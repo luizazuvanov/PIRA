@@ -12,6 +12,8 @@ jobs:
   ci:
     name: "Run tests and static analysis"
     uses: ./.github/workflows/ci.yml
+    with:
+      python-version: 3.14
   cd-dev:
     name: "Deploy to dev"
     needs: ci

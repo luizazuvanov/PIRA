@@ -4,9 +4,8 @@ on:
     inputs:
       env:
         type: string
-        description: |
-          Environment which you would like to deploy to (e.g. dev, stage, live).
         required: true
+        description: Environment which you would like to deploy to (e.g. dev, stage, live).
 jobs:
   image:
    runs-on: ubuntu-latest
