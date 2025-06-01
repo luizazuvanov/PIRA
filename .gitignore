@@ -1,6 +1,19 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux,python,macos,visualstudiocode,pycharm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,python,macos,visualstudiocode,pycharm+all
 
+### NF Core ###
+
+.nextflow*
+work/
+data/
+results/
+.DS_Store
+testing/
+testing*
+*.pyc
+null/
+pipeline_info/
+
 ### Linux ###
 *~
 
