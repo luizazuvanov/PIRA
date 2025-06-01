@@ -1,8 +1,8 @@
 ### Issue
 
-<!-- Jira card number with link -->
+<!-- Issue card number with link -->
 
-- [SLE-1](https://sumupteam.atlassian.net/browse/SLE-1)
+- [PIRA-1](https://sumupteam.atlassian.net/browse/PIRA-1)
 
 ### Changes
 
@@ -17,6 +17,6 @@
 Please make sure to check the following:
 
 - [ ] Development completed according to the ticket;
-- [ ] Feature is documented (Readme.md, database, postman, etc);
+- [ ] Feature is documented (Readme.md, docs, etc.);
 - [ ] Unit and integration tests created;
 - [ ] Tested on an integration environment.
