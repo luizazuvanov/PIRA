@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if ! make format
+then
+    echo "code format failed"
+    exit 1
+fi
+
+if ! make lint
+then
+    echo "code lint failed"
+    exit 1
+fi

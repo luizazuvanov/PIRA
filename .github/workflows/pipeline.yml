@@ -1,0 +1,30 @@
+name: CICD pipeline
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+jobs:
+  ci:
+    name: "Run tests and static analysis"
+    uses: ./.github/workflows/ci.yml
+    with:
+      python-version: 3.14
+  cd-dev:
+    name: "Deploy to dev"
+    needs: ci
+    if: ${{ github.ref == 'refs/heads/develop' }}
+    uses: ./.github/workflows/cd.yml
+    with:
+      env: dev
+  cd-prod:
+    name: "Deploy to live"
+    needs: ci
+    if: ${{ github.ref == 'refs/heads/main' }}
+    uses: ./.github/workflows/cd.yml
+    with:
+      env: live
