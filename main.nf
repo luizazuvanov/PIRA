@@ -68,6 +68,7 @@ workflow {
     NFCORE_PIRA (
         PIPELINE_INITIALISATION.out.samplesheet
     )
+
     //
     // SUBWORKFLOW: Run completion tasks
     //

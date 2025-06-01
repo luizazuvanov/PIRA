@@ -8,8 +8,8 @@ lint: ## Lint code
 
 .PHONY: test
 test:  ## Run test
-	@nextflow run . -profile debug,test,docker --outdir .
+	@nextflow -log ./logs/.nextflow.log run . -profile debug,test,docker --outdir .
 
 .PHONY: run
 run: ## Run pipeline
-	@nextflow run . -profile debug,test,docker --outdir .
+	@nextflow -log ./logs/.nextflow.log run . -profile debug,test,docker --outdir .
