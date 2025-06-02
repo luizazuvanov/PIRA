@@ -54,5 +54,4 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Test
         run: |
-          echo 0
-          # make test
+          make test
