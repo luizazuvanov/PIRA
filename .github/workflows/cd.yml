@@ -6,6 +6,11 @@ on:
         type: string
         required: true
         description: Environment which you would like to deploy to (e.g. dev, stage, live).
+    secrets:
+      dockerhub_user:
+        required: true
+      dockerhub_token:
+        required: true
 jobs:
   image:
     runs-on: ubuntu-latest
@@ -19,7 +24,7 @@ jobs:
           DOCKER_APP_TAG: ${{ inputs.env }}
           DOCKER_APP_NAME: pira
         run: |
-          DOCKER_IMAGE_URI="${{ inputs.DOCKERHUB_USER }}/${DOCKER_APP_NAME}:${DOCKER_APP_TAG}"
+          DOCKER_IMAGE_URI="${{ secrets.dockerhub_user }}/${DOCKER_APP_NAME}:${DOCKER_APP_TAG}"
           docker build --build-arg build_date="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" -t "${DOCKER_IMAGE_URI}" .
-          echo ${{ inputs.DOCKERHUB_TOKEN }} | docker login -u ${{ inputs.DOCKERHUB_USER }} --password-stdin
+          echo ${{ secrets.dockerhub_token }} | docker login -u ${{ secrets.dockerhub_user }} --password-stdin
           docker push "${DOCKER_IMAGE_URI}"
