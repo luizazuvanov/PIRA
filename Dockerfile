@@ -21,6 +21,12 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 FROM python:${python_image_tag} as builder-image
 
+# -- Layer: Image Metadata
+
+ARG build_date
+
+LABEL org.opencontainers.image.created=${build_date}
+
 # -- Layer: OS
 
 RUN apt-get update -y && \
