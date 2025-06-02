@@ -21,6 +21,9 @@ jobs:
     uses: ./.github/workflows/cd.yml
     with:
       env: dev
+    secrets:
+      dockerhub_user: ${{ secrets.DOCKERHUB_USER }}
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
   cd-prod:
     name: "Deploy to live"
     needs: ci
@@ -28,3 +31,6 @@ jobs:
     uses: ./.github/workflows/cd.yml
     with:
       env: main
+    secrets:
+      dockerhub_user: ${{ secrets.DOCKERHUB_USER }}
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
