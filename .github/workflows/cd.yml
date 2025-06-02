@@ -8,12 +8,18 @@ on:
         description: Environment which you would like to deploy to (e.g. dev, stage, live).
 jobs:
   image:
-   runs-on: ubuntu-latest
-   permissions:
-     id-token: write
-     contents: read
-   steps:
-     - name: Checkout repository
-       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-       with:
-         ref: ${{ github.event.pull_request.head.sha || github.sha }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Deploy image
+        with:
+          DOCKER_APP_TAG: ${{ inputs.env }}
+          DOCKER_APP_NAME: pira
+        run: |
+          DOCKER_IMAGE_URI="${{ inputs.DOCKERHUB_USER }}/${DOCKER_APP_NAME}:${DOCKER_APP_TAG}"
+          docker build --build-arg build_date="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" -t "${DOCKER_IMAGE_URI}" .
+          echo ${{ inputs.DOCKERHUB_TOKEN }} | docker login -u ${{ inputs.DOCKERHUB_USER }} --password-stdin
+          docker push "${DOCKER_IMAGE_URI}"
