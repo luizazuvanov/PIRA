@@ -13,11 +13,11 @@ jobs:
     name: "Run tests and static analysis"
     uses: ./.github/workflows/ci.yml
     with:
-      python-version: 3.14
+      python-version: 3.13.3
   cd-dev:
     name: "Deploy to dev"
     needs: ci
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.ref == 'refs/heads/dev' }}
     uses: ./.github/workflows/cd.yml
     with:
       env: dev
@@ -27,4 +27,4 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     uses: ./.github/workflows/cd.yml
     with:
-      env: live
+      env: main
