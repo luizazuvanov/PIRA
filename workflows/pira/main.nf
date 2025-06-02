@@ -46,10 +46,27 @@ process convertToUpper {
     """
 }
 
+process convertToUpperPython {
+    publishDir "results/upper_python"
+    tag "$y"
+
+    input:
+    path y
+
+    output:
+    path 'upper_python_*'
+
+    script:
+    """
+    python -c "import sys; print(sys.stdin.read().upper())" < $y > upper_python_${y}
+    """
+}
+
 workflow PIRA {
     ch_str = channel.of(params.str)     // Create a channel using parameter input
     ch_chunks = splitString(ch_str)     // Split string into chunks and create a named channel
     convertToUpper(ch_chunks.flatten()) // Convert lowercase letters to uppercase letters
+    convertToUpperPython(ch_chunks.flatten()) // Convert lowercase letters to uppercase letters in Python
 }
 
 /*
