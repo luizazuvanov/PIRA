@@ -6,8 +6,6 @@ on:
         type: string
         required: true
         description: Environment which you would like to deploy to (e.g. dev, stage, live).
-    secrets:
-
 jobs:
   image:
     runs-on: ubuntu-latest
