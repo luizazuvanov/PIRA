@@ -1,9 +1,3 @@
-### Issue
-
-<!-- Issue card number with link -->
-
-- [PIRA-1](https://sumupteam.atlassian.net/browse/PIRA-1)
-
 ### Changes
 
 <!-- High-level description of changes as topics -->
