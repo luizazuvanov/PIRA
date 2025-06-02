@@ -25,21 +25,16 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_pira
 */
 
 //
-// WORKFLOW: Run main analysis pipeline depending on type of input
+// WORKFLOW: Run main analysis pipeline
 //
 workflow NFCORE_PIRA {
-
-    take:
-    samplesheet // channel: samplesheet read in from --input
 
     main:
 
     //
-    // WORKFLOW: Run pipeline
+    // WORKFLOW: Run workflows/pira pipeline
     //
-    PIRA (
-        samplesheet
-    )
+    PIRA ()
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,16 +53,13 @@ workflow {
         params.validate_params,
         params.monochrome_logs,
         args,
-        params.outdir,
-        params.input
+        params.outdir
     )
 
     //
     // WORKFLOW: Run main workflow
     //
-    NFCORE_PIRA (
-        PIPELINE_INITIALISATION.out.samplesheet
-    )
+    NFCORE_PIRA ()
 
     //
     // SUBWORKFLOW: Run completion tasks
@@ -78,7 +70,7 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
+        params.hook_url
     )
 }
 
