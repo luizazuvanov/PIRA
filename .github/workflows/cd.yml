@@ -15,7 +15,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Deploy image
-        with:
+        env:
           DOCKER_APP_TAG: ${{ inputs.env }}
           DOCKER_APP_NAME: pira
         run: |
