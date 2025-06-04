@@ -27,4 +27,4 @@ run: ## Run pipeline
 
 .PHONEY: clean
 clean: ## Clean up
-	@rm -rf ./results ./logs/.nextflow.log*
+	@rm -rf ./results ./logs/.nextflow.log* ./work

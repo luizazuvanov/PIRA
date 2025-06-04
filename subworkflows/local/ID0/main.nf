@@ -23,10 +23,8 @@ workflow ID0 {
     ch_file
 
     main:
-    
-    print "ID0"
     step(ch_file)
 
     emit:
-    ch_data = step.out
+    step.out
 }
