@@ -15,7 +15,7 @@ test: ## Test run: ## Run pipeline
 	@nextflow -log ./logs/.nextflow.log \
 		run main.nf \
 		-profile debug,test,docker \
-		--outdir .
+		--outdir ./results
 
 .PHONY: run
 run: ## Run pipeline
@@ -23,4 +23,8 @@ run: ## Run pipeline
 		run main.nf \
 		-profile docker \
 		--input ./assets/samplesheet.csv \
-		--outdir .
+		--outdir ./results
+
+.PHONEY: clean
+clean: ## Clean up
+	@rm -rf ./results ./logs/.nextflow.log*

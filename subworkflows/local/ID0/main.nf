@@ -1,16 +1,19 @@
 process step {
-    publishDir "results/step"
 
     input:
     path data_path
 
     output:
-    path 'step_output.txt'
+    path 'data.csv'
 
     script:
     """
-    echo "Processing data from: ${data_path}" > step_output.txt
-    cat ${data_path} >> step_output.txt
+    # Clean Experiment (column 2) and Condition (column 3)
+    awk -F ',' 'NR == 1 {print; next} {
+        gsub(/[^a-zA-Z0-9]/, "", \$2); 
+        gsub(/[^a-zA-Z0-9]/, "", \$3); 
+        print
+    }' OFS=',' "$data_path" > "data.csv"
     """
 }
 
@@ -22,7 +25,8 @@ workflow ID0 {
     main:
     
     print "ID0"
-    ch_file.view()
-
     step(ch_file)
+
+    emit:
+    ch_data = step.out
 }
