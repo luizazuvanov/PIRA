@@ -1,6 +1,3 @@
-# Created by https://www.toptal.com/developers/gitignore/api/linux,python,macos,visualstudiocode,pycharm+all
-# Edit at https://www.toptal.com/developers/gitignore?templates=linux,python,macos,visualstudiocode,pycharm+all
-
 ### NF Core ###
 
 .nextflow*
@@ -339,5 +336,3 @@ pyrightconfig.json
 # Ignore all local history of files
 .history
 .ionide
-
-# End of https://www.toptal.com/developers/gitignore/api/linux,python,macos,visualstudiocode,pycharm+all

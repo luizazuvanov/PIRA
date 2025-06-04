@@ -4,6 +4,10 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { ID0 } from '../../subworkflows/local/ID0'
+include { paramsSummaryMap          } from 'plugin/nf-schema'
+include { samplesheetToList         } from 'plugin/nf-schema'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -63,10 +67,16 @@ process convertToUpperPython {
 }
 
 workflow PIRA {
-    ch_str = channel.of(params.str)     // Create a channel using parameter input
-    ch_chunks = splitString(ch_str)     // Split string into chunks and create a named channel
-    convertToUpper(ch_chunks.flatten()) // Convert lowercase letters to uppercase letters
-    convertToUpperPython(ch_chunks.flatten()) // Convert lowercase letters to uppercase letters in Python
+    // ch_str = channel.of(params.str)     // Create a channel using parameter input
+    // ch_chunks = splitString(ch_str)     // Split string into chunks and create a named channel
+    // convertToUpper(ch_chunks.flatten()) // Convert lowercase letters to uppercase letters
+    // convertToUpperPython(ch_chunks.flatten()) // Convert lowercase letters to uppercase letters in Python
+    
+    print "PIRA"
+    ch_samplesheet = channel.fromPath(params.input)
+    ch_samplesheet.view()
+    
+    ID0(ch_samplesheet)
 }
 
 /*

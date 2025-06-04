@@ -6,14 +6,21 @@ help: ## Show this help message
 lint: ## Lint code
 	@pre-commit run --all-files
 
-.PHONY: test
-test: ## Run test
-	@nextflow -log ./logs/.nextflow.log run . -profile debug,test,docker --outdir .
-
 .PHONY: build
 build: ## Build pipeline deps container
 	@docker build --no-cache . -t nfcore/pira:dev
 
+.PHONY: test
+test: ## Test run: ## Run pipeline
+	@nextflow -log ./logs/.nextflow.log \
+		run main.nf \
+		-profile debug,test,docker \
+		--outdir .
+
 .PHONY: run
 run: ## Run pipeline
-	@nextflow -log ./logs/.nextflow.log run . -profile docker --outdir .
+	@nextflow -log ./logs/.nextflow.log \
+		run main.nf \
+		-profile docker \
+		--input ./assets/samplesheet.csv \
+		--outdir .
