@@ -1,3 +1,11 @@
-sample,fastq_1,fastq_2
-SAMPLE_PAIRED_END,/path/to/fastq/files/AEG588A1_S1_L002_R1_001.fastq.gz,/path/to/fastq/files/AEG588A1_S1_L002_R2_001.fastq.gz
-SAMPLE_SINGLE_END,/path/to/fastq/files/AEG588A4_S4_L003_R1_001.fastq.gz,
+run,experiment,condition
+SRR16496056,SRX12699021,0dayoldyoungadult_20C
+SRR16496057,SRX12699022,0dayoldyoungadult_20C
+SRR16496058,SRX12699023,0dayoldyoungadult_20C
+SRR16496059,SRX12699024,0dayoldyoungadult_20C
+SRR16496060,SRX12699025,0dayoldyoungadult_20C
+SRR16496066,SRX12699031,9dayoldadult_20C
+SRR16496067,SRX12699032,9dayoldadult_20C
+SRR16496068,SRX12699033,9dayoldadult_20C
+SRR16496069,SRX12699034,9dayoldadult_20C
+SRR16496070,SRX12699035,9dayoldadult_20C

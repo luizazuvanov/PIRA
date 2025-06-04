@@ -7,27 +7,20 @@
     "items": {
         "type": "object",
         "properties": {
-            "sample": {
+            "run": {
                 "type": "string",
-                "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided and cannot contain spaces",
+                "errorMessage": "TODO: explain what this field is for",
                 "meta": ["id"]
             },
-            "fastq_1": {
+            "experiment": {
                 "type": "string",
-                "format": "file-path",
-                "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "errorMessage": "TODO: explain what this field is for"
             },
-            "fastq_2": {
+            "condition": {
                 "type": "string",
-                "format": "file-path",
-                "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "errorMessage": "TODO: explain what this field is for"
             }
         },
-        "required": ["sample", "fastq_1"]
+        "required": ["run", "experiment", "condition"]
     }
 }
