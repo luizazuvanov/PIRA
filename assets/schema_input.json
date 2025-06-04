@@ -14,10 +14,12 @@
             },
             "experiment": {
                 "type": "string",
+                "pattern": "[a-zA-Z0-9]",
                 "errorMessage": "TODO: explain what this field is for"
             },
             "condition": {
                 "type": "string",
+                "pattern": "[a-zA-Z0-9]",
                 "errorMessage": "TODO: explain what this field is for"
             }
         },
