@@ -18,15 +18,16 @@ workflow PIRA {
     ch_data = channel.fromPath(params.input)
     
     print "ID1"
-    ch_download_line = Channel.empty()
+    ch_samples = Channel.empty()
     ch_data
         .map { it -> file(it) }
-        .splitText( keepHeader: true )
-        .map { it -> it.trim() }
-        .unique() 
-        .set { ch_download_line }
+        .splitCsv( header: true, strip: true )
+        .map { row -> tuple(row.run, row.experiment, row.condition) }
+        .set { ch_samples }
 
-    ID1(ch_download_line)
+    // ch_samples.view()
+
+    ID1(ch_samples)
 }
 
 /*
