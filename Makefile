@@ -15,6 +15,7 @@ test: ## Test run: ## Run pipeline
 	@nextflow -log ./logs/.nextflow.log \
 		run main.nf \
 		-profile debug,test,docker \
+		-stub-run \
 		--outdir ./results
 
 .PHONY: run

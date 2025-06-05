@@ -1,16 +1,21 @@
+include { SRATOOLS_PREFETCH           } from '../../../modules/nf-core/sratools/prefetch/main.nf'
+include { SRATOOLS_FASTERQDUMP        } from '../../../modules/nf-core/sratools/fasterqdump/main.nf'
+include { CUSTOM_SRATOOLSNCBISETTINGS } from '../../../modules/nf-core/custom/sratoolsncbisettings/main'
+
 process step {
     
-    publishDir path: "${params.outdir}/sequence/raw/fq/${experiment}", mode: 'copy', pattern: "${run}.txt"
+    publishDir path: "${params.outdir}/sequence/raw/fq/", mode: 'move', pattern: "${meta.experiment}/*.fastq.gz"
 
     input:
-    tuple val(run), val(experiment), val(condition)
-
+    tuple val(meta), path(reads)
+    
     output:
-    path "${run}.txt"
+    path "${meta.experiment}/*.fastq.gz"
 
     script:
     """
-    echo "${run} * ${experiment} * ${condition}" > "${run}.txt"
+    mkdir -p ${meta.experiment}
+    for read in ${reads}; do cp \${read} ${meta.experiment}/\${read}; done
     """
 }
 
@@ -20,5 +25,29 @@ workflow ID1 {
     ch_samples
 
     main:
-    step(ch_samples)
+
+    samples = ch_samples.map { it -> tuple([id: it[0], experiment: it[1]], it[0]) }
+
+    CUSTOM_SRATOOLSNCBISETTINGS(
+        samples
+    )
+
+    SRATOOLS_PREFETCH(
+        samples, 
+        CUSTOM_SRATOOLSNCBISETTINGS.out.ncbi_settings, 
+        []
+    )
+
+    SRATOOLS_FASTERQDUMP(
+        SRATOOLS_PREFETCH.out.sra, 
+        CUSTOM_SRATOOLSNCBISETTINGS.out.ncbi_settings, 
+        []
+    )
+
+    step(
+        SRATOOLS_FASTERQDUMP.out.reads
+    )
+
+    emit:
+    reads = step.out
 }

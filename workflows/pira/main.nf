@@ -13,7 +13,7 @@ include { ID1 } from '../../subworkflows/local/ID1'
 */
 
 workflow PIRA {    
-    
+
     print "PIRA"
     ch_data = channel.fromPath(params.input)
     
@@ -23,11 +23,11 @@ workflow PIRA {
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
         .map { row -> tuple(row.run, row.experiment, row.condition) }
+        .unique()
         .set { ch_samples }
 
-    // ch_samples.view()
-
-    ID1(ch_samples)
+    reads = ID1(ch_samples)
+    reads.view()
 }
 
 /*
