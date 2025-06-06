@@ -44,10 +44,6 @@ workflow ID1 {
         []
     )
 
-    step(
-        SRATOOLS_FASTERQDUMP.out.reads
-    )
-
     emit:
-    reads = step.out
+    reads = SRATOOLS_FASTERQDUMP.out.reads
 }
