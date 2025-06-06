@@ -11,10 +11,19 @@ build: ## Build pipeline deps container
 	@docker build --no-cache . -t nfcore/pira:dev
 
 .PHONY: test
-test: ## Test run: ## Run pipeline
+test: ## Run test
+	@nextflow -log ./logs/.nextflow.log \
+		run main.nf \
+		-profile test,docker \
+		-stub-run \
+		--outdir ./results
+
+.PHONY: debug
+debug: ## Run test with debug profile
 	@nextflow -log ./logs/.nextflow.log \
 		run main.nf \
 		-profile debug,test,docker \
+		-stub-run \
 		--outdir ./results
 
 .PHONY: run
@@ -27,4 +36,4 @@ run: ## Run pipeline
 
 .PHONEY: clean
 clean: ## Clean up
-	@rm -rf ./results ./logs/.nextflow.log*
+	@rm -rf ./results ./logs/.nextflow.log* ./work

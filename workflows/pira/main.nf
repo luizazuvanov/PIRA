@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID0 } from '../../subworkflows/local/ID0'
+include { ID1 } from '../../subworkflows/local/ID1'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -13,11 +13,21 @@ include { ID0 } from '../../subworkflows/local/ID0'
 */
 
 workflow PIRA {    
-    
+
     print "PIRA"
-    ch_samplesheet = channel.fromPath(params.input)
+    ch_data = channel.fromPath(params.input)
     
-    ID0(ch_samplesheet)
+    print "ID1"
+    ch_samples = Channel.empty()
+    ch_data
+        .map { it -> file(it) }
+        .splitCsv( header: true, strip: true )
+        .map { row -> tuple(row.run, row.experiment, row.condition) }
+        .unique()
+        .set { ch_samples }
+
+    reads = ID1(ch_samples)
+    reads.view()
 }
 
 /*
