@@ -6,6 +6,7 @@
 
 include { ID1 } from '../../subworkflows/local/ID1'
 include { ID2 } from '../../subworkflows/local/ID2'
+include { ID3 } from '../../subworkflows/local/ID3'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,6 +32,9 @@ workflow PIRA {
 
     print "ID2"    
     ch_out = ID2(ch_out)
+
+    print "ID3"    
+    ch_out = ID3(ch_out)
 }
 
 /*
