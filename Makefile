@@ -12,6 +12,7 @@ build: ## Build pipeline deps container
 
 .PHONY: test
 test: ## Run test
+	@make clean
 	@nextflow -log ./logs/.nextflow.log \
 		run main.nf \
 		-profile test,docker \
@@ -20,6 +21,7 @@ test: ## Run test
 
 .PHONY: debug
 debug: ## Run test with debug profile
+	@make clean
 	@nextflow -log ./logs/.nextflow.log \
 		run main.nf \
 		-profile debug,test,docker \

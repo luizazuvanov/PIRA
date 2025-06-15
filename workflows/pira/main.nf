@@ -5,6 +5,7 @@
 */
 
 include { ID1 } from '../../subworkflows/local/ID1'
+include { ID2 } from '../../subworkflows/local/ID2'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -22,12 +23,13 @@ workflow PIRA {
     ch_data
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
-        .map { row -> tuple(row.run, row.experiment, row.condition) }
         .unique()
         .set { ch_samples }
 
-    reads = ID1(ch_samples)
-    reads.view()
+    ch_out = ID1(ch_samples)
+
+    print "ID2"    
+    ID2(ch_out)
 }
 
 /*

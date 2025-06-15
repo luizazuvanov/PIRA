@@ -1,6 +1,6 @@
-include { SRATOOLS_PREFETCH           } from '../../../modules/nf-core/sratools/prefetch/main.nf'
-include { SRATOOLS_FASTERQDUMP        } from '../../../modules/nf-core/sratools/fasterqdump/main.nf'
-include { CUSTOM_SRATOOLSNCBISETTINGS } from '../../../modules/nf-core/custom/sratoolsncbisettings/main'
+include { SRATOOLS_PREFETCH           } from '../../../modules/nf-core/sratools/prefetch'
+include { SRATOOLS_FASTERQDUMP        } from '../../../modules/nf-core/sratools/fasterqdump'
+include { CUSTOM_SRATOOLSNCBISETTINGS } from '../../../modules/nf-core/custom/sratoolsncbisettings'
 
 process step {
     
@@ -22,18 +22,16 @@ process step {
 workflow ID1 {
 
     take:
-    ch_samples
+    ch_input
 
     main:
 
-    samples = ch_samples.map { it -> tuple([id: it[0], experiment: it[1]], it[0]) }
-
     CUSTOM_SRATOOLSNCBISETTINGS(
-        samples
+        []
     )
 
     SRATOOLS_PREFETCH(
-        samples, 
+        ch_input.map { it -> tuple([id: it.run], it.run) },
         CUSTOM_SRATOOLSNCBISETTINGS.out.ncbi_settings, 
         []
     )
@@ -44,6 +42,22 @@ workflow ID1 {
         []
     )
 
+    // clean
+    ch_out = Channel.empty()
+    SRATOOLS_FASTERQDUMP.out.reads
+        .map { it -> tuple(run: it[0].id, out: it[1]) }
+        .map { it -> it[0]}
+        .set { ch_out }
+
+    // join
+    ch_out = ch_input
+        .map { it -> tuple(it.run, it) }
+        .join( 
+            ch_out
+            .map {it -> tuple(it.run, it)}
+        )
+        .map { __, a, b -> a + b }
+
     emit:
-    reads = SRATOOLS_FASTERQDUMP.out.reads
+    ch_out
 }
