@@ -31,7 +31,7 @@ workflow ID2 {
             ch_out
             .map {it -> tuple(it.run, it)}
         )
-        .map { __, a, b -> a + b }
+        .map { __, a, b -> a + b } // drop join key
 
     emit:
     ch_out
