@@ -2,23 +2,6 @@ include { SRATOOLS_PREFETCH           } from '../../../modules/nf-core/sratools/
 include { SRATOOLS_FASTERQDUMP        } from '../../../modules/nf-core/sratools/fasterqdump'
 include { CUSTOM_SRATOOLSNCBISETTINGS } from '../../../modules/nf-core/custom/sratoolsncbisettings'
 
-process step {
-    
-    publishDir path: "${params.outdir}/sequence/raw/fq/", mode: 'move', pattern: "${meta.experiment}/*.fastq.gz"
-
-    input:
-    tuple val(meta), path(reads)
-    
-    output:
-    path "${meta.experiment}/*.fastq.gz"
-
-    script:
-    """
-    mkdir -p ${meta.experiment}
-    for read in ${reads}; do cp \${read} ${meta.experiment}/\${read}; done
-    """
-}
-
 workflow ID1 {
 
     take:
