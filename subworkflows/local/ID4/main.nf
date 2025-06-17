@@ -1,7 +1,7 @@
 include { STAR_ALIGN } from '../../../modules/nf-core/star/align'
 
 
-workflow ID3 {
+workflow ID4 {
     
     take:
     ch_input
@@ -13,8 +13,8 @@ workflow ID3 {
     STAR_ALIGN(
         ch_input.map { it -> tuple([id: it.experiment, single_end: single_end], it.fastp) }, 
         ch_input.map { __ -> tuple([], '/dev/null/abc' ) },
-        ch_input.map { __ -> tuple([], '/dev/null' ) },
-        true,
+        ch_input.map { it -> tuple([], it.spl) },
+        false,
         "",
         ""
     )
@@ -22,8 +22,8 @@ workflow ID3 {
     // clean
 
     ch_out = Channel.empty()
-    STAR_ALIGN.out.spl_junc_tab
-        .map { it -> tuple(experiment: it[0].id, spl: it[1]) }
+    STAR_ALIGN.out.bam
+        .map { it -> tuple(experiment: it[0].id, bam: it[1]) }
         .map { it -> it.first() }
         .set { ch_out }
 
