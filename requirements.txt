@@ -1,2 +1,2 @@
 nextflow==25.4.2
-nf-core==3.2.1
+nf-core==3.3.1

@@ -7,10 +7,10 @@ workflow ID2 {
 
     main:
 
-    def single_end = ch_input.map { it -> it.out }.collect().size() == 1
+    def single_end = ch_input.map { it -> it.fastq }.collect().size() == 1
 
     FASTP(
-        ch_input.map { it -> tuple([id: it.run, single_end: single_end], it.out) }, 
+        ch_input.map { it -> tuple([id: it.run, single_end: single_end], it.fastq) }, 
         [],
         false,
         false,
@@ -18,13 +18,15 @@ workflow ID2 {
     )
 
     // clean
+
     ch_out = Channel.empty()
     FASTP.out.reads
-        .map { it -> tuple(run: it[0].id, out: it[1]) }
-        .map { it -> it[0]}
+        .map { it -> tuple(run: it[0].id, fastp: it[1]) }
+        .map { it -> it.first() }
         .set { ch_out }
 
     // join
+    
     ch_out = ch_input
         .map { it -> tuple(it.run, it) }
         .join( 
