@@ -15,6 +15,21 @@
                         "git_sha": "8864afe586537bf562eac7b83349c26207f3cb4d",
                         "installed_by": ["modules"]
                     },
+                    "samtools/index": {
+                        "branch": "master",
+                        "git_sha": "d090922b1a4b80ba283186459ababf8e308abcbb",
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/merge": {
+                        "branch": "master",
+                        "git_sha": "d090922b1a4b80ba283186459ababf8e308abcbb",
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/stats": {
+                        "branch": "master",
+                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
+                        "installed_by": ["modules"]
+                    },
                     "sratools/fasterqdump": {
                         "branch": "master",
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",

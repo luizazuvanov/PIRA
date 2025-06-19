@@ -10,6 +10,17 @@ lint: ## Lint code
 build: ## Build pipeline deps container
 	@docker build --no-cache . -t nfcore/pira:dev
 
+.PHONY: render
+render: ## Render pipeline
+	@make clean
+	@nextflow -log ./logs/.nextflow.log \
+		run main.nf \
+		-profile test,docker \
+		-stub-run \
+		-preview \
+		-with-dag ./results/pipeline.png \
+		--outdir ./results
+
 .PHONY: test
 test: ## Run test
 	@make clean
@@ -17,6 +28,7 @@ test: ## Run test
 		run main.nf \
 		-profile test,docker \
 		-stub-run \
+		-with-dag ./results/pipeline.png \
 		--outdir ./results
 
 .PHONY: debug
@@ -26,14 +38,7 @@ debug: ## Run test with debug profile
 		run main.nf \
 		-profile debug,test,docker \
 		-stub-run \
-		--outdir ./results
-
-.PHONY: run
-run: ## Run pipeline
-	@nextflow -log ./logs/.nextflow.log \
-		run main.nf \
-		-profile docker \
-		--input ./assets/samplesheet.csv \
+		-with-dag ./results/pipeline.png \
 		--outdir ./results
 
 .PHONEY: clean

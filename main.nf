@@ -31,10 +31,22 @@ workflow NFCORE_PIRA {
 
     main:
 
+    ch_samples = Channel.empty() // experiment, run, condition
+    ch_input = Channel.fromPath(params.input, type: "file")
+    ch_index = Channel.fromPath(params.index, type: "dir")
+
+    ch_input
+        .map { it -> file(it) }
+        .splitCsv( header: true, strip: true )
+        .unique()
+        .combine(ch_index)
+        .map { row, index -> row + [index: index]}
+        .set { ch_samples }
+
     //
     // WORKFLOW: Run workflows/pira pipeline
     //
-    PIRA ()
+    PIRA (ch_samples)
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
