@@ -20,11 +20,27 @@ workflow ID3 {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out_bam = Channel.empty()
+    STAR_ALIGN.out.bam
+        .map { it -> tuple(experiment: it[0].id, index: it[0].index, bam: it[1]) }
+        .map { it -> it.first() }
+        .set { ch_out_bam }
+
+    ch_out_spl = Channel.empty()
     STAR_ALIGN.out.spl_junc_tab
         .map { it -> tuple(experiment: it[0].id, index: it[0].index, spl: it[1]) }
         .map { it -> it.first() }
-        .set { ch_out }
+        .set { ch_out_spl }
+
+    // join
+
+    ch_out = ch_out_bam
+        .map { it -> tuple(it.experiment, it) }
+        .join( 
+            ch_out_spl
+            .map {it -> tuple(it.experiment, it)}
+        )
+        .map { __, a, b -> a + b } // drop join key
 
     emit:
     ch_out

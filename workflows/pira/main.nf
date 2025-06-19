@@ -17,28 +17,60 @@ include { ID4 } from '../../subworkflows/local/ID4'
 
 workflow PIRA {    
 
-    print "PIRA"
+    take:
+    // run, exp, cond, idx
+    ch_samples
 
-    ch_input = channel.fromPath(params.input, type: "file")
-    ch_index = channel.fromPath(params.index, type: "dir")
-    ch_samples = Channel.empty() // experiment, run, condition
-    
-    ch_input
-        .map { it -> file(it) }
-        .splitCsv( header: true, strip: true )
-        .unique()
-        .combine(ch_index)
-        .map { row, index -> row + [index: index]}
-        .set { ch_samples }
+    main:
 
-    print "ID1"
-    ch_fastq = ID1(ch_samples) // experiment, run, condition, index, []fastq
+    //
+    // SUBWORKFLOW: ID1
+    //
 
-    print "ID2"
-    ch_fastp = ID2(ch_fastq) // experiment, run, condition, index, []fastp
+    println "ID1"
+    ch_fastq = ID1(ch_samples) // run, exp, cond, idx, []fastq
 
-    print "ID3"
-    ch_fastp_by_experiment = Channel.empty() // experiment, index, []fastp 
+    //
+    // SUBWORKFLOW: ID2
+    //
+
+    println "ID2"
+    ch_fastp = ID2(ch_fastq) // run, exp, cond, idx, []fastp
+
+    //
+    // SUBWORKFLOW: ID3
+    //
+
+    println "ID3"
+    ch_fastp_by_exp_idx = group_fastp_by_exp_idx(ch_fastp) // exp, idx, []fastp
+    ch_novo = ID3(ch_fastp_by_exp_idx) // exp, idx, []bam, spl
+    ch_novo.view()
+
+    //
+    // SUBWORKFLOW: ID4
+    //
+
+    println "ID4"
+    ch_fastp_bam_spl_by_exp_idx = join_fastp_bam_spl_by_exp_idx(ch_fastp_by_exp_idx, ch_novo) // exp, idx, []fastp, spl
+    ch_denovo = ID4(ch_fastp_bam_spl_by_exp_idx) // exp, idx, []bam
+    ch_denovo.view()
+}
+
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+workflow group_fastp_by_exp_idx {
+
+    take:
+    ch_fastp // run, experiment, condition, index
+
+    main:
+
+    ch_fastp_by_exp_idx = Channel.empty()
     ch_fastp
         .map { it -> tuple(it.experiment, it) }
         .groupTuple()
@@ -47,25 +79,33 @@ workflow PIRA {
             index: its.collect { it.index }.unique().first(),
             fastp: its.collect { it.fastp }.flatten()
         ] }
-        .set { ch_fastp_by_experiment }
+        .set { ch_fastp_by_exp_idx }
 
-    ch_fastp_by_experiment.view()
+    emit:
+    ch_fastp_by_exp_idx // experiment, index, []fastp
+}
 
-    ch_spl_by_experiment = ID3(ch_fastp_by_experiment) // experiment, index, spl
+workflow join_fastp_bam_spl_by_exp_idx {
+    
+    take:
+    ch_bam_spl_by_exp_idx // exp, idx, []bam, spl
+    ch_fastp_by_exp_idx // exp, idx, []fastp
 
-    print "ID4"
-    ch_fastp_spl_by_experiment = Channel.empty() // experiment, index, []fastp, spl
-    ch_fastp_by_experiment
+    main:
+    
+    ch_fastp_sp_by_exp_idx = Channel.empty()
+
+    ch_fastp_by_exp_idx
         .map { it -> tuple(it.experiment, it) }
         .join( 
-            ch_spl_by_experiment
+            ch_bam_spl_by_exp_idx
             .map {it -> tuple(it.experiment, it)}
         )
         .map { __, a, b -> a + b } // drop join key
-        .set { ch_fastp_spl_by_experiment }
+        .set { ch_fastp_sp_by_exp_idx }
 
-    ch_bam_by_experiment = ID4(ch_fastp_spl_by_experiment) // experiment, index, bam
-    ch_bam_by_experiment.view()
+    emit:
+    ch_fastp_sp_by_exp_idx // exp, idx, []fastp, []bam, spl
 }
 
 /*
