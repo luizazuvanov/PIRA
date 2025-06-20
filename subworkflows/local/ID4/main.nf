@@ -1,31 +1,50 @@
-include { STAR_ALIGN } from '../../../modules/nf-core/star/align'
+include { SAMTOOLS_INDEX } from '../../../modules/nf-core/samtools/index'
+include { SAMTOOLS_MERGE } from '../../../modules/nf-core/samtools/merge'
+include { SAMTOOLS_STATS } from '../../../modules/nf-core/samtools/stats'
 
-workflow ID4 {
+workflow ID4_EXPERIMENT {
     
     take:
     ch_input
 
     main:
-    
-    def single_end = ch_input.map { it -> it.fastp }.collect().size() == 1
 
-    STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, index: it.index, single_end: single_end], it.fastp) }, 
-        ch_input.map { it -> tuple([id: it.experiment], it.index) },
-        ch_input.map { it -> tuple([id: it.experiment], it.spl) },
-        false,
-        "",
-        ""
+    SAMTOOLS_STATS(
+        ch_input.map { it -> tuple(
+            [id: it.experiment], 
+            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},
+            []
+        ) },
+        [[], []]
     )
 
-    // clean
+    SAMTOOLS_INDEX(
+        ch_input.map { it -> tuple(
+            [id: it.experiment], 
+            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')}
+        ) }
+    )
+}
 
-    ch_out = Channel.empty()
-    STAR_ALIGN.out.bam
-        .map { it -> tuple(experiment: it[0].id, it[0].index, bam: it[1]) }
-        .map { it -> it.first() }
-        .set { ch_out }
 
-    emit:
-    ch_out
+workflow ID4_CONDITION {
+    
+    take:
+    ch_input
+
+    main:
+
+    SAMTOOLS_MERGE(
+        ch_input.map { it -> tuple(
+            [id: "${it.alignment}-${it.condition}"], 
+            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')}
+        ) },
+        [[], []],
+        [[], []],
+        [[], []] 
+    )
+
+    SAMTOOLS_INDEX(
+        SAMTOOLS_MERGE.out.bam
+    )
 }

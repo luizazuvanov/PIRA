@@ -21,8 +21,7 @@ workflow ID2 {
 
     ch_out = Channel.empty()
     FASTP.out.reads
-        .map { it -> tuple(run: it[0].id, fastp: it[1]) }
-        .map { it -> it.first() }
+        .map { it -> [run: it[0].id, fastp: it[1]] }
         .set { ch_out }
 
     // join
