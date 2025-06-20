@@ -32,7 +32,7 @@ workflow NFCORE_PIRA {
     main:
 
     ch_samples = Channel.empty() // experiment, run, condition
-    ch_input = Channel.fromPath(params.input, type: "file")
+    ch_input = Channel.fromPath(params.input)
     ch_index = Channel.fromPath(params.index, type: "dir")
 
     ch_input

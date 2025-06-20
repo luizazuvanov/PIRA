@@ -6,8 +6,8 @@
 
 include { ID1 } from '../../subworkflows/local/ID1'
 include { ID2 } from '../../subworkflows/local/ID2'
-include { ID3 } from '../../subworkflows/local/ID3'
-include { ID4 } from '../../subworkflows/local/ID4'
+include { ID3A } from '../../subworkflows/local/ID3'
+include { ID3B } from '../../subworkflows/local/ID3'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,19 +41,20 @@ workflow PIRA {
     // SUBWORKFLOW: ID3
     //
 
-    println "ID3"
-    ch_fastp_by_exp_idx = group_fastp_by_exp_idx(ch_fastp) // exp, idx, []fastp
-    ch_novo = ID3(ch_fastp_by_exp_idx) // exp, idx, []bam, spl
-    ch_novo.view()
+    println "ID3A"
+    ch_fastp_by_exp = group_fastp_by_exp(ch_fastp) // exp, idx, []fastp
+    ch_novo = ID3A(ch_fastp_by_exp) // exp, idx, []bam, spl
+
+    println "ID3B"
+    ch_fastp_bam_spl_by_exp = join_fastp_bam_spl_by_exp(ch_fastp_by_exp, ch_novo) // exp, idx, []fastp, spl
+    ch_denovo = ID3B(ch_fastp_bam_spl_by_exp) // exp, idx, []bam, spl
 
     //
     // SUBWORKFLOW: ID4
     //
 
-    println "ID4"
-    ch_fastp_bam_spl_by_exp_idx = join_fastp_bam_spl_by_exp_idx(ch_fastp_by_exp_idx, ch_novo) // exp, idx, []fastp, spl
-    ch_denovo = ID4(ch_fastp_bam_spl_by_exp_idx) // exp, idx, []bam
-    ch_denovo.view()
+
+
 }
 
 
@@ -63,14 +64,14 @@ workflow PIRA {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow group_fastp_by_exp_idx {
+workflow group_fastp_by_exp {
 
     take:
     ch_fastp // run, experiment, condition, index
 
     main:
 
-    ch_fastp_by_exp_idx = Channel.empty()
+    ch_fastp_by_exp = Channel.empty()
     ch_fastp
         .map { it -> tuple(it.experiment, it) }
         .groupTuple()
@@ -79,33 +80,33 @@ workflow group_fastp_by_exp_idx {
             index: its.collect { it.index }.unique().first(),
             fastp: its.collect { it.fastp }.flatten()
         ] }
-        .set { ch_fastp_by_exp_idx }
+        .set { ch_fastp_by_exp }
 
     emit:
-    ch_fastp_by_exp_idx // experiment, index, []fastp
+    ch_fastp_by_exp // experiment, index, []fastp
 }
 
-workflow join_fastp_bam_spl_by_exp_idx {
+workflow join_fastp_bam_spl_by_exp {
     
     take:
-    ch_bam_spl_by_exp_idx // exp, idx, []bam, spl
-    ch_fastp_by_exp_idx // exp, idx, []fastp
+    ch_bam_spl_by_exp // exp, idx, []bam, spl
+    ch_fastp_by_exp // exp, idx, []fastp
 
     main:
     
-    ch_fastp_sp_by_exp_idx = Channel.empty()
+    ch_fastp_sp_by_exp = Channel.empty()
 
-    ch_fastp_by_exp_idx
+    ch_fastp_by_exp
         .map { it -> tuple(it.experiment, it) }
         .join( 
-            ch_bam_spl_by_exp_idx
+            ch_bam_spl_by_exp
             .map {it -> tuple(it.experiment, it)}
         )
         .map { __, a, b -> a + b } // drop join key
-        .set { ch_fastp_sp_by_exp_idx }
+        .set { ch_fastp_sp_by_exp }
 
     emit:
-    ch_fastp_sp_by_exp_idx // exp, idx, []fastp, []bam, spl
+    ch_fastp_sp_by_exp // exp, idx, []fastp, []bam, spl
 }
 
 /*
