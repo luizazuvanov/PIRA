@@ -22,14 +22,12 @@ workflow ID3_NOVO {
 
     ch_out_bam = Channel.empty()
     STAR_ALIGN.out.bam
-        .map { it -> tuple(experiment: it[0].id, index: it[0].index, bam: it[1]) }
-        .map { it -> it.first() }
+        .map { it -> [experiment: it[0].id, index: it[0].index, bam: it[1]] }
         .set { ch_out_bam }
 
     ch_out_spl = Channel.empty()
     STAR_ALIGN.out.spl_junc_tab
-        .map { it -> tuple(experiment: it[0].id, index: it[0].index, spl: it[1]) }
-        .map { it -> it.first() }
+        .map { it -> [experiment: it[0].id, index: it[0].index, spl: it[1]] }
         .set { ch_out_spl }
 
     // join
@@ -68,8 +66,7 @@ workflow ID3_DENOVO {
 
     ch_out = Channel.empty()
     STAR_ALIGN.out.bam
-        .map { it -> tuple(experiment: it[0].id, index: it[0].index, bam: it[1]) }
-        .map { it -> it.first() }
+        .map { it -> [experiment: it[0].id, index: it[0].index, bam: it[1]] }
         .set { ch_out }
 
     emit:

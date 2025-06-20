@@ -29,8 +29,7 @@ workflow ID1 {
 
     ch_out = Channel.empty()
     SRATOOLS_FASTERQDUMP.out.reads
-        .map { it -> tuple(run: it[0].id, fastq: it[1]) }
-        .map { it -> it.first() }
+        .map { it -> [run: it[0].id, fastq: it[1]] }
         .set { ch_out }
 
     // join

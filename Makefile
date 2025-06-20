@@ -46,6 +46,6 @@ debug: ## Run test with debug profile
 		-with-dag ./results/pipeline_info/pipeline.png \
 		--outdir ./results
 
-.PHONEY: clean
+.PHONY: clean
 clean: ## Clean up
 	@rm -rf ./results ./logs/.nextflow.log* ./work
