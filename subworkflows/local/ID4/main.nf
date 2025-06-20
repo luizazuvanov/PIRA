@@ -1,8 +1,50 @@
-workflow ID4 {
+include { SAMTOOLS_INDEX } from '../../../modules/nf-core/samtools/index'
+include { SAMTOOLS_MERGE } from '../../../modules/nf-core/samtools/merge'
+include { SAMTOOLS_STATS } from '../../../modules/nf-core/samtools/stats'
+
+workflow ID4_EXPERIMENT {
     
     take:
     ch_input
 
     main:
-    ch_input.view()
+
+    SAMTOOLS_STATS(
+        ch_input.map { it -> tuple(
+            [id: it.experiment], 
+            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},
+            []
+        ) },
+        [[], []]
+    )
+
+    SAMTOOLS_INDEX(
+        ch_input.map { it -> tuple(
+            [id: it.experiment], 
+            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')}
+        ) }
+    )
+}
+
+
+workflow ID4_CONDITION {
+    
+    take:
+    ch_input
+
+    main:
+
+    SAMTOOLS_MERGE(
+        ch_input.map { it -> tuple(
+            [id: "${it.alignment}-${it.condition}"], 
+            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')}
+        ) },
+        [[], []],
+        [[], []],
+        [[], []] 
+    )
+
+    SAMTOOLS_INDEX(
+        SAMTOOLS_MERGE.out.bam
+    )
 }

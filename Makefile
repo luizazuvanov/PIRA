@@ -18,18 +18,23 @@ render: ## Render pipeline
 		-profile test,docker \
 		-stub-run \
 		-preview \
-		-with-dag ./results/pipeline.png \
+		-with-dag ./results/pipeline_info/pipeline.png \
+		--outdir ./results
+
+.PHONY: resume
+resume: ## Resume test
+	@nextflow -log ./logs/.nextflow.log \
+		run main.nf \
+		-profile test,docker \
+		-stub-run \
+		-resume \
+		-with-dag ./results/pipeline_info/pipeline.png \
 		--outdir ./results
 
 .PHONY: test
 test: ## Run test
 	@make clean
-	@nextflow -log ./logs/.nextflow.log \
-		run main.nf \
-		-profile test,docker \
-		-stub-run \
-		-with-dag ./results/pipeline.png \
-		--outdir ./results
+	@make resume
 
 .PHONY: debug
 debug: ## Run test with debug profile
@@ -38,7 +43,7 @@ debug: ## Run test with debug profile
 		run main.nf \
 		-profile debug,test,docker \
 		-stub-run \
-		-with-dag ./results/pipeline.png \
+		-with-dag ./results/pipeline_info/pipeline.png \
 		--outdir ./results
 
 .PHONEY: clean
