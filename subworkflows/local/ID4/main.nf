@@ -11,7 +11,7 @@ workflow ID4_EXPERIMENT {
 
     SAMTOOLS_STATS(
         ch_input.map { it -> tuple(
-            [id: it.experiment], 
+            [id: it.experiment, alignment: it.alignment], 
             it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},
             []
         ) },
@@ -20,7 +20,7 @@ workflow ID4_EXPERIMENT {
 
     SAMTOOLS_INDEX(
         ch_input.map { it -> tuple(
-            [id: it.experiment], 
+            [id: it.experiment, alignment: it.alignment], 
             it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')}
         ) }
     )

@@ -49,8 +49,9 @@ workflow PIRA {
     ) // exp, []fastp
 
     ch_novo = ID3_NOVO(
-        ch_fastp_by_exp, 
-        ch_index
+        ch_fastp_by_exp
+            .combine(ch_index)
+            .map {row, index -> row + [index: index.index] },
     ) // exp, []bam, spl
 
     ch_fastp_bam_spl_by_exp = join_by_exp(
@@ -59,15 +60,28 @@ workflow PIRA {
     ) // exp, []fastp, spl
     
     ch_denovo = ID3_DENOVO(
-        ch_fastp_bam_spl_by_exp, 
-        ch_index
+        ch_fastp_bam_spl_by_exp
+            .combine(ch_index)
+            .map {row, index -> row + [index: index.index] },
     ) // exp, []bam
 
     //
     // SUBWORKFLOW: ID4
     //
 
+    // Exp
+
+    ch_novo
+        .map { it -> it + [alignment: "novo"]}
+        .set { ch_novo }
+
+    ch_denovo
+        .map { it -> it + [alignment: "denovo"]}
+        .set { ch_denovo }
+
     ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
+
+    // Cond
 
     ch_novo_by_cond = join_by_exp(
         ch_novo,
@@ -100,8 +114,13 @@ workflow PIRA {
     //
     // SUBWORKFLOW: ID5
     //
-    
-    ID5(ch_novo.mix(ch_denovo), ch_bed)
+
+    ID5(
+        ch_novo
+            .mix(ch_denovo)
+            .combine(ch_bed)
+            .map {row, bed -> row + [bed: bed.bed] },
+    )
 }
 
 

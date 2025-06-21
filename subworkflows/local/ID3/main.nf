@@ -4,7 +4,6 @@ workflow ID3_NOVO {
     
     take:
     ch_input
-    ch_index
 
     main:
     
@@ -12,7 +11,7 @@ workflow ID3_NOVO {
 
     STAR_ALIGN(
         ch_input.map { it -> tuple([id: it.experiment, single_end: single_end], it.fastp) }, 
-        ch_index.map { it -> tuple([id: it.experiment], it.index) },
+        ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
         "",
@@ -49,7 +48,6 @@ workflow ID3_DENOVO {
     
     take:
     ch_input
-    ch_index
 
     main:
     
@@ -57,7 +55,7 @@ workflow ID3_DENOVO {
 
     STAR_ALIGN(
         ch_input.map { it -> tuple([id: it.experiment, single_end: single_end], it.fastp) }, 
-        ch_index.map { it -> tuple([id: it.experiment], it.index) },
+        ch_input.map { it -> tuple([id: it.experiment], it.index) },
         ch_input.map { it -> tuple([id: it.experiment], it.spl) },
         false,
         "",

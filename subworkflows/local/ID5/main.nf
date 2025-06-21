@@ -4,24 +4,29 @@ include { RSEQC_JUNCTIONSATURATION } from '../../../modules/nf-core/rseqc/juncti
 include { RSEQC_READDISTRIBUTION   } from '../../../modules/nf-core/rseqc/readdistribution'
 
 workflow ID5 {
+
     take:
     ch_input
-    ch_bed
 
     main:
-    
-    ch_input.view()
-    ch_bed.view()
 
     RSEQC_INFEREXPERIMENT(
-        ch_input.map { it -> tuple([id: it.experiment], it.bam)},
-        ch_bed.map { it -> it.bed}
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
+        ch_input.map { it -> it.bed}
     )
 
-    RSEQC_INFEREXPERIMENT.out.txt.view()
+    RSEQC_JUNCTIONANNOTATION(
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
+        ch_input.map { it -> it.bed}
+    )
 
-    ch_out = Channel.empty()
+    RSEQC_JUNCTIONSATURATION(
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
+        ch_input.map { it -> it.bed}
+    )
 
-    emit:
-    ch_out
+    RSEQC_READDISTRIBUTION(
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
+        ch_input.map { it -> it.bed}
+    )
 }
