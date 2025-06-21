@@ -4,14 +4,15 @@ workflow ID3_NOVO {
     
     take:
     ch_input
+    ch_index
 
     main:
     
     def single_end = ch_input.map { it -> it.fastp }.collect().size() == 1
 
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, index: it.index, single_end: single_end], it.fastp) }, 
-        ch_input.map { it -> tuple([id: it.experiment], it.index) },
+        ch_input.map { it -> tuple([id: it.experiment, single_end: single_end], it.fastp) }, 
+        ch_index.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
         "",
@@ -22,12 +23,12 @@ workflow ID3_NOVO {
 
     ch_out_bam = Channel.empty()
     STAR_ALIGN.out.bam
-        .map { it -> [experiment: it[0].id, index: it[0].index, bam: it[1]] }
+        .map { it -> [experiment: it[0].id, bam: it[1]] }
         .set { ch_out_bam }
 
     ch_out_spl = Channel.empty()
     STAR_ALIGN.out.spl_junc_tab
-        .map { it -> [experiment: it[0].id, index: it[0].index, spl: it[1]] }
+        .map { it -> [experiment: it[0].id, spl: it[1]] }
         .set { ch_out_spl }
 
     // join
@@ -48,14 +49,15 @@ workflow ID3_DENOVO {
     
     take:
     ch_input
+    ch_index
 
     main:
     
     def single_end = ch_input.map { it -> it.fastp }.collect().size() == 1
 
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, index: it.index, single_end: single_end], it.fastp) }, 
-        ch_input.map { it -> tuple([id: it.experiment], it.index) },
+        ch_input.map { it -> tuple([id: it.experiment, single_end: single_end], it.fastp) }, 
+        ch_index.map { it -> tuple([id: it.experiment], it.index) },
         ch_input.map { it -> tuple([id: it.experiment], it.spl) },
         false,
         "",
@@ -66,7 +68,7 @@ workflow ID3_DENOVO {
 
     ch_out = Channel.empty()
     STAR_ALIGN.out.bam
-        .map { it -> [experiment: it[0].id, index: it[0].index, bam: it[1]] }
+        .map { it -> [experiment: it[0].id, bam: it[1]] }
         .set { ch_out }
 
     emit:

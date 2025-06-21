@@ -31,22 +31,31 @@ workflow NFCORE_PIRA {
 
     main:
 
-    ch_samples = Channel.empty() // experiment, run, condition
-    ch_input = Channel.fromPath(params.input)
-    ch_index = Channel.fromPath(params.index, type: "dir")
+    ch_samples = Channel.empty()
+    ch_index = Channel.empty()
+    ch_bed = Channel.empty()
 
-    ch_input
+    Channel
+        .fromPath(params.input, type: "file")
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
         .unique()
-        .combine(ch_index)
-        .map { row, index -> row + [index: index]}
         .set { ch_samples }
+
+    Channel
+        .fromPath(params.index, type: "dir")
+        .map { it: [index: it]}
+        .set { ch_index }
+
+    Channel
+        .fromPath(params.bed, type: "file")
+        .map { it: [bed: it]}
+        .set { ch_bed }
 
     //
     // WORKFLOW: Run workflows/pira pipeline
     //
-    PIRA (ch_samples)
+    PIRA (ch_samples, ch_index, ch_bed)
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
