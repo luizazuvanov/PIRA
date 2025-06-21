@@ -10,6 +10,7 @@ include { ID3_NOVO } from '../../subworkflows/local/ID3'
 include { ID3_DENOVO } from '../../subworkflows/local/ID3'
 include { ID4_EXPERIMENT } from '../../subworkflows/local/ID4'
 include { ID4_CONDITION } from '../../subworkflows/local/ID4'
+include { ID5 } from '../../subworkflows/local/ID5'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,8 +21,10 @@ include { ID4_CONDITION } from '../../subworkflows/local/ID4'
 workflow PIRA {    
 
     take:
-    // run, exp, cond, idx
+    // run, exp, cond
     ch_samples
+    ch_index
+    ch_bed
 
     main:
 
@@ -29,57 +32,95 @@ workflow PIRA {
     // SUBWORKFLOW: ID1
     //
 
-    ch_fastq = ID1(ch_samples) // run, exp, cond, idx, []fastq
+    ch_fastq = ID1(ch_samples) // run, exp, cond, []fastq
 
     //
     // SUBWORKFLOW: ID2
     //
 
-    ch_fastp = ID2(ch_fastq) // run, exp, cond, idx, []fastp
+    ch_fastp = ID2(ch_fastq) // run, exp, cond, []fastp
 
     //
     // SUBWORKFLOW: ID3
     //
 
-    ch_fastp_by_exp = group_fastp_by_exp(ch_fastp) // exp, idx, []fastp
-    ch_novo = ID3_NOVO(ch_fastp_by_exp) // exp, idx, []bam, spl
+    ch_fastp_by_exp = group_fastp_by_exp(
+        ch_fastp
+    ) // exp, []fastp
 
-    ch_fastp_bam_spl_by_exp = join_by_exp(ch_fastp_by_exp, ch_novo) // exp, idx, []fastp, spl
-    ch_denovo = ID3_DENOVO(ch_fastp_bam_spl_by_exp) // exp, idx, []bam
+    ch_novo = ID3_NOVO(
+        ch_fastp_by_exp
+            .combine(ch_index)
+            .map {row, index -> row + [index: index.index] },
+    ) // exp, []bam, spl
+
+    ch_fastp_bam_spl_by_exp = join_by_exp(
+        ch_fastp_by_exp, 
+        ch_novo
+    ) // exp, []fastp, spl
+    
+    ch_denovo = ID3_DENOVO(
+        ch_fastp_bam_spl_by_exp
+            .combine(ch_index)
+            .map {row, index -> row + [index: index.index] },
+    ) // exp, []bam
 
     //
     // SUBWORKFLOW: ID4
     //
 
-    ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
-
-    ch_novo = join_by_exp(
-        ch_novo,
-        ch_samples.map { it -> [experiment: it.experiment, condition: it.condition] }
-    )
-
-    ch_novo = group_bam_by_cond(
-        ch_novo
-    )
+    // Exp
 
     ch_novo
         .map { it -> it + [alignment: "novo"]}
         .set { ch_novo }
 
-    ch_denovo = join_by_exp(
-        ch_denovo,
-        ch_samples.map { it -> [experiment: it.experiment, condition: it.condition] }
-    )
-    
-    ch_denovo = group_bam_by_cond(
-        ch_denovo
-    )
-
     ch_denovo
         .map { it -> it + [alignment: "denovo"]}
         .set { ch_denovo }
 
-    ID4_CONDITION(ch_novo.mix(ch_denovo))
+    ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
+
+    // Cond
+
+    ch_novo_by_cond = join_by_exp(
+        ch_novo,
+        ch_samples.map { it -> [experiment: it.experiment, condition: it.condition] }
+    )
+
+    ch_novo_by_cond = group_bam_by_cond(
+        ch_novo_by_cond
+    )
+
+    ch_novo_by_cond
+        .map { it -> it + [alignment: "novo"]}
+        .set { ch_novo_by_cond }
+
+    ch_denovo_by_cond = join_by_exp(
+        ch_denovo,
+        ch_samples.map { it -> [experiment: it.experiment, condition: it.condition] }
+    )
+    
+    ch_denovo_by_cond = group_bam_by_cond(
+        ch_denovo_by_cond
+    )
+
+    ch_denovo_by_cond
+        .map { it -> it + [alignment: "denovo"]}
+        .set { ch_denovo_by_cond }
+
+    ID4_CONDITION(ch_novo_by_cond.mix(ch_denovo_by_cond))
+
+    //
+    // SUBWORKFLOW: ID5
+    //
+
+    ID5(
+        ch_novo
+            .mix(ch_denovo)
+            .combine(ch_bed)
+            .map {row, bed -> row + [bed: bed.bed] },
+    )
 }
 
 
@@ -92,7 +133,7 @@ workflow PIRA {
 workflow group_fastp_by_exp {
 
     take:
-    ch_fastp // [exp, index, []fastp, ...]
+    ch_fastp // [exp, []fastp, ...]
 
     main:
 
@@ -102,13 +143,12 @@ workflow group_fastp_by_exp {
         .groupTuple()
         .map { __, its -> [
             experiment: its.collect { it.experiment }.unique().first(), 
-            index: its.collect { it.index }.unique().first(),
             fastp: its.collect { it.fastp }.flatten()
         ] }
         .set { ch_fastp_by_exp }
 
     emit:
-    ch_fastp_by_exp // exp, index, []fastp
+    ch_fastp_by_exp // exp, []fastp
 }
 
 workflow group_bam_by_cond {
