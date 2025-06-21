@@ -4,13 +4,15 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID1 } from '../../subworkflows/local/ID1'
-include { ID2 } from '../../subworkflows/local/ID2'
-include { ID3_NOVO } from '../../subworkflows/local/ID3'
-include { ID3_DENOVO } from '../../subworkflows/local/ID3'
-include { ID4_EXPERIMENT } from '../../subworkflows/local/ID4'
-include { ID4_CONDITION } from '../../subworkflows/local/ID4'
-include { ID5 } from '../../subworkflows/local/ID5'
+include { ID1            } from '../../subworkflows/local/ID1/main'
+include { ID2            } from '../../subworkflows/local/ID2/main'
+include { ID3_NOVO       } from '../../subworkflows/local/ID3/main'
+include { ID3_DENOVO     } from '../../subworkflows/local/ID3/main'
+include { ID4_EXPERIMENT } from '../../subworkflows/local/ID4/main'
+include { ID4_CONDITION  } from '../../subworkflows/local/ID4/main'
+include { ID5            } from '../../subworkflows/local/ID5/main'
+include { ID6_STRINGTIE  } from '../../subworkflows/local/ID6/main'
+include { ID6_MERGE      } from '../../subworkflows/local/ID6/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,6 +27,7 @@ workflow PIRA {
     ch_samples
     ch_index
     ch_bed
+    ch_gtf
 
     main:
 
@@ -121,6 +124,31 @@ workflow PIRA {
             .combine(ch_bed)
             .map {row, bed -> row + [bed: bed.bed] },
     )
+
+    //
+    // SUBWORKFLOW: ID6
+    //
+
+    // Exp
+
+    ch_denovo_gtf = ID6_STRINGTIE(
+        ch_denovo
+            .combine(ch_gtf)
+            .map {row, gtf -> row + [reference: gtf.gtf] },
+    ) // exp, alignment, gtf
+
+    ch_denovo_gtf = group_gtf_by_align(
+        ch_denovo_gtf
+    ) // align, []gtf
+
+    // Align
+
+    ID6_MERGE(
+        ch_denovo_gtf
+            .combine(ch_gtf)
+            .map {row, gtf -> row + [reference: gtf.gtf] },
+    )
+
 }
 
 
@@ -129,6 +157,27 @@ workflow PIRA {
     FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+
+workflow group_gtf_by_align {
+
+    take:
+    ch_gtf // [align, []gtf, ...]
+
+    main:
+
+    ch_gtf_by_align = Channel.empty()
+    ch_gtf
+        .map { it -> tuple(it.alignment, it) }
+        .groupTuple()
+        .map { __, its -> [
+            alignment: its.collect { it.alignment }.unique().first(), 
+            gtf: its.collect { it.gtf }.flatten()
+        ] }
+        .set { ch_gtf_by_align }
+
+    emit:
+    ch_gtf_by_align // align, []gtf
+}
 
 workflow group_fastp_by_exp {
 

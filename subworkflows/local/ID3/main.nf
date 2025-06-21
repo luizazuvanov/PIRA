@@ -1,4 +1,4 @@
-include { STAR_ALIGN } from '../../../modules/nf-core/star/align'
+include { STAR_ALIGN } from '../../../modules/nf-core/star/align/main'
 
 workflow ID3_NOVO {
     

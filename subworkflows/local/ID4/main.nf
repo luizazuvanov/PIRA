@@ -1,6 +1,6 @@
-include { SAMTOOLS_INDEX } from '../../../modules/nf-core/samtools/index'
-include { SAMTOOLS_MERGE } from '../../../modules/nf-core/samtools/merge'
-include { SAMTOOLS_STATS } from '../../../modules/nf-core/samtools/stats'
+include { SAMTOOLS_INDEX } from '../../../modules/nf-core/samtools/index/main'
+include { SAMTOOLS_MERGE } from '../../../modules/nf-core/samtools/merge/main'
+include { SAMTOOLS_STATS } from '../../../modules/nf-core/samtools/stats/main'
 
 workflow ID4_EXPERIMENT {
     

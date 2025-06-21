@@ -1,4 +1,4 @@
-include { FASTP } from '../../../modules/nf-core/fastp'
+include { FASTP } from '../../../modules/nf-core/fastp/main'
 
 workflow ID2 {
 
