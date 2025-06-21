@@ -80,6 +80,11 @@ workflow PIRA {
         .set { ch_denovo }
 
     ID4_CONDITION(ch_novo.mix(ch_denovo))
+
+    //
+    // SUBWORKFLOW: ID5
+    //
+    
 }
 
 
