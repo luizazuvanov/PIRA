@@ -1,6 +1,6 @@
-include { SRATOOLS_PREFETCH           } from '../../../modules/nf-core/sratools/prefetch'
-include { SRATOOLS_FASTERQDUMP        } from '../../../modules/nf-core/sratools/fasterqdump'
-include { CUSTOM_SRATOOLSNCBISETTINGS } from '../../../modules/nf-core/custom/sratoolsncbisettings'
+include { SRATOOLS_PREFETCH           } from '../../../modules/nf-core/sratools/prefetch/main'
+include { SRATOOLS_FASTERQDUMP        } from '../../../modules/nf-core/sratools/fasterqdump/main'
+include { CUSTOM_SRATOOLSNCBISETTINGS } from '../../../modules/nf-core/custom/sratoolsncbisettings/main'
 
 workflow ID1 {
 
