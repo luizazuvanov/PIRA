@@ -25,6 +25,7 @@ workflow PIRA {
     ch_samples
     ch_index
     ch_bed
+    ch_gtf
 
     main:
 

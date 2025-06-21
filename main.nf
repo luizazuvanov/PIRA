@@ -34,6 +34,7 @@ workflow NFCORE_PIRA {
     ch_samples = Channel.empty()
     ch_index = Channel.empty()
     ch_bed = Channel.empty()
+    ch_gtf = Channel.empty()
 
     Channel
         .fromPath(params.input, type: "file")
@@ -52,10 +53,15 @@ workflow NFCORE_PIRA {
         .map { it: [bed: it]}
         .set { ch_bed }
 
+    Channel
+        .fromPath(params.gtf, type: "file")
+        .map { it: [gtf: it]}
+        .set { ch_gtf }
+
     //
     // WORKFLOW: Run workflows/pira pipeline
     //
-    PIRA (ch_samples, ch_index, ch_bed)
+    PIRA (ch_samples, ch_index, ch_bed, ch_gtf)
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
