@@ -36,7 +36,7 @@ workflow ID4_CONDITION {
 
     SAMTOOLS_MERGE(
         ch_input.map { it -> tuple(
-            [id: "${it.alignment}-${it.condition}"], 
+            [id: it.condition, alignment: it.alignment], 
             it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')}
         ) },
         [[], []],
