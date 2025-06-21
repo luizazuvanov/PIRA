@@ -15,7 +15,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { PIRA  } from './workflows/pira'
+include { PIRA                    } from './workflows/pira'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_pira_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_pira_pipeline'
 /*

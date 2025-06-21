@@ -129,16 +129,19 @@ workflow PIRA {
     // SUBWORKFLOW: ID6
     //
 
+    // Exp
+
     ch_denovo_gtf = ID6_STRINGTIE(
         ch_denovo
             .combine(ch_gtf)
             .map {row, gtf -> row + [reference: gtf.gtf] },
     ) // exp, alignment, gtf
 
-
     ch_denovo_gtf = group_gtf_by_align(
         ch_denovo_gtf
     ) // align, []gtf
+
+    // Align
 
     ID6_MERGE(
         ch_denovo_gtf
