@@ -11,22 +11,22 @@ workflow ID5 {
     main:
 
     RSEQC_INFEREXPERIMENT(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
-        ch_input.map { it -> it.bed}
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> it.bed }
     )
 
     RSEQC_JUNCTIONANNOTATION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
         ch_input.map { it -> it.bed}
     )
 
     RSEQC_JUNCTIONSATURATION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
-        ch_input.map { it -> it.bed}
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> it.bed }
     )
 
     RSEQC_READDISTRIBUTION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam)},
-        ch_input.map { it -> it.bed}
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> it.bed }
     )
 }
