@@ -29,4 +29,14 @@ workflow ID5 {
         ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
         ch_input.map { it -> it.bed }
     )
+
+    // clean
+
+    ch_out = Channel.empty()
+    RSEQC_INFEREXPERIMENT.out.txt
+        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, infer: it[1]] }
+        .set { ch_out }
+
+    emit:
+    ch_out
 }

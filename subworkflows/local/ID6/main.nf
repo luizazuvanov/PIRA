@@ -8,13 +8,18 @@ workflow ID6_STRINGTIE {
 
     main:
 
-    // TODO: strandness
+    STRANDEDNESS(
+        ch_input.map { it -> tuple([id: it.experiment], it.infer) }
+    )
 
     STRINGTIE_STRINGTIE(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> tuple(
+            [id: it.experiment, alignment: it.alignment, strandedness: STRANDEDNESS.out.strandedness], 
+            it.bam
+        ) },
         ch_input.map { it -> it.reference }
     )
-    
+
     // clean
 
     ch_out = Channel.empty()
@@ -37,4 +42,21 @@ workflow ID6_MERGE {
         ch_input.map { it -> it.gtf },
         ch_input.map { it -> it.reference }
     )
+}
+
+process STRANDEDNESS {
+  tag "$meta.id"
+  label 'process_single'
+
+  input:
+  tuple val(meta), path(infer)
+
+  output:
+  val(strandedness), emit: strandedness
+
+  script:
+  strandedness = ''
+  """
+  echo ${strandedness}
+  """
 }
