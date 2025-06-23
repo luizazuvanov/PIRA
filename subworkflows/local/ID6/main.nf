@@ -104,9 +104,12 @@ process STRANDNESS {
     if not valid:
         raise ValueError("Failed to parse file")
 
-    strandnes = ""
+    strandnes: str = ""
+    max_fraction: float = 0.0
     for key, value in fractions.items():
-        strandnes = key if value > 0.7 else strandnes
+        if value > 0.7 and value > max_fraction:
+            max_fraction = value
+            strandnes = key
 
     print(strandnes)
     """
