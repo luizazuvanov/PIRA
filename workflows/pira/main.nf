@@ -118,12 +118,12 @@ workflow PIRA {
     // SUBWORKFLOW: ID5
     //
 
-    ID5(
+    ch_mixed = ID5(
         ch_novo
             .mix(ch_denovo)
             .combine(ch_bed)
             .map {row, bed -> row + [bed: bed.bed] },
-    )
+    ) // exp, alignment, infer
 
     //
     // SUBWORKFLOW: ID6
@@ -131,6 +131,11 @@ workflow PIRA {
 
     // Exp
 
+    ch_denovo = join_by_exp(
+        ch_denovo,
+        ch_mixed.filter {it -> it.alignment == "denovo" }
+    ) // exp, []bam, alignment, infer
+    
     ch_denovo_gtf = ID6_STRINGTIE(
         ch_denovo
             .combine(ch_gtf)
