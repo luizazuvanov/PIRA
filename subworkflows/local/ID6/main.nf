@@ -12,8 +12,6 @@ workflow ID6_STRINGTIE {
         ch_input.map { it -> tuple([id: it.experiment], it.infer) }
     )
 
-    STRANDNESS.out.strandness.view()
-
     STRINGTIE_STRINGTIE(
         ch_input.map { it -> tuple(
             [id: it.experiment, alignment: it.alignment, strandedness: STRANDNESS.out.strandness], 
