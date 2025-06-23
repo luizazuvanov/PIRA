@@ -8,13 +8,15 @@ workflow ID6_STRINGTIE {
 
     main:
 
-    STRANDEDNESS(
+    STRANDNESS(
         ch_input.map { it -> tuple([id: it.experiment], it.infer) }
     )
 
+    STRANDNESS.out.strandness.view()
+
     STRINGTIE_STRINGTIE(
         ch_input.map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment, strandedness: STRANDEDNESS.out.strandedness], 
+            [id: it.experiment, alignment: it.alignment, strandedness: STRANDNESS.out.strandness], 
             it.bam
         ) },
         ch_input.map { it -> it.reference }
@@ -44,19 +46,76 @@ workflow ID6_MERGE {
     )
 }
 
-process STRANDEDNESS {
-  tag "$meta.id"
-  label 'process_single'
+process STRANDNESS {
+    tag "$meta.id"
+    label 'process_single'
 
-  input:
-  tuple val(meta), path(infer)
+    // TODO: use Python container
+    // TODO: move to modules/local
 
-  output:
-  val(strandedness), emit: strandedness
+    input:
+    tuple val(meta), path(infer)
 
-  script:
-  strandedness = ''
-  """
-  echo ${strandedness}
-  """
+    output:
+    val(strandness), emit: strandness
+
+    script:
+    strandness = ''
+    """
+    #!/usr/bin/env python3
+    import re
+
+    PATTERN: dict[str, str] = {
+        "++,--": "forward",
+        "+-,-+": "reverse",
+        "1++,1--,2+-,2-+": "forward",
+        "1+-,1-+,2++,2--": "reverse"
+    }
+
+    fractions: dict[str, float] = {
+        "forward": 0.0,
+        "reverse": 0.0
+    }
+
+    valid: bool = False
+
+    try:
+        with open("${infer}", "r") as fp:
+            for line in fp:
+                line = line.strip().lower()
+                match = re.search(r'"([^"]*)"', line)
+                if not match:
+                    continue
+
+                pattern_key = match.group(1)
+                direction = PATTERN.get(pattern_key)
+                if not direction:
+                    continue
+
+                try:
+                    explained = float(line.split(":")[-1].strip())
+                except ValueError:
+                    continue
+
+                fractions[direction] = explained
+                valid = True
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to parse file: {e}")
+
+    if not valid:
+        raise ValueError("Failed to parse file")
+
+    strandnes = ""
+    for key, value in fractions.items():
+        strandnes = key if value > 0.7 else strandnes
+
+    print(strandnes)
+    """
+
+    stub:
+    strandness = ''
+    """
+    echo 'forward'
+    """
 }
