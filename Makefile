@@ -6,6 +6,10 @@ help: ## Show this help message
 lint: ## Lint code
 	@pre-commit run --all-files
 
+.PHONY: nfcore-lint
+nfcore-lint: ## Lint code with nf-core tools
+	@nf-core pipelines lint
+
 .PHONY: build
 build: ## Build pipeline deps container
 	@docker build --no-cache . -t nfcore/pira:dev
