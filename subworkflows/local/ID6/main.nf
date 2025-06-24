@@ -8,13 +8,13 @@ workflow ID6_STRINGTIE {
 
     main:
 
-    STRANDNESS(
+    STRANDEDNESS(
         ch_input.map { it -> tuple([id: it.experiment], it.infer) }
     )
 
     STRINGTIE_STRINGTIE(
         ch_input.map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment, strandedness: STRANDNESS.out.strandness], 
+            [id: it.experiment, alignment: it.alignment, strandedness: STRANDEDNESS.out.strandedness], 
             it.bam
         ) },
         ch_input.map { it -> it.reference }
@@ -44,7 +44,7 @@ workflow ID6_MERGE {
     )
 }
 
-process STRANDNESS {
+process STRANDEDNESS {
     tag "$meta.id"
     label 'process_single'
 
@@ -55,10 +55,10 @@ process STRANDNESS {
     tuple val(meta), path(infer)
 
     output:
-    val(strandness), emit: strandness
+    val(strandedness), emit: strandedness
 
     script:
-    strandness = ''
+    strandedness = ''
     """
     #!/usr/bin/env python3
     import re
@@ -115,7 +115,7 @@ process STRANDNESS {
     """
 
     stub:
-    strandness = ''
+    strandedness = ''
     """
     echo 'forward'
     """
