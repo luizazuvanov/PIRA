@@ -49,4 +49,15 @@ workflow ID6_MERGE {
         ch_input.map { it -> it.gtf },
         ch_input.map { it -> it.reference }
     )
+
+    // clean
+
+    ch_out = Channel.empty()
+    ch_input
+        .combine(STRINGTIE_MERGE.out.gtf)
+        .map { row, gtf -> [alignment: row.alignment, gtf: gtf] }
+        .set { ch_out }
+
+    emit:
+    ch_out
 }

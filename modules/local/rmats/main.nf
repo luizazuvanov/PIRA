@@ -19,6 +19,7 @@ process RMATS {
     output:
     path("${meta.id}/out/"), emit: out
     path("${meta.id}/tmp/"), emit: tmp
+    path("versions.yml")   , emit: versions
 
     script:
     def args = task.ext.args ?: ''

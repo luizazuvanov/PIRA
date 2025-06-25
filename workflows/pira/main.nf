@@ -4,15 +4,17 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID1            } from '../../subworkflows/local/ID1/main'
-include { ID2            } from '../../subworkflows/local/ID2/main'
-include { ID3_NOVO       } from '../../subworkflows/local/ID3/main'
-include { ID3_DENOVO     } from '../../subworkflows/local/ID3/main'
-include { ID4_EXPERIMENT } from '../../subworkflows/local/ID4/main'
-include { ID4_CONDITION  } from '../../subworkflows/local/ID4/main'
-include { ID5            } from '../../subworkflows/local/ID5/main'
-include { ID6_STRINGTIE  } from '../../subworkflows/local/ID6/main'
-include { ID6_MERGE      } from '../../subworkflows/local/ID6/main'
+include { ID1               } from '../../subworkflows/local/ID1/main'
+include { ID2               } from '../../subworkflows/local/ID2/main'
+include { ID3_NOVO          } from '../../subworkflows/local/ID3/main'
+include { ID3_DENOVO        } from '../../subworkflows/local/ID3/main'
+include { ID4_EXPERIMENT    } from '../../subworkflows/local/ID4/main'
+include { ID4_CONDITION     } from '../../subworkflows/local/ID4/main'
+include { ID5               } from '../../subworkflows/local/ID5/main'
+include { ID6_STRINGTIE     } from '../../subworkflows/local/ID6/main'
+include { ID6_MERGE         } from '../../subworkflows/local/ID6/main'
+include { ID7 as ID7_NOVO   } from '../../subworkflows/local/ID7/main'
+include { ID7 as ID7_DENOVO } from '../../subworkflows/local/ID7/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +95,7 @@ workflow PIRA {
 
     ch_novo_by_cond = group_bam_by_cond(
         ch_novo_by_cond
-    )
+    ) // cond, []bam
 
     ch_novo_by_cond
         .map { it -> it + [alignment: "novo"]}
@@ -106,7 +108,7 @@ workflow PIRA {
     
     ch_denovo_by_cond = group_bam_by_cond(
         ch_denovo_by_cond
-    )
+    ) // cond, []bam
 
     ch_denovo_by_cond
         .map { it -> it + [alignment: "denovo"]}
@@ -135,7 +137,7 @@ workflow PIRA {
         ch_denovo,
         ch_mixed.filter {it -> it.alignment == "denovo" }
     ) // exp, []bam, alignment, infer
-    
+
     ch_denovo_gtf = ID6_STRINGTIE(
         ch_denovo
             .combine(ch_gtf)
@@ -148,12 +150,93 @@ workflow PIRA {
 
     // Align
 
-    ID6_MERGE(
+    ch_denovo_gtf = ID6_MERGE(
         ch_denovo_gtf
             .combine(ch_gtf)
             .map {row, gtf -> row + [reference: gtf.gtf] },
+    ) // align, gtf
+
+    //
+    // SUBWORKFLOW: ID7
+    //
+
+    ch_pairs_cond = compute_pairs_by_cond(
+        ch_samples.map { it -> [condition: it.condition] }
+    ) // cond_1, cond_2
+
+    // Novo
+
+    ch_novo_pairs_cond = combine_by_cond(
+        ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
+        ch_novo_by_cond
     )
 
+    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it -> 
+        [
+            cond_1: it.cond_1, 
+            cond_2: it.cond_2, 
+            alignment: it.alignment, 
+            bam_1: it.bam
+        ] 
+    }
+
+    ch_novo_pairs_cond = combine_by_cond(
+        ch_novo_pairs_cond.map { it -> [condition: it.cond_2] + it},
+        ch_novo_by_cond
+    )
+
+    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it -> 
+        [
+            cond_1: it.cond_1, 
+            cond_2: it.cond_2, 
+            alignment: it.alignment, 
+            bam_1: it.bam_1,
+            bam_2: it.bam
+        ] 
+    } // cond_1, cond_2, alignment, []bam_1, []bam_2
+
+    ID7_NOVO(
+        ch_novo_pairs_cond
+            .combine(ch_gtf)
+            .map {row, gtf -> row + [gtf: gtf.gtf] },
+    )
+
+    // Denovo
+
+    ch_denovo_pairs_cond = combine_by_cond(
+        ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
+        ch_denovo_by_cond
+    )
+
+    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it -> 
+        [
+            cond_1: it.cond_1, 
+            cond_2: it.cond_2, 
+            alignment: it.alignment, 
+            bam_1: it.bam
+        ] 
+    }
+
+    ch_denovo_pairs_cond = combine_by_cond(
+        ch_denovo_pairs_cond.map { it -> [condition: it.cond_2] + it},
+        ch_denovo_by_cond
+    )
+
+    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it -> 
+        [
+            cond_1: it.cond_1, 
+            cond_2: it.cond_2, 
+            alignment: it.alignment, 
+            bam_1: it.bam_1,
+            bam_2: it.bam
+        ] 
+    } // cond_1, cond_2, alignment, []bam_1, []bam_2
+
+    ID7_DENOVO(
+        ch_denovo_pairs_cond
+            .combine(ch_denovo_gtf)
+            .map {row, gtf -> row + [gtf: gtf.gtf] },
+    )
 }
 
 
@@ -226,6 +309,29 @@ workflow group_bam_by_cond {
     ch_out // cond, []bam
 }
 
+workflow combine_by_cond {
+
+    take:
+    ch_a // cond, ...
+    ch_b // cond, ...
+
+    main:
+    
+    ch_out = Channel.empty()
+
+    ch_a
+        .map { it -> tuple(it.condition, it) }
+        .combine( 
+            ch_b.map {it -> tuple(it.condition, it)},
+            by: 0
+        )
+        .map { __, a, b -> a + b } // drop join key
+        .set { ch_out }
+
+    emit:
+    ch_out // cond, ...
+}
+
 workflow join_by_exp {
 
     take:
@@ -248,6 +354,34 @@ workflow join_by_exp {
 
     emit:
     ch_out // exp, ...
+}
+
+workflow compute_pairs_by_cond {
+
+    take:
+    ch_input // cond, ...
+
+    main:
+
+    ch_out = Channel.empty()
+
+    ch_input
+        .map { it -> it.condition }
+        .distinct()
+        .collect()
+        .flatMap { it ->
+            def pairs = []
+            for (int i = 0; i < it.size(); i++) { 
+                for (int j = i + 1; j < it.size(); j++) {
+                    pairs << [cond_1: it[i], cond_2: it[j]]
+                }
+            }
+            return pairs
+        }
+        .set { ch_out }
+
+    emit:
+    ch_out // cond_1, cond_2
 }
 
 /*
