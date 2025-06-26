@@ -198,7 +198,13 @@ workflow PIRA {
     ID7_NOVO(
         ch_novo_pairs_cond
             .combine(ch_gtf)
-            .map {row, gtf -> row + [gtf: gtf.gtf] },
+            .map {row, gtf -> row + [gtf: gtf.gtf] }
+            .combine(
+                ch_denovo
+                    .map { it -> [infer: it.infer] }
+                    .distinct()
+            )
+            .map { row, infer -> row + [infer: infer.infer] }
     )
 
     // Denovo
@@ -235,7 +241,13 @@ workflow PIRA {
     ID7_DENOVO(
         ch_denovo_pairs_cond
             .combine(ch_denovo_gtf)
-            .map {row, gtf -> row + [gtf: gtf.gtf] },
+            .map {row, gtf -> row + [gtf: gtf.gtf] }
+            .combine(
+                ch_denovo
+                    .map { it -> [infer: it.infer] }
+                    .distinct()
+            )
+            .map { row, infer -> row + [infer: infer.infer] }
     )
 }
 

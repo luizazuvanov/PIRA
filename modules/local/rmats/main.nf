@@ -8,8 +8,7 @@ process RMATS {
         'community.wave.seqera.io/library/rmats:4.3.0--177f3a2035a879e5' }"
 
     input:
-    tuple val(meta)
-    path(gtf)
+    tuple val(meta), path(gtf)
     path(b1)
     path(b2)
     val(read_type)
@@ -17,24 +16,31 @@ process RMATS {
     val(strandedness)
 
     output:
-    path("${meta.id}/out/"), emit: out
-    path("${meta.id}/tmp/"), emit: tmp
+    path("$meta.id/out/"), emit: out
+    path("$meta.id/tmp/"), emit: tmp
     path("versions.yml")   , emit: versions
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "$meta.id"
     def threads = task.cpus ?: 10
-
-    read_type = read_type ?: 'paired' // {paired,single}
-    read_length = read_length ?: 150 
-    strandedness = strandedness ?: 'fr-unstranded' // {fr-unstranded,fr-firststrand,fr-secondstrand}
     
     """
+
+    touch b1.txt
+    for bam in $b1; do
+        echo \$bam >> b1.txt
+    done
+
+    touch b2.txt
+    for bam in $b2; do
+        echo \$bam >> b2.txt
+    done
+
     rmats.py \\
         --gtf $gtf \\
-        --b1 $b1 \\ 
-        --b2 $b2 \\
+        --b1 b1.txt \\ 
+        --b2 b2.txt \\
         --od $prefix/out \\
         --tmp $prefix/tmp \\
         --t $read_type \\
@@ -52,6 +58,17 @@ process RMATS {
     stub:
 
     """
+
+    touch b1.txt
+    for bam in $b1; do
+        echo \$bam >> b1.txt
+    done
+
+    touch b2.txt
+    for bam in $b2; do
+        echo \$bam >> b1.txt
+    done
+
     events=(
         SE
         A3SS
