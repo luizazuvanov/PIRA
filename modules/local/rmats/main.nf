@@ -68,7 +68,7 @@ process RMATS {
 
     touch b2.txt
     for bam in $b2; do
-        echo \$bam >> b1.txt
+        echo \$bam >> b2.txt
     done
 
     events=(
