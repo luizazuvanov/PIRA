@@ -22,7 +22,7 @@ render: ## Render pipeline
 		-profile test,docker \
 		-stub-run \
 		-preview \
-		-with-dag ./results/pipeline_info/pipeline.png \
+		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--outdir ./results
 
 .PHONY: resume
@@ -32,7 +32,7 @@ resume: ## Resume test
 		-profile test,docker \
 		-stub-run \
 		-resume \
-		-with-dag ./results/pipeline_info/pipeline.png \
+		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--outdir ./results
 
 .PHONY: test
@@ -47,7 +47,7 @@ debug: ## Run test with debug profile
 		run main.nf \
 		-profile debug,test,docker \
 		-stub-run \
-		-with-dag ./results/pipeline_info/pipeline.png \
+		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--outdir ./results
 
 .PHONY: clean

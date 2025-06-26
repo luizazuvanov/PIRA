@@ -24,6 +24,14 @@ workflow ID4_EXPERIMENT {
             it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')}
         ) }
     )
+
+    ch_out = Channel.empty()
+    SAMTOOLS_STATS.out.stats
+        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, stats: it[1]] }
+        .set { ch_out }
+
+    emit:
+    ch_out
 }
 
 
