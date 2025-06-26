@@ -84,7 +84,7 @@ workflow PIRA {
         .map { it -> it + [alignment: "denovo"]}
         .set { ch_denovo }
 
-    ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
+    ch_stats = ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
 
     // Cond
 
@@ -205,6 +205,13 @@ workflow PIRA {
                     .distinct()
             )
             .map { row, infer -> row + [infer: infer.infer] }
+            .combine(
+                ch_stats
+                    .filter { it -> it.alignment == "novo" }
+                    .map { it -> [stats: it.stats] }
+                    .first()
+            )
+            .map { row, stats -> row + [stats: stats.stats] }
     )
 
     // Denovo
@@ -248,6 +255,13 @@ workflow PIRA {
                     .distinct()
             )
             .map { row, infer -> row + [infer: infer.infer] }
+            .combine(
+                ch_stats
+                    .filter { it -> it.alignment == "denovo" }
+                    .map { it -> [stats: it.stats] }
+                    .first()
+            )
+            .map { row, stats -> row + [stats: stats.stats] }
     )
 }
 

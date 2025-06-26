@@ -23,8 +23,8 @@ workflow ID7 {
         ch_input.map { it -> tuple([id: it.alignment], it.gtf) },
         ch_input.map { it -> it.bam_1 },
         ch_input.map { it -> it.bam_2 },
-        ch_input.map { it -> it.sequencing},
-        ch_input.map { __ -> 150 }, // default read length
-        ch_input.map { it -> it.strandedness},
+        ch_input.map { it -> it.stats },
+        ch_input.map { it -> it.sequencing },
+        ch_input.map { it -> it.strandedness },
     )
 }

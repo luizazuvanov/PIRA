@@ -11,14 +11,14 @@ process RMATS {
     tuple val(meta), path(gtf)
     path(b1)
     path(b2)
+    path(stats)
     val(read_type)
-    val(read_length)
     val(strandedness)
 
     output:
     path("$meta.id/out/"), emit: out
     path("$meta.id/tmp/"), emit: tmp
-    path("versions.yml")   , emit: versions
+    path("versions.yml") , emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -37,6 +37,8 @@ process RMATS {
         echo \$bam >> b2.txt
     done
 
+    read_length=\$(grep "^RL" "$stats" | sort -nr -k3,3 | cut -f2 | head -1)
+
     rmats.py \\
         --gtf $gtf \\
         --b1 b1.txt \\ 
@@ -45,7 +47,7 @@ process RMATS {
         --tmp $prefix/tmp \\
         --t $read_type \\
         --libType $strandedness \\
-        --readLength $read_length \\
+        --readLength \${read_length} \\
         --nthread $threads \\
         $args
 
