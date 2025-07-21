@@ -4,7 +4,6 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID1               } from '../../subworkflows/local/ID1/main'
 include { ID2               } from '../../subworkflows/local/ID2/main'
 include { ID3_NOVO          } from '../../subworkflows/local/ID3/main'
 include { ID3_DENOVO        } from '../../subworkflows/local/ID3/main'
@@ -37,7 +36,7 @@ workflow PIRA {
     // SUBWORKFLOW: ID1
     //
 
-    ch_fastq = ID1(ch_samples) // run, exp, cond, []fastq
+    ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] }
 
     //
     // SUBWORKFLOW: ID2
