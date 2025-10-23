@@ -17,7 +17,7 @@ build: ## Build pipeline deps container
 .PHONY: render
 render: ## Render pipeline
 	@make clean
-	@nextflow -log ./logs/.nextflow.log \
+	@nextflow -log ./logs/nextflow.log \
 		run main.nf \
 		-profile test,docker \
 		-stub-run \
@@ -27,7 +27,7 @@ render: ## Render pipeline
 
 .PHONY: resume
 resume: ## Resume test
-	@nextflow -log ./logs/.nextflow.log \
+	@nextflow -log ./logs/nextflow.log \
 		run main.nf \
 		-profile test,docker \
 		-stub-run \
@@ -43,7 +43,7 @@ test: ## Run test
 .PHONY: debug
 debug: ## Run test with debug profile
 	@make clean
-	@nextflow -log ./logs/.nextflow.log \
+	@nextflow -log ./logs/nextflow.log \
 		run main.nf \
 		-profile debug,test,docker \
 		-stub-run \
@@ -52,4 +52,4 @@ debug: ## Run test with debug profile
 
 .PHONY: clean
 clean: ## Clean up
-	@rm -rf ./results ./logs/.nextflow.log* ./work
+	@rm -rf ./results ./logs/nextflow.log* ./work
