@@ -3,6 +3,8 @@
 import re
 import sys
 
+from typing import Union
+
 ALIAS: dict[str, str] = {
     "fr-secondstrand": "forward",
     "fr-firststrand": "reverse",
@@ -17,7 +19,7 @@ PATTERN: dict[str, str] = {
 }
 
 
-def parse(filepath: str) -> dict[str]:
+def parse(filepath: str) -> Union[dict[str: str], Exception]:
 
     fractions: dict[str, float] = {"fr-secondstrand": 0.0, "fr-firststrand": 0.0}
 
@@ -72,7 +74,7 @@ def parse(filepath: str) -> dict[str]:
 if __name__ == "__main__":
 
     out: dict[str, str] = parse(filepath=sys.argv[1])
-    
+
     row = ",".join(out.values())
     header = ",".join(out.keys())
 
