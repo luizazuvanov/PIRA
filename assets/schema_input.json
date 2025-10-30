@@ -37,6 +37,6 @@
                 "errorMessage": "TODO: explain what this field is for"
             }
         },
-        "required": ["run", "experiment", "condition", "fastq_1"]
+        "required": ["run", "experiment", "condition"]
     }
 }
