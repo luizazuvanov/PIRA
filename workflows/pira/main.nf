@@ -4,6 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { ID1               } from '../../subworkflows/local/ID1/main'
 include { ID2               } from '../../subworkflows/local/ID2/main'
 include { ID3_NOVO          } from '../../subworkflows/local/ID3/main'
 include { ID3_DENOVO        } from '../../subworkflows/local/ID3/main'
@@ -21,7 +22,7 @@ include { ID7 as ID7_DENOVO } from '../../subworkflows/local/ID7/main'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow PIRA {    
+workflow PIRA {
 
     take:
     // run, exp, cond
@@ -36,7 +37,11 @@ workflow PIRA {
     // SUBWORKFLOW: ID1
     //
 
-    ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] }
+    if params.download {
+        ch_fastq = ID1(ch_samples) // run, exp, cond, []fastq
+    } else {
+        ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] } // run, exp, cond, []fastq
+    }
 
     //
     // SUBWORKFLOW: ID2
@@ -59,10 +64,10 @@ workflow PIRA {
     ) // exp, []bam, spl
 
     ch_fastp_bam_spl_by_exp = join_by_exp(
-        ch_fastp_by_exp, 
+        ch_fastp_by_exp,
         ch_novo
     ) // exp, []fastp, spl
-    
+
     ch_denovo = ID3_DENOVO(
         ch_fastp_bam_spl_by_exp
             .combine(ch_index)
@@ -104,7 +109,7 @@ workflow PIRA {
         ch_denovo,
         ch_samples.map { it -> [experiment: it.experiment, condition: it.condition] }
     )
-    
+
     ch_denovo_by_cond = group_bam_by_cond(
         ch_denovo_by_cond
     ) // cond, []bam
@@ -170,13 +175,13 @@ workflow PIRA {
         ch_novo_by_cond
     )
 
-    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it -> 
+    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
         [
-            cond_1: it.cond_1, 
-            cond_2: it.cond_2, 
-            alignment: it.alignment, 
+            cond_1: it.cond_1,
+            cond_2: it.cond_2,
+            alignment: it.alignment,
             bam_1: it.bam
-        ] 
+        ]
     }
 
     ch_novo_pairs_cond = combine_by_cond(
@@ -184,14 +189,14 @@ workflow PIRA {
         ch_novo_by_cond
     )
 
-    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it -> 
+    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
         [
-            cond_1: it.cond_1, 
-            cond_2: it.cond_2, 
-            alignment: it.alignment, 
+            cond_1: it.cond_1,
+            cond_2: it.cond_2,
+            alignment: it.alignment,
             bam_1: it.bam_1,
             bam_2: it.bam
-        ] 
+        ]
     } // cond_1, cond_2, alignment, []bam_1, []bam_2
 
     ID7_NOVO(
@@ -220,13 +225,13 @@ workflow PIRA {
         ch_denovo_by_cond
     )
 
-    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it -> 
+    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
         [
-            cond_1: it.cond_1, 
-            cond_2: it.cond_2, 
-            alignment: it.alignment, 
+            cond_1: it.cond_1,
+            cond_2: it.cond_2,
+            alignment: it.alignment,
             bam_1: it.bam
-        ] 
+        ]
     }
 
     ch_denovo_pairs_cond = combine_by_cond(
@@ -234,14 +239,14 @@ workflow PIRA {
         ch_denovo_by_cond
     )
 
-    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it -> 
+    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
         [
-            cond_1: it.cond_1, 
-            cond_2: it.cond_2, 
-            alignment: it.alignment, 
+            cond_1: it.cond_1,
+            cond_2: it.cond_2,
+            alignment: it.alignment,
             bam_1: it.bam_1,
             bam_2: it.bam
-        ] 
+        ]
     } // cond_1, cond_2, alignment, []bam_1, []bam_2
 
     ID7_DENOVO(
@@ -283,7 +288,7 @@ workflow group_gtf_by_align {
         .map { it -> tuple(it.alignment, it) }
         .groupTuple()
         .map { __, its -> [
-            alignment: its.collect { it.alignment }.unique().first(), 
+            alignment: its.collect { it.alignment }.unique().first(),
             gtf: its.collect { it.gtf }.flatten()
         ] }
         .set { ch_gtf_by_align }
@@ -304,7 +309,7 @@ workflow group_fastp_by_exp {
         .map { it -> tuple(it.experiment, it) }
         .groupTuple()
         .map { __, its -> [
-            experiment: its.collect { it.experiment }.unique().first(), 
+            experiment: its.collect { it.experiment }.unique().first(),
             fastp: its.collect { it.fastp }.flatten()
         ] }
         .set { ch_fastp_by_exp }
@@ -325,7 +330,7 @@ workflow group_bam_by_cond {
         .map { it -> tuple(it.condition, it) }
         .groupTuple()
         .map { __, its -> [
-            condition: its.collect { it.condition }.unique().first(), 
+            condition: its.collect { it.condition }.unique().first(),
             bam: its.collect { it.bam }.flatten()
         ] }
         .set { ch_out }
@@ -341,12 +346,12 @@ workflow combine_by_cond {
     ch_b // cond, ...
 
     main:
-    
+
     ch_out = Channel.empty()
 
     ch_a
         .map { it -> tuple(it.condition, it) }
-        .combine( 
+        .combine(
             ch_b.map {it -> tuple(it.condition, it)},
             by: 0
         )
@@ -364,12 +369,12 @@ workflow join_by_exp {
     ch_b // exp, ...
 
     main:
-    
+
     ch_out = Channel.empty()
 
     ch_a
         .map { it -> tuple(it.experiment, it) }
-        .join( 
+        .join(
             ch_b.map {it -> tuple(it.experiment, it)},
             failOnDuplicate: true,
             remainder: false
@@ -396,7 +401,7 @@ workflow compute_pairs_by_cond {
         .collect()
         .flatMap { it ->
             def pairs = []
-            for (int i = 0; i < it.size(); i++) { 
+            for (int i = 0; i < it.size(); i++) {
                 for (int j = i + 1; j < it.size(); j++) {
                     pairs << [cond_1: it[i], cond_2: it[j]]
                 }
