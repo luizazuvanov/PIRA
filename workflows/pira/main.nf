@@ -37,7 +37,7 @@ workflow PIRA {
     // SUBWORKFLOW: ID1
     //
 
-    if params.download {
+    if (params.download) {
         ch_fastq = ID1(ch_samples) // run, exp, cond, []fastq
     } else {
         ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] } // run, exp, cond, []fastq
