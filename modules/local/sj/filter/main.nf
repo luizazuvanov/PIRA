@@ -29,7 +29,7 @@ process SJ_FILTER {
     """
 
     stub:
-
+    def prefix = task.ext.prefix ?: "$meta.id"
     """
 
     touch "$prefix".SJ.out.filter.tab

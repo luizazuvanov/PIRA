@@ -20,8 +20,7 @@ workflow ID3_NOVO {
     )
 
     SJ_FILTER(
-        STAR_ALIGN.out.spl_junc_tab
-        .map { it -> tuple([experiment: it[0].id, spl: it[1]]) }
+        STAR_ALIGN.out.spl_junc_tab.map { it -> tuple([id: it[0].id], it[1]) }
     )
 
     // clean
