@@ -1,4 +1,5 @@
 include { STAR_ALIGN } from '../../../modules/nf-core/star/align/main'
+include { SJ_FILTER } from '../../../modules/local/sj/filter/main'
 
 workflow ID3_NOVO {
     
@@ -18,6 +19,11 @@ workflow ID3_NOVO {
         ""
     )
 
+    SJ_FILTER(
+        STAR_ALIGN.out.spl_junc_tab
+        .map { it -> tuple([experiment: it[0].id, spl: it[1]]) }
+    )
+
     // clean
 
     ch_out_bam = Channel.empty()
@@ -26,7 +32,7 @@ workflow ID3_NOVO {
         .set { ch_out_bam }
 
     ch_out_spl = Channel.empty()
-    STAR_ALIGN.out.spl_junc_tab
+    SJ_FILTER.out.spl_junc_tab
         .map { it -> [experiment: it[0].id, spl: it[1]] }
         .set { ch_out_spl }
 
