@@ -21,7 +21,7 @@ workflow ID3_NOVO {
     // clean
 
     ch_out_bam = Channel.empty()
-    STAR_ALIGN.out.bam
+    STAR_ALIGN.out.bam_sorted_aligned
         .map { it -> [experiment: it[0].id, bam: it[1]] }
         .set { ch_out_bam }
 
