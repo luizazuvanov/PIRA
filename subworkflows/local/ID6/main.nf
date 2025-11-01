@@ -21,7 +21,7 @@ workflow ID6_STRINGTIE {
                 .splitCsv( header: true, strip: true )
         )
         .map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment, strandedness: it.alias], 
+            [id: it.experiment, alignment: it.alignment, strandedness: it.strandedness], 
             it.bam
         ) },
         ch_input.map { it -> it.reference }
