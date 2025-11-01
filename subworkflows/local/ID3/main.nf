@@ -62,7 +62,7 @@ workflow ID3_DENOVO {
         ch_input.map { it -> tuple([id: it.experiment, single_end: single_end, spl: it.spl], it.fastp) }, 
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
-        false,
+        true,
         "",
         ""
     )
