@@ -47,7 +47,7 @@ process RMATS {
         --tmp $prefix/tmp \\
         --t $read_type \\
         --libType $strandedness \\
-        --readLength \${read_length} \\
+        --readLength ${read_length} \\
         --nthread $threads \\
         $args
 

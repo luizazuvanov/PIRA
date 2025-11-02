@@ -15,11 +15,12 @@ workflow ID6_STRINGTIE {
 
     STRINGTIE_STRINGTIE(
         ch_input
-        .mix(
+        .combine(
             STRANDEDNESS.out.infer
                 .map { it -> file(it) }
                 .splitCsv( header: true, strip: true )
         )
+        .map { a, b -> a + b }
         .map { it -> tuple(
             [id: it.experiment, alignment: it.alignment, strandedness: it.strandedness], 
             it.bam
