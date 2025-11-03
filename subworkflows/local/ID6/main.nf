@@ -1,5 +1,6 @@
 include { STRINGTIE_STRINGTIE } from '../../../modules/nf-core/stringtie/stringtie/main'
 include { STRINGTIE_MERGE     } from '../../../modules/nf-core/stringtie/merge/main'
+include { STRINGTIE_CLEAN     } from '../../../modules/local/stringtie/clean/main'
 include { STRANDEDNESS        } from '../../../modules/local/strandedness/main'
 
 workflow ID6_STRINGTIE {
@@ -13,19 +14,31 @@ workflow ID6_STRINGTIE {
         ch_input.map { it -> tuple([id: it.experiment], it.infer) }
     )
 
+    ch_strandedness = Channel.empty()
+    STRANDEDNESS.out.infer
+        .map { it -> file(it) }
+        .splitCsv( header: true, strip: true )
+        .set { ch_strandedness }
+
+    STRINGTIE_CLEAN(
+        ch_input.map { it -> tuple([id: it.experiment], it.reference) }
+    )
+
+    ch_reference = Channel.empty()
+    STRINGTIE_CLEAN.out.reference_clean
+        .map { it -> [reference: it[1]] }
+        .set { ch_reference }
+
     STRINGTIE_STRINGTIE(
         ch_input
-        .combine(
-            STRANDEDNESS.out.infer
-                .map { it -> file(it) }
-                .splitCsv( header: true, strip: true )
-        )
+        .combine(ch_strandedness)
         .map { a, b -> a + b }
         .map { it -> tuple(
             [id: it.experiment, alignment: it.alignment, strandedness: it.strandedness], 
             it.bam
         ) },
-        ch_input.map { it -> it.reference }
+        ch_reference
+        .map { it -> it.reference }
     )
 
     // clean
