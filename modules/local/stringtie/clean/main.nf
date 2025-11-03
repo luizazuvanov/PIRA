@@ -32,7 +32,7 @@ process STRINGTIE_CLEAN {
     def prefix = task.ext.prefix ?: "$meta.id"
     """
 
-    touch "$reference"_clean.gtf
+    touch "$reference".clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

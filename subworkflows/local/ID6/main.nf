@@ -37,8 +37,8 @@ workflow ID6_STRINGTIE {
             [id: it.experiment, alignment: it.alignment, strandedness: it.strandedness], 
             it.bam
         ) },
-       ch_reference
-       .map { it -> it.reference }
+        ch_reference
+        .map { it -> it.reference }
     )
 
     // clean
