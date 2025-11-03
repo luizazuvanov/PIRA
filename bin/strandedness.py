@@ -58,17 +58,17 @@ def parse(filepath: str) -> Union[dict[str: str], Exception]:
     if not valid:
         raise ValueError("Failed to parse file")
 
-    alias_key: str = "fr-unstranded"
-    strandedness: str = ALIAS[alias_key]
+    strandedness: str = "fr-unstranded"
+    alias: str = ALIAS[strandedness]
 
     max_fraction: float = 0.0
     for key, value in fractions.items():
         if value > 0.7 and value > max_fraction:
             max_fraction = value
-            alias_key = key
-            strandedness = ALIAS[alias_key]
+            strandedness = key
+            alias = ALIAS[strandedness]
 
-    return {"sequencing": sequencing, "strandedness": strandedness, "alias": alias_key}
+    return {"sequencing": sequencing, "strandedness": strandedness, "alias": alias}
 
 
 if __name__ == "__main__":
