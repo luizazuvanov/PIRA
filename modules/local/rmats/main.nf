@@ -37,17 +37,15 @@ process RMATS {
         echo \$bam >> b2.txt
     done
 
-    read_length=\$(grep "^RL" "$stats" | sort -nr -k3,3 | cut -f2 | head -1)
-
     rmats.py \\
         --gtf $gtf \\
         --b1 b1.txt \\ 
         --b2 b2.txt \\
         --od $prefix/out \\
         --tmp $prefix/tmp \\
-        --t $read_type \\
+        -t $read_type \\
         --libType $strandedness \\
-        --readLength ${read_length} \\
+        --readLength \$(grep "^RL" "$stats" | sort -nr -k3,3 | cut -f2 | head -1) \\
         --nthread $threads \\
         $args
 
