@@ -20,7 +20,7 @@ process STRINGTIE_CLEAN {
     
     """
 
-    awk -F"\t" '\$3 != "gene"' "$reference" > "$reference"_clean.gtf
+    awk -F"\t" '\$3 != "gene"' "$reference" > "$reference".clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
