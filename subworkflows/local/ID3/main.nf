@@ -78,7 +78,7 @@ workflow ID3_DENOVO {
     // clean
 
     ch_out = Channel.empty()
-    STAR_ALIGN.out.bam
+    STAR_ALIGN.out.bam_sorted_aligned
         .map { it -> [experiment: it[0].id, bam: it[1]] }
         .set { ch_out }
 
