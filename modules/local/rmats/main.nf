@@ -24,7 +24,7 @@ process RMATS {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"
     def threads = task.cpus ?: 10
-    
+
     """
 
     touch b1.txt
@@ -39,7 +39,7 @@ process RMATS {
 
     rmats.py \\
         --gtf $gtf \\
-        --b1 b1.txt \\ 
+        --b1 b1.txt \\
         --b2 b2.txt \\
         --od $prefix/out \\
         --tmp $prefix/tmp \\

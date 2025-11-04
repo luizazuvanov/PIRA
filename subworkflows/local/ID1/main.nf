@@ -42,6 +42,15 @@ workflow ID1 {
         )
         .map { __, a, b -> a + b } // drop join key
 
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( CUSTOM_SRATOOLSNCBISETTINGS.out.versions )
+        .mix( SRATOOLS_PREFETCH.out.versions )
+        .mix( SRATOOLS_FASTERQDUMP.out.versions )
+
     emit:
-    ch_out
+    data = ch_out
+    versions = ch_versions
 }

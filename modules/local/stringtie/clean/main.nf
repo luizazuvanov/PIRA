@@ -17,7 +17,7 @@ process STRINGTIE_CLEAN {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"
-    
+
     """
 
     awk -F"\t" '\$3 != "gene"' "$reference" > "$reference".clean.gtf

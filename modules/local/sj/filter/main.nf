@@ -17,7 +17,7 @@ process SJ_FILTER {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"
-    
+
     """
 
     cat "$prefix".SJ.out.tab | awk '(\$5>1 && \$6==0 && \$7 > 2)' | cut -f1-6 | sort | uniq > "$prefix".SJ.out.filter.tab

@@ -25,4 +25,14 @@ workflow ID7 {
         ch_strandedness.map { it -> it.sequencing },
         ch_strandedness.map { it -> it.strandedness },
     )
+
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( STRANDEDNESS.out.versions )
+        .mix( RMATS.out.versions )
+
+    emit:
+    versions = ch_versions
 }
