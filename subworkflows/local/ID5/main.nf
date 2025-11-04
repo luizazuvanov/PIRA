@@ -37,6 +37,16 @@ workflow ID5 {
         .map { it -> [experiment: it[0].id, alignment: it[0].alignment, infer: it[1]] }
         .set { ch_out }
 
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( RSEQC_INFEREXPERIMENT.out.versions )
+        .mix( RSEQC_JUNCTIONANNOTATION.out.versions )
+        .mix( RSEQC_JUNCTIONSATURATION.out.versions )
+        .mix( RSEQC_READDISTRIBUTION.out.versions )
+
     emit:
-    ch_out
+    data = ch_out
+    versions = ch_versions
 }

@@ -2,16 +2,16 @@ include { STAR_ALIGN } from '../../../modules/nf-core/star/align/main'
 include { SJ_FILTER } from '../../../modules/local/sj/filter/main'
 
 workflow ID3_NOVO {
-    
+
     take:
     ch_input
 
     main:
-    
+
     def single_end = ch_input.map { it -> it.fastp }.collect().size() == 1
 
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, single_end: single_end], it.fastp) }, 
+        ch_input.map { it -> tuple([id: it.experiment, single_end: single_end], it.fastp) },
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
@@ -39,27 +39,35 @@ workflow ID3_NOVO {
 
     ch_out = ch_out_bam
         .map { it -> tuple(it.experiment, it) }
-        .join( 
+        .join(
             ch_out_spl
             .map {it -> tuple(it.experiment, it)}
         )
         .map { __, a, b -> a + b } // drop join key
 
+// versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( STAR_ALIGN.out.versions )
+        .mix( SJ_FILTER.out.versions )
+
     emit:
-    ch_out
+    data = ch_out
+    versions = ch_versions
 }
 
 workflow ID3_DENOVO {
-    
+
     take:
     ch_input
 
     main:
-    
+
     def single_end = ch_input.map { it -> it.fastp }.collect().size() == 1
 
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, single_end: single_end, spl: it.spl], it.fastp) }, 
+        ch_input.map { it -> tuple([id: it.experiment, single_end: single_end, spl: it.spl], it.fastp) },
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
@@ -74,6 +82,13 @@ workflow ID3_DENOVO {
         .map { it -> [experiment: it[0].id, bam: it[1]] }
         .set { ch_out }
 
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( STAR_ALIGN.out.versions )
+
     emit:
-    ch_out
+    data = ch_out
+    versions = ch_versions
 }

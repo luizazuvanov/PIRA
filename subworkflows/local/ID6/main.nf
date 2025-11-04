@@ -34,7 +34,7 @@ workflow ID6_STRINGTIE {
         .combine(ch_strandedness)
         .map { a, b -> a + b }
         .map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment, strandedness: it.strandedness], 
+            [id: it.experiment, alignment: it.alignment, strandedness: it.strandedness],
             it.bam
         ) },
         ch_reference
@@ -48,8 +48,17 @@ workflow ID6_STRINGTIE {
         .map { it -> [experiment: it[0].id, alignment: it[0].alignment, gtf: it[1]] }
         .set { ch_out }
 
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( STRANDEDNESS.out.versions )
+        .mix( STRINGTIE_CLEAN.out.versions )
+        .mix( STRINGTIE_STRINGTIE.out.versions )
+
     emit:
-    ch_out
+    data = ch_out
+    versions = ch_versions
 }
 
 workflow ID6_MERGE {
@@ -72,6 +81,13 @@ workflow ID6_MERGE {
         .map { row, gtf -> [alignment: row.alignment, gtf: gtf] }
         .set { ch_out }
 
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( STRINGTIE_MERGE.out.versions )
+
     emit:
-    ch_out
+    data = ch_out
+    versions = ch_versions
 }

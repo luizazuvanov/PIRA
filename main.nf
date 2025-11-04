@@ -64,7 +64,7 @@ workflow NFCORE_PIRA {
     PIRA (ch_samples, ch_index, ch_bed, ch_gtf)
 
     emit:
-    multiqc_report = PIRA.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = PIRA.out.multiqc_report
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
