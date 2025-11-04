@@ -9,12 +9,13 @@ include { ID2               } from '../../subworkflows/local/ID2/main'
 include { ID3_NOVO          } from '../../subworkflows/local/ID3/main'
 include { ID3_DENOVO        } from '../../subworkflows/local/ID3/main'
 include { ID4_EXPERIMENT    } from '../../subworkflows/local/ID4/main'
-include { ID4_CONDITION     } from '../../subworkflows/local/ID4/main'
 include { ID5               } from '../../subworkflows/local/ID5/main'
 include { ID6_STRINGTIE     } from '../../subworkflows/local/ID6/main'
 include { ID6_MERGE         } from '../../subworkflows/local/ID6/main'
 include { ID7 as ID7_NOVO   } from '../../subworkflows/local/ID7/main'
 include { ID7 as ID7_DENOVO } from '../../subworkflows/local/ID7/main'
+
+include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,12 +34,17 @@ workflow PIRA {
 
     main:
 
+    ch_versions = Channel.empty()
+    ch_multiqc_files = Channel.empty()
+
     //
     // SUBWORKFLOW: ID1
     //
 
     if (params.download) {
-        ch_fastq = ID1(ch_samples) // run, exp, cond, []fastq
+        ID1(ch_samples)
+        ch_fastq = ID1.out.data // run, exp, cond, []fastq
+        ch_versions = ch_versions.mix(ID1.out.versions)
     } else {
         ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] } // run, exp, cond, []fastq
     }
@@ -47,7 +53,9 @@ workflow PIRA {
     // SUBWORKFLOW: ID2
     //
 
-    ch_fastp = ID2(ch_fastq) // run, exp, cond, []fastp
+    ID2(ch_fastq)
+    ch_fastp = ID2.out.data // run, exp, cond, []fastp
+    ch_versions = ch_versions.mix(ID2.out.versions)
 
     //
     // SUBWORKFLOW: ID3
@@ -57,22 +65,28 @@ workflow PIRA {
         ch_fastp
     ) // exp, []fastp
 
-    ch_novo = ID3_NOVO(
+    ID3_NOVO(
         ch_fastp_by_exp
             .combine(ch_index)
             .map {row, index -> row + [index: index.index] },
     ) // exp, []bam, spl
+
+    ch_novo = ID3_NOVO.out.data
+    ch_versions = ch_versions.mix(ID3_NOVO.out.versions)
 
     ch_fastp_bam_spl_by_exp = join_by_exp(
         ch_fastp_by_exp,
         ch_novo
     ) // exp, []fastp, spl
 
-    ch_denovo = ID3_DENOVO(
+    ID3_DENOVO(
         ch_fastp_bam_spl_by_exp
             .combine(ch_index)
             .map {row, index -> row + [index: index.index] },
     ) // exp, []bam
+
+    ch_denovo = ID3_DENOVO.out.data
+    ch_versions = ch_versions.mix(ID3_DENOVO.out.versions)
 
     //
     // SUBWORKFLOW: ID4
@@ -88,7 +102,8 @@ workflow PIRA {
         .map { it -> it + [alignment: "denovo"]}
         .set { ch_denovo }
 
-    ch_stats = ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
+    ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
+    ch_stats = ID4_EXPERIMENT.out.data
 
     // Cond
 
@@ -118,18 +133,19 @@ workflow PIRA {
         .map { it -> it + [alignment: "denovo"]}
         .set { ch_denovo_by_cond }
 
-    ID4_CONDITION(ch_novo_by_cond.mix(ch_denovo_by_cond))
-
     //
     // SUBWORKFLOW: ID5
     //
 
-    ch_mixed = ID5(
+    ID5(
         ch_novo
             .mix(ch_denovo)
             .combine(ch_bed)
             .map {row, bed -> row + [bed: bed.bed] },
     ) // exp, alignment, infer
+
+    ch_mixed = ID5.out.data
+    ch_versions = ch_versions.mix(ID5.out.versions)
 
     //
     // SUBWORKFLOW: ID6
@@ -142,11 +158,14 @@ workflow PIRA {
         ch_mixed.filter {it -> it.alignment == "denovo" }
     ) // exp, []bam, alignment, infer
 
-    ch_denovo_gtf = ID6_STRINGTIE(
+    ID6_STRINGTIE(
         ch_denovo
             .combine(ch_gtf)
             .map {row, gtf -> row + [reference: gtf.gtf] },
     ) // exp, alignment, gtf
+
+    ch_denovo_gtf = ID6_STRINGTIE.out.data
+    ch_versions = ch_versions.mix(ID6_STRINGTIE.out.versions)
 
     ch_denovo_gtf = group_gtf_by_align(
         ch_denovo_gtf
@@ -154,11 +173,14 @@ workflow PIRA {
 
     // Align
 
-    ch_denovo_gtf = ID6_MERGE(
+    ID6_MERGE(
         ch_denovo_gtf
             .combine(ch_gtf)
             .map {row, gtf -> row + [reference: gtf.gtf] },
     ) // align, gtf
+
+    ch_denovo_gtf = ID6_MERGE.out.data
+    ch_versions = ch_versions.mix(ID6_MERGE.out.versions)
 
     //
     // SUBWORKFLOW: ID7
@@ -217,6 +239,7 @@ workflow PIRA {
             )
             .map { row, stats -> row + [stats: stats.stats] }
     )
+    ch_versions = ch_versions.mix(ID7_NOVO.out.versions)
 
     // Denovo
 
@@ -267,8 +290,23 @@ workflow PIRA {
             )
             .map { row, stats -> row + [stats: stats.stats] }
     )
-}
+    ch_versions = ch_versions.mix(ID7_DENOVO.out.versions)
 
+    //
+    // Collate and save software versions
+    //
+    softwareVersionsToYAML(ch_versions)
+    .collectFile(
+        storeDir: "${params.outdir}/pipeline_info",
+        name: 'nf_core_pira_software_mqc_versions.yml',
+        sort: true,
+        newLine: true
+    )
+
+    emit:
+    multiqc_report = Channel.empty()
+    versions = ch_versions
+}
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

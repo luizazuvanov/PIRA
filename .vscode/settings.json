@@ -1,4 +1,3 @@
 {
-    "markdown.styles": ["public/vscode_markdown.css"],
-    "makefile.configureOnOpen": false
+    "markdown.styles": ["public/vscode_markdown.css"]
 }
