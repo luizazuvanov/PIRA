@@ -34,7 +34,7 @@ process RMATS {
         echo -n , >> b1.txt
     done
 
-    sed -i '' 's/,\$//g' b1.txt
+    sed -i 's/.$//' b1.txt
 
     touch b2.txt
 
@@ -43,7 +43,7 @@ process RMATS {
         echo -n , >> b2.txt
     done
 
-    sed -i '' 's/,\$//g' b2.txt
+    sed -i 's/.$//' b2.txt
 
     rmats.py \\
         --gtf $gtf \\
