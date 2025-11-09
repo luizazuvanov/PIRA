@@ -4,7 +4,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID1               } from '../../subworkflows/local/ID1/main'
+include { ID1_FETCH         } from '../../subworkflows/local/ID1/main'
+include { ID1_SERIALISE     } from '../../subworkflows/local/ID1/main'
 include { ID2               } from '../../subworkflows/local/ID2/main'
 include { ID3_NOVO          } from '../../subworkflows/local/ID3/main'
 include { ID3_DENOVO        } from '../../subworkflows/local/ID3/main'
@@ -43,11 +44,19 @@ workflow PIRA {
     //
 
     if (params.download) {
-        ID1(ch_samples)
-        ch_fastq = ID1.out.data // run, exp, cond, []fastq
-        ch_versions = ch_versions.mix(ID1.out.versions)
+
+        ID1_FETCH(ch_samples)
+        ch_sra = ID1_FETCH.out.data // run, exp, cond, []sra
+        ch_versions = ch_versions.mix(ID1_FETCH.out.versions)
+
+        ID1_SERIALISE(ch_sra)
+        ch_fastq = ID1_SERIALISE.out.data // run, exp, cond, []fastq
+        ch_versions = ch_versions.mix(ID1_SERIALISE.out.versions)
+
     } else {
+
         ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] } // run, exp, cond, []fastq
+
     }
 
     //
