@@ -27,23 +27,8 @@ process RMATS {
 
     """
 
-    touch b1.txt
-
-    for bam in $b1; do
-        echo -n \$bam >> b1.txt
-        echo -n , >> b1.txt
-    done
-
-    sed -i 's/.$//' b1.txt
-
-    touch b2.txt
-
-    for bam in $b2; do
-        echo -n \$bam >> b2.txt
-        echo -n , >> b2.txt
-    done
-
-    sed -i 's/.$//' b2.txt
+    ( IFS=,; printf '%s\n' "$b1" ) > b1.txt
+    ( IFS=,; printf '%s\n' "$b2" ) > b2.txt
 
     rmats.py \\
         --gtf $gtf \\
