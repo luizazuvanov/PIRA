@@ -13,8 +13,8 @@ include { ID5               } from '../../subworkflows/local/ID5/main'
 include { ID6_CLEAN         } from '../../subworkflows/local/ID6/main'
 include { ID6_STRINGTIE     } from '../../subworkflows/local/ID6/main'
 include { ID6_MERGE         } from '../../subworkflows/local/ID6/main'
-include { ID7 as ID7_NOVO   } from '../../subworkflows/local/ID7/main'
-include { ID7 as ID7_DENOVO } from '../../subworkflows/local/ID7/main'
+// include { ID7 as ID7_NOVO   } from '../../subworkflows/local/ID7/main'
+// include { ID7 as ID7_DENOVO } from '../../subworkflows/local/ID7/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -226,25 +226,25 @@ workflow PIRA {
         ]
     } // cond_1, cond_2, alignment, []bam_1, []bam_2
 
-    ID7_NOVO(
-        ch_novo_pairs_cond
-            .combine(ch_gtf)
-            .map {row, gtf -> row + [gtf: gtf.gtf] }
-            .combine(
-                ch_denovo
-                    .map { it -> [infer: it.infer] }
-                    .distinct()
-            )
-            .map { row, infer -> row + [infer: infer.infer] }
-            .combine(
-                ch_stats
-                    .filter { it -> it.alignment == "novo" }
-                    .map { it -> [stats: it.stats] }
-                    .first()
-            )
-            .map { row, stats -> row + [stats: stats.stats] }
-    )
-    ch_versions = ch_versions.mix(ID7_NOVO.out.versions)
+    // ID7_NOVO(
+    //     ch_novo_pairs_cond
+    //         .combine(ch_gtf)
+    //         .map {row, gtf -> row + [gtf: gtf.gtf] }
+    //         .combine(
+    //             ch_denovo
+    //                 .map { it -> [infer: it.infer] }
+    //                 .distinct()
+    //         )
+    //         .map { row, infer -> row + [infer: infer.infer] }
+    //         .combine(
+    //             ch_stats
+    //                 .filter { it -> it.alignment == "novo" }
+    //                 .map { it -> [stats: it.stats] }
+    //                 .first()
+    //         )
+    //         .map { row, stats -> row + [stats: stats.stats] }
+    // )
+    // ch_versions = ch_versions.mix(ID7_NOVO.out.versions)
 
     // Denovo
 
@@ -277,25 +277,25 @@ workflow PIRA {
         ]
     } // cond_1, cond_2, alignment, []bam_1, []bam_2
 
-    ID7_DENOVO(
-        ch_denovo_pairs_cond
-            .combine(ch_denovo_gtf)
-            .map {row, gtf -> row + [gtf: gtf.gtf] }
-            .combine(
-                ch_denovo
-                    .map { it -> [infer: it.infer] }
-                    .distinct()
-            )
-            .map { row, infer -> row + [infer: infer.infer] }
-            .combine(
-                ch_stats
-                    .filter { it -> it.alignment == "denovo" }
-                    .map { it -> [stats: it.stats] }
-                    .first()
-            )
-            .map { row, stats -> row + [stats: stats.stats] }
-    )
-    ch_versions = ch_versions.mix(ID7_DENOVO.out.versions)
+    // ID7_DENOVO(
+    //     ch_denovo_pairs_cond
+    //         .combine(ch_denovo_gtf)
+    //         .map {row, gtf -> row + [gtf: gtf.gtf] }
+    //         .combine(
+    //             ch_denovo
+    //                 .map { it -> [infer: it.infer] }
+    //                 .distinct()
+    //         )
+    //         .map { row, infer -> row + [infer: infer.infer] }
+    //         .combine(
+    //             ch_stats
+    //                 .filter { it -> it.alignment == "denovo" }
+    //                 .map { it -> [stats: it.stats] }
+    //                 .first()
+    //         )
+    //         .map { row, stats -> row + [stats: stats.stats] }
+    // )
+    // ch_versions = ch_versions.mix(ID7_DENOVO.out.versions)
 
     //
     // Collate and save software versions
