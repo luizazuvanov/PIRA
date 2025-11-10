@@ -181,7 +181,7 @@ workflow PIRA {
     ID6_MERGE(
         ch_denovo_gtf
             .combine(ch_gtf_clean)
-            .map {row, gtf -> row + [reference: gtf.reference_clean] },
+            .map {row, gtf -> row + [reference: gtf.reference] },
     ) // align, gtf
 
     ch_denovo_gtf = ID6_MERGE.out.data
