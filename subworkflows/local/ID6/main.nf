@@ -40,7 +40,7 @@ workflow ID6_STRINGTIE {
     // strandedness
 
     STRANDEDNESS(
-        ch_input.map { it -> tuple([id: it.experiment], it.infer) }
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.infer) }
     )
 
     ch_strandedness = Channel.empty()
