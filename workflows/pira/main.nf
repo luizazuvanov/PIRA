@@ -69,8 +69,8 @@ workflow PIRA {
     ID3_NOVO(
         ch_fastp_by_exp
             .combine(ch_index)
-            .map {row, index -> row + [index: index.index] },
-    ) // exp, []bam, spl
+            .map {row, index -> row + [index: index.index, alignment: "novo"] },
+    ) // exp, alignment, []bam, spl
 
     ch_novo = ID3_NOVO.out.data
     ch_versions = ch_versions.mix(ID3_NOVO.out.versions)
@@ -83,8 +83,8 @@ workflow PIRA {
     ID3_DENOVO(
         ch_fastp_bam_spl_by_exp
             .combine(ch_index)
-            .map {row, index -> row + [index: index.index] },
-    ) // exp, []bam
+            .map {row, index -> row + [index: index.index, alignment: "denovo"] },
+    ) // exp, alignment, []bam
 
     ch_denovo = ID3_DENOVO.out.data
     ch_versions = ch_versions.mix(ID3_DENOVO.out.versions)
@@ -92,16 +92,6 @@ workflow PIRA {
     //
     // SUBWORKFLOW: ID4
     //
-
-    // Exp
-
-    ch_novo
-        .map { it -> it + [alignment: "novo"]}
-        .set { ch_novo }
-
-    ch_denovo
-        .map { it -> it + [alignment: "denovo"]}
-        .set { ch_denovo }
 
     ID4_EXPERIMENT(ch_novo.mix(ch_denovo))
     ch_stats = ID4_EXPERIMENT.out.data
