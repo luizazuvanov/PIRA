@@ -10,6 +10,7 @@ include { ID3_NOVO          } from '../../subworkflows/local/ID3/main'
 include { ID3_DENOVO        } from '../../subworkflows/local/ID3/main'
 include { ID4_EXPERIMENT    } from '../../subworkflows/local/ID4/main'
 include { ID5               } from '../../subworkflows/local/ID5/main'
+include { ID6_CLEAN         } from '../../subworkflows/local/ID6/main'
 include { ID6_STRINGTIE     } from '../../subworkflows/local/ID6/main'
 include { ID6_MERGE         } from '../../subworkflows/local/ID6/main'
 include { ID7 as ID7_NOVO   } from '../../subworkflows/local/ID7/main'
@@ -151,6 +152,10 @@ workflow PIRA {
     // SUBWORKFLOW: ID6
     //
 
+    ID6_CLEAN(ch_gtf)
+    ch_gtf_clean = ID6_CLEAN.out.data // reference
+    ch_versions = ch_versions.mix(ID6_CLEAN.out.versions)
+
     // Exp
 
     ch_denovo = join_by_exp(
@@ -160,8 +165,8 @@ workflow PIRA {
 
     ID6_STRINGTIE(
         ch_denovo
-            .combine(ch_gtf)
-            .map {row, gtf -> row + [reference: gtf.gtf] },
+            .combine(ch_gtf_clean)
+            .map {row, gtf -> row + [reference: gtf.reference] },
     ) // exp, alignment, gtf
 
     ch_denovo_gtf = ID6_STRINGTIE.out.data
@@ -175,8 +180,8 @@ workflow PIRA {
 
     ID6_MERGE(
         ch_denovo_gtf
-            .combine(ch_gtf)
-            .map {row, gtf -> row + [reference: gtf.gtf] },
+            .combine(ch_gtf_clean)
+            .map {row, gtf -> row + [reference: gtf.reference] },
     ) // align, gtf
 
     ch_denovo_gtf = ID6_MERGE.out.data

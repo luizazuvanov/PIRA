@@ -53,4 +53,4 @@ debug: ## Run test with debug profile
 
 .PHONY: clean
 clean: ## Clean up
-	@rm -rf ./results ./logs/nextflow.log* ./work
+	@rm -rf ./results ./logs/nextflow.log* ./work ./.nextflow

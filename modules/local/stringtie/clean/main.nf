@@ -11,15 +11,12 @@ process STRINGTIE_CLEAN {
     tuple val(meta), path(reference)
 
     output:
-    tuple val(meta), path('*.gtf'), emit: reference_clean
+    path('*.gtf'), emit: reference_clean
     path("versions.yml") , emit: versions
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "$meta.id"
 
     """
-
     awk -F"\t" '\$3 != "gene"' "$reference" > "$reference".clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
@@ -29,9 +26,7 @@ process STRINGTIE_CLEAN {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "$meta.id"
     """
-
     touch "$reference".clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
