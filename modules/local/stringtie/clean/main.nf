@@ -8,7 +8,7 @@ process STRINGTIE_CLEAN {
         'biocontainers/gawk:5.3.1' }"
 
     input:
-    tuple val(meta),path(reference)
+    tuple val(meta), path(reference)
 
     output:
     path('*.gtf'), emit: reference_clean
