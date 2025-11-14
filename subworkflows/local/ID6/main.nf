@@ -11,7 +11,7 @@ workflow ID6_CLEAN {
     main:
 
     STRINGTIE_CLEAN(
-        ch_input.map { it -> tuple([id: "reference-gtf"], it.gtf) }
+        ch_input.map { it -> tuple([id: "gtf", alignment: "denovo"], it.gtf) }
     )
 
     ch_out = Channel.empty()
@@ -40,7 +40,7 @@ workflow ID6_STRINGTIE {
     // strandedness
 
     STRANDEDNESS(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.infer) }
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.infer) }
     )
 
     ch_strandedness = Channel.empty()
@@ -56,7 +56,7 @@ workflow ID6_STRINGTIE {
         .combine( ch_strandedness )
         .map { a, b -> a + b }
         .map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment, strandedness: it.strandedness],
+            [id: it.experiment, alignment: it.alignment, condition: it.condition, strandedness: it.strandedness],
             it.bam
         ) },
         ch_input
@@ -67,7 +67,7 @@ workflow ID6_STRINGTIE {
 
     ch_out = Channel.empty()
     STRINGTIE_STRINGTIE.out.transcript_gtf
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, gtf: it[1]] }
+        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, gtf: it[1]] }
         .set { ch_out }
 
     // versions
