@@ -11,22 +11,22 @@ workflow ID5 {
     main:
 
     RSEQC_INFEREXPERIMENT(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed }
     )
 
     RSEQC_JUNCTIONANNOTATION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed}
     )
 
     RSEQC_JUNCTIONSATURATION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed }
     )
 
     RSEQC_READDISTRIBUTION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed }
     )
 
@@ -34,7 +34,7 @@ workflow ID5 {
 
     ch_out = Channel.empty()
     RSEQC_INFEREXPERIMENT.out.txt
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, infer: it[1]] }
+        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, infer: it[1]] }
         .set { ch_out }
 
     // versions
