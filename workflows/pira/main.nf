@@ -333,7 +333,7 @@ workflow group_gtf_by_align {
 workflow group_bam_by_cond_align {
 
     take:
-    ch_bam // [cond, align,[]bam, ...]
+    ch_bam // [cond, align, []bam, ...]
 
     main:
 
