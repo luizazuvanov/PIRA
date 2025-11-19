@@ -1,4 +1,4 @@
-process RMATS {
+process RMATS_PREP {
     tag "$meta.id"
     label 'process_medium'
 
@@ -10,35 +10,32 @@ process RMATS {
     input:
     tuple val(meta), path(gtf)
     path(b1)
-    path(b2)
-    path(stats)
-    val(read_type)
+    val(readType)
+    val(readLength)
     val(strandedness)
 
     output:
-    path("$meta.id/out/"), emit: out
-    path("$meta.id/tmp/"), emit: tmp
-    path("versions.yml") , emit: versions
+    tuple val(meta), path("prep/out/"), path("prep/tmp/"), emit: out
+    path("versions.yml")                                 , emit: versions
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "$meta.id"
+    def prefix = task.ext.prefix ?: "${meta.id}"
     def threads = task.cpus ?: 10
 
     """
 
     ( IFS=,; printf '%s\n' "$b1" ) > b1.txt
-    ( IFS=,; printf '%s\n' "$b2" ) > b2.txt
 
     rmats.py \\
+        --task prep \\
         --gtf $gtf \\
         --b1 b1.txt \\
-        --b2 b2.txt \\
-        --od $prefix/out \\
-        --tmp $prefix/tmp \\
-        -t $read_type \\
+        --od prep/out \\
+        --tmp prep/tmp \\
+        -t $readType \\
         --libType $strandedness \\
-        --readLength \$(grep "^RL" "$stats" | sort -nr -k3,3 | cut -f2 | head -1) \\
+        --readLength $readLength \\
         --nthread $threads \\
         $args
 
@@ -57,11 +54,6 @@ process RMATS {
         echo \$bam >> b1.txt
     done
 
-    touch b2.txt
-    for bam in $b2; do
-        echo \$bam >> b2.txt
-    done
-
     events=(
         SE
         A3SS
@@ -70,22 +62,22 @@ process RMATS {
         RI
     )
 
-    mkdir -p ${meta.id}/out
-    touch ${meta.id}/out/summary.txt
+    mkdir -p prep/out
+    touch prep/out/summary.txt
     for event in "\${events[@]}"; do
-        touch ${meta.id}/out/\${event}.MATS.JC.txt
-        touch ${meta.id}/out/\${event}.MATS.JCEC.txt
-        touch ${meta.id}/out/fromGTF.\${event}.txt
-        touch ${meta.id}/out/fromGTF.novelJunction.\${event}.txt
-        touch ${meta.id}/out/fromGTF.novelSpliceSite.\${event}.txt
-        touch ${meta.id}/out/JC.raw.input.\${event}.txt
-        touch ${meta.id}/out/JCEC.raw.input.\${event}.txt
-        touch ${meta.id}/out/individualCounts.\${event}.txt
+        touch prep/out/\${event}.MATS.JC.txt
+        touch prep/out/\${event}.MATS.JCEC.txt
+        touch prep/out/fromGTF.\${event}.txt
+        touch prep/out/fromGTF.novelJunction.\${event}.txt
+        touch prep/out/fromGTF.novelSpliceSite.\${event}.txt
+        touch prep/out/JC.raw.input.\${event}.txt
+        touch prep/out/JCEC.raw.input.\${event}.txt
+        touch prep/out/individualCounts.\${event}.txt
     done
 
-    mkdir -p ${meta.id}/tmp
-    touch ${meta.id}/tmp/pre.rmats
-    touch ${meta.id}/tmp/pre_read_outcomes_by_bam.txt
+    mkdir -p prep/tmp
+    touch prep/tmp/pre.rmats
+    touch prep/tmp/pre_read_outcomes_by_bam.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
