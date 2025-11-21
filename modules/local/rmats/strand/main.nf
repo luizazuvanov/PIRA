@@ -30,9 +30,9 @@ process RMATS_STRAND {
 
     # fetch first two rows
     awk 'NR<=2' "$prefix".merged.infer > "$prefix".infer.csv
-    SEQUE=\$(awk -F',' 'NR==2 { print \$1 }')
-    STRAN=\$(awk -F',' 'NR==2 { print \$2 }')
-    ALIAS=\$(awk -F',' 'NR==2 { print \$3 }')
+    SEQUE=\$(awk -F',' 'NR==2 { print \$4 }')
+    STRAN=\$(awk -F',' 'NR==2 { print \$5 }')
+    ALIAS=\$(awk -F',' 'NR==2 { print \$6 }')
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

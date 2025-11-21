@@ -38,7 +38,7 @@ process RMATS_PREP {
         --readLength $readLength \\
         --nthread $threads \\
         $args \\
-        1> $prefix/prep/tmp/rmats.log
+        1> prep/tmp/rmats.log
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
