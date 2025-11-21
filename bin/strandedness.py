@@ -75,9 +75,12 @@ if __name__ == "__main__":
 
     out: dict[str, str] = parse(filepath=sys.argv[1])
 
-    row = ",".join(out.values())
-    header = ",".join(out.keys())
+    row: list[str] = [sys.argv[2], sys.argv[3], sys.argv[4]]
+    header: list[str] = ["experiment", "alignment", "condition"]
+
+    row_str: str = ",".join(row + list(out.values()))
+    header_str: str = ",".join(header + list(out.keys()))
 
     with open("infer.csv", "w") as fp:
-        fp.write(f"{header}\n")
-        fp.write(f"{row}\n")
+        fp.write(f"{header_str}\n")
+        fp.write(f"{row_str}\n")

@@ -30,8 +30,7 @@ workflow ID6_CLEAN {
     versions = ch_versions
 }
 
-workflow ID6_STRINGTIE {
-
+workflow ID6_STRANDEDNESS {
     take:
     ch_input
 
@@ -43,18 +42,32 @@ workflow ID6_STRINGTIE {
         ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.infer) }
     )
 
-    ch_strandedness = Channel.empty()
+    ch_out = Channel.empty()
     STRANDEDNESS.out.infer
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
-        .set { ch_strandedness }
+        .set { ch_out }
 
-    // stringtie
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( STRANDEDNESS.out.versions )
+
+    emit:
+    data = ch_out
+    versions =  ch_versions
+}
+
+workflow ID6_STRINGTIE {
+
+    take:
+    ch_input
+
+    main:
 
     STRINGTIE_STRINGTIE(
         ch_input
-        .combine( ch_strandedness )
-        .map { a, b -> a + b }
         .map { it -> tuple(
             [id: it.experiment, alignment: it.alignment, condition: it.condition, strandedness: it.strandedness],
             it.bam
@@ -74,7 +87,6 @@ workflow ID6_STRINGTIE {
 
     ch_versions = Channel.empty()
     ch_versions
-        .mix( STRANDEDNESS.out.versions )
         .mix( STRINGTIE_STRINGTIE.out.versions )
 
     emit:
