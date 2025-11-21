@@ -256,7 +256,7 @@ workflow PIRA {
     ch_versions = ch_versions.mix(ID7_RMATS_PREP_DENOVO.out.versions)
 
     //
-    // SUBWORKFLOW: ID7 RMATS POS
+    // SUBWORKFLOW: ID7 RMATS POST
     //
 
     // ch_pairs_cond = compute_pairs_by_cond(
@@ -413,28 +413,6 @@ workflow group_strandedness_by_cond_align {
 
     emit:
     ch_out // cond, align, []strandedness
-}
-
-workflow group_infer_by_cond_align {
-
-    take:
-    ch_stats // [cond, align, stats, ...]
-
-    main:
-
-    ch_out = Channel.empty()
-    ch_stats
-        .map { it -> tuple(it.condition, it) }
-        .groupTuple()
-        .map { __, its -> [
-            condition: its.collect { it.condition }.unique().first(),
-            alignment: its.collect { it.alignment }.unique().first(),
-            infer: its.collect { it.infer }.flatten()
-        ] }
-        .set { ch_out }
-
-    emit:
-    ch_out // cond, align, []infer
 }
 
 workflow group_bam_by_cond_align {

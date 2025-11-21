@@ -20,7 +20,7 @@ workflow ID7_RMATS_PREP {
         .map { it -> [condition: it[0].id, alignment: it[0].alignment, length: it[1]] }
         .set { ch_stats }
 
-    // first strandness`
+    // first strandedness
 
     RMATS_STRAND(
         ch_input.map { it -> [id: it.condition, alignment: it.alignment] },
@@ -83,5 +83,5 @@ workflow ID7_RMATS_PREP {
 
     emit:
     data = ch_out
-    versions =  ch_versions
+    versions = ch_versions
 }
