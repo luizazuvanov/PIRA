@@ -15,13 +15,13 @@ process RMATS_PREP {
     val(strandedness)
 
     output:
-    tuple val(meta), path("prep/out/"), path("prep/tmp/"), emit: out
-    path("versions.yml")                                 , emit: versions
+    tuple val(meta), path("prep/tmp/"), emit: tmp
+    path("versions.yml")                 , emit: versions
 
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def threads = task.cpus ?: 10
+    def threads = task.cpus
 
     """
 
@@ -37,7 +37,8 @@ process RMATS_PREP {
         --libType $strandedness \\
         --readLength $readLength \\
         --nthread $threads \\
-        $args
+        $args \\
+        1> $prefix/prep/tmp/rmats.log
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -47,34 +48,9 @@ process RMATS_PREP {
 
     stub:
 
+    def prefix = task.ext.prefix ?: "${meta.id}"
+
     """
-
-    touch b1.txt
-    for bam in $b1; do
-        echo \$bam >> b1.txt
-    done
-
-    events=(
-        SE
-        A3SS
-        A5SS
-        MXE
-        RI
-    )
-
-    mkdir -p prep/out
-    touch prep/out/summary.txt
-    for event in "\${events[@]}"; do
-        touch prep/out/\${event}.MATS.JC.txt
-        touch prep/out/\${event}.MATS.JCEC.txt
-        touch prep/out/fromGTF.\${event}.txt
-        touch prep/out/fromGTF.novelJunction.\${event}.txt
-        touch prep/out/fromGTF.novelSpliceSite.\${event}.txt
-        touch prep/out/JC.raw.input.\${event}.txt
-        touch prep/out/JCEC.raw.input.\${event}.txt
-        touch prep/out/individualCounts.\${event}.txt
-    done
-
     mkdir -p prep/tmp
     touch prep/tmp/pre.rmats
     touch prep/tmp/pre_read_outcomes_by_bam.txt
