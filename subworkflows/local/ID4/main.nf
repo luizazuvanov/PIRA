@@ -11,7 +11,7 @@ workflow ID4_EXPERIMENT {
 
     SAMTOOLS_STATS(
         ch_input.map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment],
+            [id: it.experiment, alignment: it.alignment, condition: it.condition],
             it.bam,
             []
         ) },
