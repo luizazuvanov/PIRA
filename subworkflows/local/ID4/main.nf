@@ -27,7 +27,7 @@ workflow ID4_EXPERIMENT {
 
     ch_out = Channel.empty()
     SAMTOOLS_STATS.out.stats
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, stats: it[1]] }
+        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, stats: it[1]] }
         .set { ch_out }
 
     // versions

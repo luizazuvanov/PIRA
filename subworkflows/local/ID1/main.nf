@@ -35,6 +35,7 @@ workflow ID1 {
     // join
 
     ch_out = ch_input
+        .map { it -> [run: it.run, experiment: it.experiment, condition: it.condition] }
         .map { it -> tuple(it.run, it) }
         .join(
             ch_out
