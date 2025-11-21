@@ -4,17 +4,18 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID1               } from '../../subworkflows/local/ID1/main'
-include { ID2               } from '../../subworkflows/local/ID2/main'
-include { ID3_NOVO          } from '../../subworkflows/local/ID3/main'
-include { ID3_DENOVO        } from '../../subworkflows/local/ID3/main'
-include { ID4_EXPERIMENT    } from '../../subworkflows/local/ID4/main'
-include { ID5               } from '../../subworkflows/local/ID5/main'
-include { ID6_CLEAN         } from '../../subworkflows/local/ID6/main'
-include { ID6_STRINGTIE     } from '../../subworkflows/local/ID6/main'
-include { ID6_MERGE         } from '../../subworkflows/local/ID6/main'
-include { ID7 as ID7_NOVO   } from '../../subworkflows/local/ID7/main'
-include { ID7 as ID7_DENOVO } from '../../subworkflows/local/ID7/main'
+include { ID1                                     } from '../../subworkflows/local/ID1/main'
+include { ID2                                     } from '../../subworkflows/local/ID2/main'
+include { ID3_NOVO                                } from '../../subworkflows/local/ID3/main'
+include { ID3_DENOVO                              } from '../../subworkflows/local/ID3/main'
+include { ID4_EXPERIMENT                          } from '../../subworkflows/local/ID4/main'
+include { ID5                                     } from '../../subworkflows/local/ID5/main'
+include { ID6_CLEAN                               } from '../../subworkflows/local/ID6/main'
+include { ID6_STRANDEDNESS                        } from '../../subworkflows/local/ID6/main'
+include { ID6_STRINGTIE                           } from '../../subworkflows/local/ID6/main'
+include { ID6_MERGE                               } from '../../subworkflows/local/ID6/main'
+include { ID7_RMATS_PREP as ID7_RMATS_PREP_NOVO   } from '../../subworkflows/local/ID7/main'
+include { ID7_RMATS_PREP as ID7_RMATS_PREP_DENOVO } from '../../subworkflows/local/ID7/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -126,6 +127,15 @@ workflow PIRA {
     ch_versions = ch_versions.mix(ID6_CLEAN.out.versions)
 
     //
+    // SUBWORKFLOW: ID6 STRANDEDNESS
+    // ch_strandedness = exp, alignment, cond, sequencing, strandedness, alias
+    //
+
+    ID6_STRANDEDNESS(ch_infer)
+    ch_strandedness = ID6_STRANDEDNESS.out.data
+    ch_versions = ch_versions.mix(ID6_STRANDEDNESS.out.versions)
+
+    //
     // SUBWORKFLOW: ID6 STRINGTIE
     // ch_denovo = exp, alignment, cond, gtf
     //
@@ -133,9 +143,9 @@ workflow PIRA {
     ch_denovo = join_by_exp(
         ch_bam
             .filter {it -> it.alignment == "denovo"},
-        ch_infer
+        ch_strandedness
             .filter {it -> it.alignment == "denovo"}
-            .map { it -> [experiment: it.experiment, infer: it.infer]}
+            .map { it -> [experiment: it.experiment, strandedness: it.strandedness]}
     )
 
     ID6_STRINGTIE(
@@ -144,7 +154,6 @@ workflow PIRA {
             .map {row, gtf -> row + [reference: gtf.reference] },
     )
 
-    ch_denovo = ID6_STRINGTIE.out.data
     ch_versions = ch_versions.mix(ID6_STRINGTIE.out.versions)
 
     //
@@ -152,12 +161,12 @@ workflow PIRA {
     // ch_gtf_merged = alignment, gtf
     //
 
-    ch_denovo = group_gtf_by_align(
-        ch_denovo
+    ch_gtf_denovo = group_gtf_by_align(
+        ID6_STRINGTIE.out.data
     )
 
     ID6_MERGE(
-        ch_denovo
+        ch_gtf_denovo
             .combine(ch_gtf_clean)
             .map {row, gtf -> row + [reference: gtf.reference] },
     )
@@ -166,130 +175,162 @@ workflow PIRA {
     ch_versions = ch_versions.mix(ID6_MERGE.out.versions)
 
     //
-    // SUBWORKFLOW: ID7
+    // SUBWORKFLOW: ID7 RMATS PREP
+    // ch_novo_rmats_prep
     //
 
-    ch_pairs_cond = compute_pairs_by_cond(
-        ch_samples.map { it -> [condition: it.condition] }
-    ) // cond_1, cond_2
+    // NOVO
 
-    // Novo
+    ch_novo_stats = group_stats_by_cond_align(
+        ch_stats
+            .filter { it -> it.alignment == "novo" }
+            .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
+    )
 
-    ch_bam_novo = group_bam_by_cond_align(
+    ch_novo_strandedness = group_strandedness_by_cond_align(
+        ch_strandedness
+            .filter { it -> it.alignment == "novo" }
+            .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
+    )
+
+    ch_novo_pre = combine_by_cond(
+        ch_novo_stats,
+        ch_novo_strandedness
+    )
+
+    ch_novo_bam = group_bam_by_cond_align(
         ch_bam
-            .filter {it -> it.alignment == "novo"}
+            .filter { it -> it.alignment == "novo" }
+            .map { it -> [condition: it.condition, alignment: it.alignment, bam: it.bam] }
     )
 
-    ch_novo_pairs_cond = combine_by_cond(
-        ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
-        ch_bam_novo
+    ch_novo_pre = combine_by_cond(
+        ch_novo_pre,
+        ch_novo_bam
     )
 
-    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
-        [
-            cond_1: it.cond_1,
-            cond_2: it.cond_2,
-            alignment: it.alignment,
-            bam_1: it.bam
-        ]
-    }
-
-    ch_novo_pairs_cond = combine_by_cond(
-        ch_novo_pairs_cond.map { it -> [condition: it.cond_2] + it},
-        ch_bam_novo
-    )
-
-    ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
-        [
-            cond_1: it.cond_1,
-            cond_2: it.cond_2,
-            alignment: it.alignment,
-            bam_1: it.bam_1,
-            bam_2: it.bam
-        ]
-    } // cond_1, cond_2, alignment, []bam_1, []bam_2
-
-    ID7_NOVO(
-        ch_novo_pairs_cond
+    ID7_RMATS_PREP_NOVO(
+        ch_novo_pre
             .combine(ch_gtf)
             .map {row, gtf -> row + [gtf: gtf.gtf] }
-            .combine(
-                ch_infer
-                    .filter { it -> it.alignment == "novo" }
-                    .map { it -> [infer: it.infer] }
-                    .first()
-            )
-            .map { row, infer -> row + [infer: infer.infer] }
-            .combine(
-                ch_stats
-                    .filter { it -> it.alignment == "novo" }
-                    .map { it -> [stats: it.stats] }
-                    .first()
-            )
-            .map { row, stats -> row + [stats: stats.stats] }
     )
-    ch_versions = ch_versions.mix(ID7_NOVO.out.versions)
+    ch_novo_rmats_prep = ID7_RMATS_PREP_NOVO.out.data
+    ch_versions = ch_versions.mix(ID7_RMATS_PREP_NOVO.out.versions)
 
-    // Denovo
+    // DENOVO
 
-    ch_bam_denovo = group_bam_by_cond_align(
+    ch_denovo_stats = group_stats_by_cond_align(
+        ch_stats
+            .filter { it -> it.alignment == "denovo" }
+            .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
+    )
+
+    ch_denovo_strandedness = group_strandedness_by_cond_align(
+        ch_strandedness
+            .filter { it -> it.alignment == "denovo" }
+            .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
+    )
+
+    ch_denovo_pre = combine_by_cond(
+        ch_denovo_stats,
+        ch_denovo_strandedness
+    )
+
+    ch_denovo_bam = group_bam_by_cond_align(
         ch_bam
-            .filter {it -> it.alignment == "denovo"}
+            .filter { it -> it.alignment == "denovo" }
+            .map { it -> [condition: it.condition, alignment: it.alignment, bam: it.bam] }
     )
 
-    ch_denovo_pairs_cond = combine_by_cond(
-        ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
-        ch_bam_denovo
+    ch_denovo_pre = combine_by_cond(
+        ch_denovo_pre,
+        ch_denovo_bam
     )
 
-    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
-        [
-            cond_1: it.cond_1,
-            cond_2: it.cond_2,
-            alignment: it.alignment,
-            bam_1: it.bam
-        ]
-    }
-
-    ch_denovo_pairs_cond = combine_by_cond(
-        ch_denovo_pairs_cond.map { it -> [condition: it.cond_2] + it},
-        ch_bam_denovo
-    )
-
-    ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
-        [
-            cond_1: it.cond_1,
-            cond_2: it.cond_2,
-            alignment: it.alignment,
-            bam_1: it.bam_1,
-            bam_2: it.bam
-        ]
-    } // cond_1, cond_2, alignment, []bam_1, []bam_2
-
-    ID7_DENOVO(
-        ch_denovo_pairs_cond
+    ID7_RMATS_PREP_DENOVO(
+        ch_denovo_pre
             .combine(ch_gtf_denovo)
             .map {row, gtf -> row + [gtf: gtf.gtf] }
-            .combine(
-                ch_infer
-                    .filter { it -> it.alignment == "denovo" }
-                    .map { it -> [infer: it.infer] }
-                    .first()
-            )
-            .map { row, infer -> row + [infer: infer.infer] }
-            .combine(
-                ch_stats
-                    .filter { it -> it.alignment == "denovo" }
-                    .map { it -> [stats: it.stats] }
-                    .first()
-            )
-            .map { row, stats -> row + [stats: stats.stats] }
     )
-    ch_versions = ch_versions.mix(ID7_DENOVO.out.versions)
+    ch_denovo_rmats_prep = ID7_RMATS_PREP_DENOVO.out.data
+    ch_versions = ch_versions.mix(ID7_RMATS_PREP_DENOVO.out.versions)
 
     //
-    // Collate and save software versions
+    // SUBWORKFLOW: ID7 RMATS POS
     //
+
+    // ch_pairs_cond = compute_pairs_by_cond(
+    //     ch_samples.map { it -> [condition: it.condition] }
+    // ) // cond_1, cond_2
+
+    // // NOVO
+    // // TODO: add rmats prep
+
+    // ch_novo_pairs_cond = combine_by_cond(
+    //     ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
+    //     ch_novo_bam
+    // )
+
+    // ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
+    //     [
+    //         cond_1: it.cond_1,
+    //         cond_2: it.cond_2,
+    //         alignment: it.alignment,
+    //         bam_1: it.bam
+    //     ]
+    // }
+
+    // ch_novo_pairs_cond = combine_by_cond(
+    //     ch_novo_pairs_cond.map { it -> [condition: it.cond_2] + it},
+    //     ch_novo_bam
+    // )
+
+    // ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
+    //     [
+    //         cond_1: it.cond_1,
+    //         cond_2: it.cond_2,
+    //         alignment: it.alignment,
+    //         bam_1: it.bam_1,
+    //         bam_2: it.bam
+    //     ]
+    // } // cond_1, cond_2, alignment, []bam_1, []bam_2
+
+    // DENOVO
+    // TODO: add rmats prep
+
+    // ch_denovo_pairs_cond = combine_by_cond(
+    //     ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
+    //     ch_denovo_bam
+    // )
+
+    // ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
+    //     [
+    //         cond_1: it.cond_1,
+    //         cond_2: it.cond_2,
+    //         alignment: it.alignment,
+    //         bam_1: it.bam
+    //     ]
+    // }
+
+    // ch_denovo_pairs_cond = combine_by_cond(
+    //     ch_denovo_pairs_cond.map { it -> [condition: it.cond_2] + it},
+    //     ch_denovo_bam
+    // )
+
+    // ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
+    //     [
+    //         cond_1: it.cond_1,
+    //         cond_2: it.cond_2,
+    //         alignment: it.alignment,
+    //         bam_1: it.bam_1,
+    //         bam_2: it.bam
+    //     ]
+    // } // cond_1, cond_2, alignment, []bam_1, []bam_2
+
+    //
+    // WRAP UP
+    //
+
     softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
@@ -328,6 +369,72 @@ workflow group_gtf_by_align {
 
     emit:
     ch_gtf_by_align // align, []gtf
+}
+
+workflow group_stats_by_cond_align {
+
+    take:
+    ch_stats // [cond, align, stats, ...]
+
+    main:
+
+    ch_out = Channel.empty()
+    ch_stats
+        .map { it -> tuple(it.condition, it) }
+        .groupTuple()
+        .map { __, its -> [
+            condition: its.collect { it.condition }.unique().first(),
+            alignment: its.collect { it.alignment }.unique().first(),
+            stats: its.collect { it.stats }.flatten()
+        ] }
+        .set { ch_out }
+
+    emit:
+    ch_out // cond, align, []stats
+}
+
+workflow group_strandedness_by_cond_align {
+
+    take:
+    ch_strandedness // [cond, align, strandedness, ...]
+
+    main:
+
+    ch_out = Channel.empty()
+    ch_strandedness
+        .map { it -> tuple(it.condition, it) }
+        .groupTuple()
+        .map { __, its -> [
+            condition: its.collect { it.condition }.unique().first(),
+            alignment: its.collect { it.alignment }.unique().first(),
+            strandedness: its.collect { it.strandedness }.flatten()
+        ] }
+        .set { ch_out }
+
+    emit:
+    ch_out // cond, align, []strandedness
+}
+
+workflow group_infer_by_cond_align {
+
+    take:
+    ch_stats // [cond, align, stats, ...]
+
+    main:
+
+    ch_out = Channel.empty()
+    ch_stats
+        .map { it -> tuple(it.condition, it) }
+        .groupTuple()
+        .map { __, its -> [
+            condition: its.collect { it.condition }.unique().first(),
+            alignment: its.collect { it.alignment }.unique().first(),
+            infer: its.collect { it.infer }.flatten()
+        ] }
+        .set { ch_out }
+
+    emit:
+    ch_out // cond, align, []infer
 }
 
 workflow group_bam_by_cond_align {
