@@ -12,9 +12,10 @@ process RMATS_LENGTH {
     val stats
 
     output:
-    tuple val(meta), env('LENGTH')      , emit: stats
-    tuple val(meta), path('*.stats.csv'), emit: merged
-    path("versions.yml")                , emit: versions
+    tuple val(meta), env('LENGTH')         , emit: stats
+    tuple val(meta), path('*.stats.csv')   , emit: average
+    tuple val(meta), path('*.merged.stats'), emit: merged
+    path("versions.yml")                   , emit: versions
 
     script:
 
@@ -23,9 +24,9 @@ process RMATS_LENGTH {
     """
     # concatenate stats files
     touch "$prefix".merged.stats
-    files=\$(echo "$stats" | tr -d '[],')
-    for file in \$files; do
-        grep "^RL" \$file >> "$prefix".merged.stats
+    for file in $stats; do
+        filename=\$(echo "\$file" | tr -d '[],')
+        grep "^RL" \$filename >> "$prefix".merged.stats
     done
 
     # compute the average read length, truncated to integer
@@ -45,6 +46,12 @@ process RMATS_LENGTH {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
+    touch "$prefix".merged.stats
+    for file in $stats; do
+        filename=\$(echo "\$file" | tr -d '[],')
+        echo -e \$filename >> "$prefix".merged.stats
+    done
+
     touch "$prefix".stats.csv
     LENGTH=30
     echo -e "length" >> "$prefix".stats.csv
