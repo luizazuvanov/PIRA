@@ -19,6 +19,7 @@ process RMATS_PREP {
     path("versions.yml")              , emit: versions
 
     script:
+    def bams = b1.join(',')
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def threads = task.cpus
@@ -28,12 +29,12 @@ process RMATS_PREP {
     mkdir -p prep/tmp
     mkdir -p prep/out
 
-    ( IFS=,; printf '%s\n' "$b1" ) > b1.txt
+    echo $bams > prep/tmp/b1.txt
 
     rmats.py \\
         --task prep \\
         --gtf $gtf \\
-        --b1 b1.txt \\
+        --b1 prep/tmp/b1.txt \\
         --od prep/out \\
         --tmp prep/tmp \\
         -t $readType \\
@@ -51,11 +52,14 @@ process RMATS_PREP {
 
     stub:
 
+    def bams = b1.join(',')
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
     mkdir -p prep/tmp
     mkdir -p prep/out
+
+    echo $bams > prep/tmp/b1.txt
 
     touch prep/tmp/pre.rmats
     touch prep/tmp/pre_read_outcomes_by_bam.txt
