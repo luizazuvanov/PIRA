@@ -16,7 +16,7 @@ process RMATS_PREP {
 
     output:
     tuple val(meta), path("prep/tmp/"), emit: tmp
-    path("versions.yml")                 , emit: versions
+    path("versions.yml")              , emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -24,6 +24,9 @@ process RMATS_PREP {
     def threads = task.cpus
 
     """
+
+    mkdir -p prep/tmp
+    mkdir -p prep/out
 
     ( IFS=,; printf '%s\n' "$b1" ) > b1.txt
 
@@ -52,6 +55,8 @@ process RMATS_PREP {
 
     """
     mkdir -p prep/tmp
+    mkdir -p prep/out
+
     touch prep/tmp/pre.rmats
     touch prep/tmp/pre_read_outcomes_by_bam.txt
 

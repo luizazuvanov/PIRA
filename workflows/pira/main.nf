@@ -187,7 +187,7 @@ workflow PIRA {
             .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
     )
 
-    // assumes alias, sequencing and strandednes are unique per condition and alignment
+    // assumes alias, sequencing and strandedness are unique per condition and alignment
     ch_novo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "novo" }
@@ -226,7 +226,7 @@ workflow PIRA {
             .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
     )
 
-    // assumes alias, sequencing and strandednes are unique per condition and alignment
+    // assumes alias, sequencing and strandedness are unique per condition and alignment
     ch_denovo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "denovo" }
