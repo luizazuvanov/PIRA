@@ -187,10 +187,11 @@ workflow PIRA {
             .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
     )
 
-    ch_novo_strandedness = group_strandedness_by_cond_align(
+    // assumes alias, sequencing and strandednes are unique per condition and alignment
+    ch_novo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "novo" }
-            .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
+            // .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
     )
 
     ch_novo_pre = combine_by_cond(
@@ -225,10 +226,11 @@ workflow PIRA {
             .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
     )
 
-    ch_denovo_strandedness = group_strandedness_by_cond_align(
+    // assumes alias, sequencing and strandednes are unique per condition and alignment
+    ch_denovo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "denovo" }
-            .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
+            // .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
     )
 
     ch_denovo_pre = combine_by_cond(
@@ -393,10 +395,10 @@ workflow group_stats_by_cond_align {
     ch_out // cond, align, []stats
 }
 
-workflow group_strandedness_by_cond_align {
+workflow reduce_strandedness_by_cond_align {
 
     take:
-    ch_strandedness // [cond, align, strandedness, ...]
+    ch_strandedness // [cond, align, alias, strandedness, sequencing]
 
     main:
 
@@ -407,12 +409,14 @@ workflow group_strandedness_by_cond_align {
         .map { __, its -> [
             condition: its.collect { it.condition }.unique().first(),
             alignment: its.collect { it.alignment }.unique().first(),
-            strandedness: its.collect { it.strandedness }.flatten()
+            alias: its.collect { it.alias }.first(),
+            sequencing: its.collect { it.sequencing }.first(),
+            strandedness: its.collect { it.strandedness }.first()
         ] }
         .set { ch_out }
 
     emit:
-    ch_out // cond, align, []strandedness
+    ch_out // cond, align, alias, strandedness, sequencing
 }
 
 workflow group_bam_by_cond_align {
