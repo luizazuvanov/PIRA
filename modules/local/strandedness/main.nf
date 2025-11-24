@@ -16,7 +16,7 @@ process STRANDEDNESS {
 
     script:
     """
-    strandedness.py $infer
+    strandedness.py $infer $meta.id $meta.alignment $meta.condition
 
     cat <<- END_VERSIONS > versions.yml
     "${task.process}":
@@ -27,8 +27,8 @@ process STRANDEDNESS {
     stub:
     """
     touch "infer.csv"
-    echo -e 'sequencing,strandedness,alias' >> "infer.csv"
-    echo -e 'paired,fr-secondstrand,forward' >> "infer.csv"
+    echo -e 'experiment,alignment,condition,sequencing,strandedness,alias' >> "infer.csv"
+    echo -e '$meta.id,$meta.alignment,$meta.condition,paired,fr-secondstrand,forward' >> "infer.csv"
 
     cat <<- END_VERSIONS > versions.yml
     "${task.process}":
