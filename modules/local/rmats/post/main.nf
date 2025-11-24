@@ -13,6 +13,8 @@ process RMATS_POST {
     path(b2)
     val(tmp_1)
     val(tmp_2)
+    val(length_1)
+    val(length_2)
     val(readTypes)
     val(readLengths)
 
@@ -26,7 +28,6 @@ process RMATS_POST {
     def bams1 = b1.join(',')
     def bams2 = b2.join(',')
     def readType = readTypes.contains('single') ? 'single' : 'paired' // prioritize 'single' if present
-    def readLength = (readLengths[0] + readLengths[1]) * 0.5 // average read length
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def threads = task.cpus
@@ -42,6 +43,9 @@ process RMATS_POST {
     cp $tmp_1/*.rmats post/tmp/
     cp $tmp_2/*.rmats post/tmp/
 
+    # calculate average read length
+    readLength=$(awk "BEGIN {print ($length_1 + $length_2) / 2}")
+
     rmats.py \\
         --task post \\
         --gtf $gtf \\
@@ -50,7 +54,7 @@ process RMATS_POST {
         --od post/out \\
         --tmp post/tmp \\
         -t $readType \\
-        --readLength $readLength \\
+        --readLength \$readLength \\
         --nthread $threads \\
         $args \\
         1> post/tmp/rmats.log
@@ -66,7 +70,6 @@ process RMATS_POST {
     def bams1 = b1.join(',')
     def bams2 = b2.join(',')
     def readType = readTypes.contains('single') ? 'single' : 'paired' // prioritize 'single' if present
-    def readLength = (readLengths[0] + readLengths[1]) * 0.5 // average read length
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """

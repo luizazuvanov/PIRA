@@ -460,7 +460,8 @@ workflow id7_compute_pairs_by_cond {
                         bam_2: cond_2.bam,
                         tmp_1: cond_1.tmp,
                         tmp_2: cond_2.tmp,
-                        length: [cond_1.length, cond_2.length],
+                        length_1: cond_1.length,
+                        length_2: cond_2.length,
                         alignment: cond_1.alignment, // both have same alignment
                         sequencing: [cond_1.sequencing, cond_2.sequencing],
                     ]
