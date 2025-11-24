@@ -16,9 +16,11 @@ process RMATS_PREP {
 
     output:
     tuple val(meta), path("prep/tmp/"), emit: tmp
+    path("prep/out/")                 , emit: out
     path("versions.yml")              , emit: versions
 
     script:
+
     def bams = b1.join(',')
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
@@ -44,6 +46,15 @@ process RMATS_PREP {
         $args \\
         1> prep/tmp/rmats.log
 
+    pre="$prefix"
+    pre="\${pre}_"
+
+    for file in prep/tmp/*.rmats; do
+        dir=\$(dirname "\$file")
+        filename=\$(basename "\$file")
+        mv "\$file" "\${dir}/\${pre}\${filename}"
+    done
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         rmats: \$(echo \$(rmats.py --version) | sed -e "s/v//g")
@@ -63,6 +74,15 @@ process RMATS_PREP {
 
     touch prep/tmp/pre.rmats
     touch prep/tmp/pre_read_outcomes_by_bam.txt
+
+    pre="$prefix"
+    pre="\${pre}_"
+
+    for file in prep/tmp/*.rmats; do
+        dir=\$(dirname "\$file")
+        filename=\$(basename "\$file")
+        mv "\$file" "\${dir}/\${pre}\${filename}"
+    done
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
