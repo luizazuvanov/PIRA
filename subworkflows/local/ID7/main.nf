@@ -1,5 +1,6 @@
 include { RMATS_LENGTH } from '../../../modules/local/rmats/length/main'
 include { RMATS_PREP   } from '../../../modules/local/rmats/prep/main'
+include { RMATS_POST   } from '../../../modules/local/rmats/post/main'
 
 workflow ID7_RMATS_PREP {
     take:
@@ -62,5 +63,32 @@ workflow ID7_RMATS_PREP {
 
     emit:
     data = ch_out
+    versions = ch_versions
+}
+
+workflow ID7_RMATS_POST {
+    take:
+    ch_input
+
+    main:
+
+    RMATS_POST(
+        ch_input.map { it -> tuple( [id: it.condition, alignment: it.alignment], it.gtf ) },
+        ch_input.map { it -> it.bam_1 },
+        ch_input.map { it -> it.bam_2 },
+        ch_input.map { it -> it.tmp_1 },
+        ch_input.map { it -> it.tmp_2 },
+        ch_input.map { it -> it.length_1 },
+        ch_input.map { it -> it.length_2 },
+        ch_input.map { it -> it.sequencing },
+    )
+
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( RMATS_POST.out.versions )
+
+    emit:
     versions = ch_versions
 }

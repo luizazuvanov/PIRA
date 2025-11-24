@@ -15,7 +15,9 @@ include { ID6_STRANDEDNESS                        } from '../../subworkflows/loc
 include { ID6_STRINGTIE                           } from '../../subworkflows/local/ID6/main'
 include { ID6_MERGE                               } from '../../subworkflows/local/ID6/main'
 include { ID7_RMATS_PREP as ID7_RMATS_PREP_NOVO   } from '../../subworkflows/local/ID7/main'
+include { ID7_RMATS_POST as ID7_RMATS_POST_NOVO   } from '../../subworkflows/local/ID7/main'
 include { ID7_RMATS_PREP as ID7_RMATS_PREP_DENOVO } from '../../subworkflows/local/ID7/main'
+include { ID7_RMATS_POST as ID7_RMATS_POST_DENOVO } from '../../subworkflows/local/ID7/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -175,8 +177,7 @@ workflow PIRA {
     ch_versions = ch_versions.mix(ID6_MERGE.out.versions)
 
     //
-    // SUBWORKFLOW: ID7 RMATS PREP
-    // ch_novo_rmats_prep
+    // SUBWORKFLOW: ID7
     //
 
     // NOVO
@@ -191,7 +192,6 @@ workflow PIRA {
     ch_novo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "novo" }
-            // .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
     )
 
     ch_novo_pre = combine_by_cond(
@@ -213,10 +213,21 @@ workflow PIRA {
     ID7_RMATS_PREP_NOVO(
         ch_novo_pre
             .combine(ch_gtf)
-            .map {row, gtf -> row + [gtf: gtf.gtf] }
+            .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
     ch_novo_rmats_prep = ID7_RMATS_PREP_NOVO.out.data
     ch_versions = ch_versions.mix(ID7_RMATS_PREP_NOVO.out.versions)
+
+    ch_novo_rmats_post = compute_pairs_by_cond(
+        ch_novo_rmats_prep
+    )
+
+    ID7_RMATS_POST_NOVO(
+        ch_novo_rmats_post
+            .combine(ch_gtf)
+            .map { row, gtf -> row + [gtf: gtf.gtf] }
+    )
+    ch_versions = ch_versions.mix(ID7_RMATS_POST_NOVO.out.versions)
 
     // DENOVO
 
@@ -230,7 +241,6 @@ workflow PIRA {
     ch_denovo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "denovo" }
-            // .map { it -> [condition: it.condition, alignment: it.alignment, strandedness: it.strandedness] }
     )
 
     ch_denovo_pre = combine_by_cond(
@@ -252,82 +262,21 @@ workflow PIRA {
     ID7_RMATS_PREP_DENOVO(
         ch_denovo_pre
             .combine(ch_gtf_denovo)
-            .map {row, gtf -> row + [gtf: gtf.gtf] }
+            .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
     ch_denovo_rmats_prep = ID7_RMATS_PREP_DENOVO.out.data
     ch_versions = ch_versions.mix(ID7_RMATS_PREP_DENOVO.out.versions)
 
-    //
-    // SUBWORKFLOW: ID7 RMATS POST
-    //
+    ch_denovo_rmats_post = compute_pairs_by_cond(
+        ch_denovo_rmats_prep
+    )
 
-    // ch_pairs_cond = compute_pairs_by_cond(
-    //     ch_samples.map { it -> [condition: it.condition] }
-    // ) // cond_1, cond_2
-
-    // // NOVO
-    // // TODO: add rmats prep
-
-    // ch_novo_pairs_cond = combine_by_cond(
-    //     ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
-    //     ch_novo_bam
-    // )
-
-    // ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
-    //     [
-    //         cond_1: it.cond_1,
-    //         cond_2: it.cond_2,
-    //         alignment: it.alignment,
-    //         bam_1: it.bam
-    //     ]
-    // }
-
-    // ch_novo_pairs_cond = combine_by_cond(
-    //     ch_novo_pairs_cond.map { it -> [condition: it.cond_2] + it},
-    //     ch_novo_bam
-    // )
-
-    // ch_novo_pairs_cond = ch_novo_pairs_cond.map { it ->
-    //     [
-    //         cond_1: it.cond_1,
-    //         cond_2: it.cond_2,
-    //         alignment: it.alignment,
-    //         bam_1: it.bam_1,
-    //         bam_2: it.bam
-    //     ]
-    // } // cond_1, cond_2, alignment, []bam_1, []bam_2
-
-    // DENOVO
-    // TODO: add rmats prep
-
-    // ch_denovo_pairs_cond = combine_by_cond(
-    //     ch_pairs_cond.map { it -> [condition: it.cond_1] + it},
-    //     ch_denovo_bam
-    // )
-
-    // ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
-    //     [
-    //         cond_1: it.cond_1,
-    //         cond_2: it.cond_2,
-    //         alignment: it.alignment,
-    //         bam_1: it.bam
-    //     ]
-    // }
-
-    // ch_denovo_pairs_cond = combine_by_cond(
-    //     ch_denovo_pairs_cond.map { it -> [condition: it.cond_2] + it},
-    //     ch_denovo_bam
-    // )
-
-    // ch_denovo_pairs_cond = ch_denovo_pairs_cond.map { it ->
-    //     [
-    //         cond_1: it.cond_1,
-    //         cond_2: it.cond_2,
-    //         alignment: it.alignment,
-    //         bam_1: it.bam_1,
-    //         bam_2: it.bam
-    //     ]
-    // } // cond_1, cond_2, alignment, []bam_1, []bam_2
+    ID7_RMATS_POST_DENOVO(
+        ch_denovo_rmats_post
+            .combine(ch_gtf_denovo)
+            .map { row, gtf -> row + [gtf: gtf.gtf] }
+    )
+    ch_versions = ch_versions.mix(ID7_RMATS_POST_DENOVO.out.versions)
 
     //
     // WRAP UP
@@ -491,29 +440,40 @@ workflow join_by_exp {
 workflow compute_pairs_by_cond {
 
     take:
-    ch_input // cond, ...
+    ch_input // [cond, ...], [cond, ...]
 
     main:
 
     ch_out = Channel.empty()
 
     ch_input
-        .map { it -> it.condition }
-        .distinct()
         .collect()
-        .flatMap { it ->
-            def pairs = []
-            for (int i = 0; i < it.size(); i++) {
-                for (int j = i + 1; j < it.size(); j++) {
-                    pairs << [cond_1: it[i], cond_2: it[j]]
+        .flatMap { items ->
+            def combinations = []
+            for (int i = 0; i < items.size(); i++) {
+                for (int j = i + 1; j < items.size(); j++) {
+                    def cond_1 = items[i]
+                    def cond_2 = items[j]
+                    def combined = [
+                        condition: "${cond_1.condition}_vs_${cond_2.condition}",
+                        bam_1: cond_1.bam,
+                        bam_2: cond_2.bam,
+                        tmp_1: cond_1.tmp,
+                        tmp_2: cond_2.tmp,
+                        length_1: cond_1.length,
+                        length_2: cond_2.length,
+                        alignment: cond_1.alignment, // both have same alignment
+                        sequencing: [cond_1.sequencing, cond_2.sequencing],
+                    ]
+                    combinations.add(combined)
                 }
             }
-            return pairs
+            return combinations
         }
         .set { ch_out }
 
     emit:
-    ch_out // cond_1, cond_2
+    ch_out // [cond1_vs_cond2, ...]
 }
 
 /*
