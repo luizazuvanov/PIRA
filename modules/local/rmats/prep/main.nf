@@ -16,7 +16,6 @@ process RMATS_PREP {
 
     output:
     tuple val(meta), path("prep/tmp/"), emit: tmp
-    path("prep/out/")                 , emit: out
     path("versions.yml")              , emit: versions
 
     script:

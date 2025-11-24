@@ -218,7 +218,7 @@ workflow PIRA {
     ch_novo_rmats_prep = ID7_RMATS_PREP_NOVO.out.data
     ch_versions = ch_versions.mix(ID7_RMATS_PREP_NOVO.out.versions)
 
-    ch_novo_rmats_post = id7_compute_pairs_by_cond(
+    ch_novo_rmats_post = compute_pairs_by_cond(
         ch_novo_rmats_prep
     )
 
@@ -267,7 +267,7 @@ workflow PIRA {
     ch_denovo_rmats_prep = ID7_RMATS_PREP_DENOVO.out.data
     ch_versions = ch_versions.mix(ID7_RMATS_PREP_DENOVO.out.versions)
 
-    ch_denovo_rmats_post = id7_compute_pairs_by_cond(
+    ch_denovo_rmats_post = compute_pairs_by_cond(
         ch_denovo_rmats_prep
     )
 
@@ -437,7 +437,7 @@ workflow join_by_exp {
     ch_out // exp, ...
 }
 
-workflow id7_compute_pairs_by_cond {
+workflow compute_pairs_by_cond {
 
     take:
     ch_input // [cond, ...], [cond, ...]
