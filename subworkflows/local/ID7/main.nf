@@ -72,8 +72,6 @@ workflow ID7_RMATS_POST {
 
     main:
 
-    ch_input.view().println()
-
     RMATS_POST(
         ch_input.map { it -> tuple( [id: it.condition, alignment: it.alignment], it.gtf ) },
         ch_input.map { it -> it.bam_1 },
