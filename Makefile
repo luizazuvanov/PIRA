@@ -58,4 +58,4 @@ clean: ## Clean up
 .PHONY: test
 test: ## Run tests
 	@./bin/nf-test clean
-	@./bin/nf-test test
+	@./bin/nf-test test --clean-snapshot

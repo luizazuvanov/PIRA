@@ -4,7 +4,7 @@ nextflow_process {
     script "modules/local/stringtie/clean/main.nf"
     process "STRINGTIE_CLEAN"
 
-    test("success") {
+    test("sarscov2 - gtf") {
 
         when {
             process {

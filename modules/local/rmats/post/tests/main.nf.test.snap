@@ -11,9 +11,9 @@
                         [
                             "b1.txt:md5,d0bf18636285a71a8b0cd19b6c67626e",
                             "b2.txt:md5,9855fc1c5fc0e4e1b338545d0da14e65",
-                            "condition_1_2025-11-25-21_05_18_744779_0.rmats:md5,2f395e8d6611c98cdd062ff7a124d7d4",
-                            "condition_2_2025-11-25-21_05_18_069119_0.rmats:md5,fda21d38c500aa7aa741ff9b4cfff409",
-                            "rmats.log:md5,b5f5552bbcbe19e63965844f9988047c"
+                            "condition_1_2025-11-25-21_14_21_588497_0.rmats:md5,2f395e8d6611c98cdd062ff7a124d7d4",
+                            "condition_2_2025-11-25-21_14_21_722113_0.rmats:md5,fda21d38c500aa7aa741ff9b4cfff409",
+                            "rmats.log:md5,bc508040c1617d7667399d79f498df61"
                         ]
                     ]
                 ],
@@ -273,9 +273,9 @@
                         [
                             "b1.txt:md5,d0bf18636285a71a8b0cd19b6c67626e",
                             "b2.txt:md5,9855fc1c5fc0e4e1b338545d0da14e65",
-                            "condition_1_2025-11-25-21_05_18_744779_0.rmats:md5,2f395e8d6611c98cdd062ff7a124d7d4",
-                            "condition_2_2025-11-25-21_05_18_069119_0.rmats:md5,fda21d38c500aa7aa741ff9b4cfff409",
-                            "rmats.log:md5,b5f5552bbcbe19e63965844f9988047c"
+                            "condition_1_2025-11-25-21_14_21_588497_0.rmats:md5,2f395e8d6611c98cdd062ff7a124d7d4",
+                            "condition_2_2025-11-25-21_14_21_722113_0.rmats:md5,fda21d38c500aa7aa741ff9b4cfff409",
+                            "rmats.log:md5,bc508040c1617d7667399d79f498df61"
                         ]
                     ]
                 ],
@@ -288,6 +288,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.04.3"
         },
-        "timestamp": "2025-11-25T22:05:37.590377"
+        "timestamp": "2025-11-25T22:14:41.11827"
     }
 }

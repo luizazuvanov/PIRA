@@ -4,7 +4,7 @@ nextflow_process {
     script "../main.nf"
     process "SJ_FILTER"
 
-    test("success") {
+    test("local - tab") {
 
         when {
             process {
