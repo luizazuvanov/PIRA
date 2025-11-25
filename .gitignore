@@ -26,7 +26,6 @@ pipeline_info/
 .nfs*
 
 .nf-test/
-bin/nf-test*
 
 ### macOS ###
 # General
