@@ -46,7 +46,7 @@ workflow PIRA {
     // ch_fastq = run, exp, cond, []fastq
     //
 
-    if (params.download) {
+    if (!params.with_fastq) {
         ID1(ch_samples)
         ch_fastq = ID1.out.data
         ch_versions = ch_versions.mix(ID1.out.versions)
