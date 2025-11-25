@@ -1,0 +1,39 @@
+{
+    "success": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "minimal",
+                            "alignment": "alignment",
+                            "condition": "condition"
+                        },
+                        "minimal.SJ.out.filter.tab:md5,05280f1d55c6d9bb0afeba9e5579dc4e"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,df85e02ccc5e5b0b50c9cdfd937ab1a9"
+                ],
+                "spl_junc_tab": [
+                    [
+                        {
+                            "id": "minimal",
+                            "alignment": "alignment",
+                            "condition": "condition"
+                        },
+                        "minimal.SJ.out.filter.tab:md5,05280f1d55c6d9bb0afeba9e5579dc4e"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,df85e02ccc5e5b0b50c9cdfd937ab1a9"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.3"
+        },
+        "timestamp": "2025-11-25T17:42:31.03582"
+    }
+}
