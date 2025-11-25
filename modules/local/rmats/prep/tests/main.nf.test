@@ -1,0 +1,32 @@
+nextflow_process {
+
+    name "Test Process RMATS_PREP"
+    script "../main.nf"
+    process "RMATS_PREP"
+
+    test("success") {
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id: 'condition', alignment: 'alignment' ],
+                    file(params.modules_testdata_base_path + "genomics/sarscov2/genome/genome.gtf", checkIfExists: true)
+                ])
+                input[1] = Channel.of([
+                    file(params.modules_testdata_base_path + "genomics/sarscov2/illumina/bam/test.paired_end.sorted.bam", checkIfExists: true)
+                ])
+                input[2] = "paired"
+                input[3] = "30"
+                input[4] = "fr-firststrand"
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+}
