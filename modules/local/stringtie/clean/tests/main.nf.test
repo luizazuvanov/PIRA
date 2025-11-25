@@ -4,14 +4,14 @@ nextflow_process {
     script "modules/local/stringtie/clean/main.nf"
     process "STRINGTIE_CLEAN"
 
-    test("Should run without failures") {
+    test("success") {
 
         when {
             process {
                 """
                 input[0] = Channel.of([
                     [ id: 'gtf', alignment: 'alignment' ],
-                    [ file(params.modules_testdata_base_path + 'genomics/sarscov2/genome/genome.gtf', checkIfExists: true) ] // TODO: test
+                    [ file(params.modules_testdata_base_path + 'genomics/sarscov2/genome/genome.gtf', checkIfExists: true) ]
                 ])
                 """
             }

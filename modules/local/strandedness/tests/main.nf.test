@@ -4,7 +4,8 @@ nextflow_process {
     script "../main.nf"
     process "STRANDEDNESS"
 
-    test("should successfully run strandedness") {
+    test("success") {
+
         setup {
             run("RSEQC_INFEREXPERIMENT") {
                 script "../../../nf-core/rseqc/inferexperiment"
@@ -19,6 +20,7 @@ nextflow_process {
                 }
             }
         }
+
         when {
             process {
                 """
@@ -26,11 +28,11 @@ nextflow_process {
                 """
             }
         }
+
         then {
-            assertAll(
-                { assert process.success },
-                { assert snapshot(process.out).match() }
-            )
+            assert process.success
+            assert snapshot(process.out).match()
         }
+
     }
 }

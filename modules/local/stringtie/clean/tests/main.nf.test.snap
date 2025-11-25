@@ -1,4 +1,27 @@
 {
+    "success": {
+        "content": [
+            {
+                "0": [
+                    "genome.gtf.clean.gtf:md5,bc93a6d5d7b28e6403fbac62fbacf325"
+                ],
+                "1": [
+                    "versions.yml:md5,0a81720ee745e69a46baacd2bf26774d"
+                ],
+                "reference_clean": [
+                    "genome.gtf.clean.gtf:md5,bc93a6d5d7b28e6403fbac62fbacf325"
+                ],
+                "versions": [
+                    "versions.yml:md5,0a81720ee745e69a46baacd2bf26774d"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.3"
+        },
+        "timestamp": "2025-11-25T17:46:13.457011"
+    },
     "Should run without failures": {
         "content": [
             {

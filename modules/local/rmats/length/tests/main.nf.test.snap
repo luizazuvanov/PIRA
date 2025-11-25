@@ -1,0 +1,73 @@
+{
+    "success": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "condition",
+                            "alignment": "alignment"
+                        },
+                        "930616"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "condition",
+                            "alignment": "alignment"
+                        },
+                        "condition.stats.csv:md5,96099fcabf1878b76c66f0ff3ed86c95"
+                    ]
+                ],
+                "2": [
+                    [
+                        {
+                            "id": "condition",
+                            "alignment": "alignment"
+                        },
+                        "condition.merged.stats:md5,b422cf77c168cb9ad06a0bedff24976d"
+                    ]
+                ],
+                "3": [
+                    "versions.yml:md5,e3a460bb48a8f31d432a6c3274a362af"
+                ],
+                "average": [
+                    [
+                        {
+                            "id": "condition",
+                            "alignment": "alignment"
+                        },
+                        "condition.stats.csv:md5,96099fcabf1878b76c66f0ff3ed86c95"
+                    ]
+                ],
+                "merged": [
+                    [
+                        {
+                            "id": "condition",
+                            "alignment": "alignment"
+                        },
+                        "condition.merged.stats:md5,b422cf77c168cb9ad06a0bedff24976d"
+                    ]
+                ],
+                "stats": [
+                    [
+                        {
+                            "id": "condition",
+                            "alignment": "alignment"
+                        },
+                        "930616"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,e3a460bb48a8f31d432a6c3274a362af"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.3"
+        },
+        "timestamp": "2025-11-25T20:04:07.315927"
+    }
+}

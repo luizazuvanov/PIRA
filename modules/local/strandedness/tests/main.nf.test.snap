@@ -21,5 +21,28 @@
             "nextflow": "25.04.3"
         },
         "timestamp": "2025-11-25T16:52:57.575645"
+    },
+    "success": {
+        "content": [
+            {
+                "0": [
+                    "infer.csv:md5,d1d30a5bfad55191148e0e9c26b415b4"
+                ],
+                "1": [
+                    "versions.yml:md5,f98f244602bbc5c900aceccfa38a03d6"
+                ],
+                "infer": [
+                    "infer.csv:md5,d1d30a5bfad55191148e0e9c26b415b4"
+                ],
+                "versions": [
+                    "versions.yml:md5,f98f244602bbc5c900aceccfa38a03d6"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.3"
+        },
+        "timestamp": "2025-11-25T17:46:07.846075"
     }
 }
