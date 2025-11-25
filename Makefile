@@ -36,8 +36,8 @@ resume: ## Resume test
 		--download \
 		--outdir ./results
 
-.PHONY: test
-test: ## Run test
+.PHONY: run
+run: ## Run pipeline
 	@make clean
 	@make resume
 
@@ -54,3 +54,8 @@ debug: ## Run test with debug profile
 .PHONY: clean
 clean: ## Clean up
 	@rm -rf ./results ./logs/nextflow.log* ./work ./.nextflow
+
+.PHONY: test
+test: ## Run tests
+	@./bin/nf-test clean
+	@./bin/nf-test test

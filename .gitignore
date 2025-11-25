@@ -25,6 +25,9 @@ pipeline_info/
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
+.nf-test/
+bin/nf-test*
+
 ### macOS ###
 # General
 .DS_Store
