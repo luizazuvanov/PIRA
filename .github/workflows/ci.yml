@@ -54,4 +54,4 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Test
         run: |
-          ./bin/nf-test test --profile ci
+          ./bin/nf-test test --profile ci,docker
