@@ -1,0 +1,74 @@
+nextflow_process {
+
+    name "Test Process RMATS_POST"
+    script "../main.nf"
+    process "RMATS_POST"
+
+    test("sarscov2 - gtf - bam") {
+
+        setup {
+            run("RMATS_PREP", alias: "RMATS_PREP_1") {
+                script "../../prep"
+                process {
+                    """
+                    input[0] = Channel.of([
+                        [ id: 'condition_1', alignment: 'alignment' ],
+                        file(params.modules_testdata_base_path + "genomics/sarscov2/genome/genome.gtf", checkIfExists: true)
+                    ])
+                    input[1] = Channel.of([
+                        file(params.modules_testdata_base_path + "genomics/sarscov2/illumina/bam/test.paired_end.bam", checkIfExists: true)
+                    ])
+                    input[2] = "paired"
+                    input[3] = 30
+                    input[4] = "fr-firststrand"
+                    """
+                }
+            }
+
+            run("RMATS_PREP", alias: "RMATS_PREP_2") {
+                script "../../prep"
+                process {
+                    """
+                    input[0] = Channel.of([
+                        [ id: 'condition_2', alignment: 'alignment' ],
+                        file(params.modules_testdata_base_path + "genomics/sarscov2/genome/genome.gtf", checkIfExists: true)
+                    ])
+                    input[1] = Channel.of([
+                        file(params.modules_testdata_base_path + "genomics/sarscov2/illumina/bam/test.paired_end.sorted.bam", checkIfExists: true)
+                    ])
+                    input[2] = "paired"
+                    input[3] = 30
+                    input[4] = "fr-firststrand"
+                    """
+                }
+            }
+        }
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id: 'condition_1_vs_condition_2', alignment: 'alignment' ],
+                    file(params.modules_testdata_base_path + "genomics/sarscov2/genome/genome.gtf", checkIfExists: true)
+                ])
+                input[1] = Channel.of([
+                    file(params.modules_testdata_base_path + "genomics/sarscov2/illumina/bam/test.paired_end.bam", checkIfExists: true)
+                ])
+                input[2] = Channel.of([
+                    file(params.modules_testdata_base_path + "genomics/sarscov2/illumina/bam/test.paired_end.sorted.bam", checkIfExists: true)
+                ])
+                input[3] = RMATS_PREP_1.out.tmp.map { it -> it[1] }
+                input[4] = RMATS_PREP_2.out.tmp.map { it -> it[1] }
+                input[5] = 30
+                input[6] = 30
+                input[7] = ["paired", "paired"]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+}
