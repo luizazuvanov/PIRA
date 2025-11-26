@@ -2,8 +2,9 @@ include { RSEQC_INFEREXPERIMENT    } from '../../../modules/nf-core/rseqc/infere
 include { RSEQC_JUNCTIONANNOTATION } from '../../../modules/nf-core/rseqc/junctionannotation/main'
 include { RSEQC_JUNCTIONSATURATION } from '../../../modules/nf-core/rseqc/junctionsaturation/main'
 include { RSEQC_READDISTRIBUTION   } from '../../../modules/nf-core/rseqc/readdistribution/main'
+include { STRANDEDNESS             } from '../../../modules/local/strandedness/main'
 
-workflow ID5 {
+workflow ID5_RSEQC {
 
     take:
     ch_input
@@ -49,4 +50,33 @@ workflow ID5 {
     emit:
     data = ch_out
     versions = ch_versions
+}
+
+workflow ID5_STRANDEDNESS {
+    take:
+    ch_input
+
+    main:
+
+    // strandedness
+
+    STRANDEDNESS(
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.infer) }
+    )
+
+    ch_out = Channel.empty()
+    STRANDEDNESS.out.infer
+        .map { it -> file(it) }
+        .splitCsv( header: true, strip: true )
+        .set { ch_out }
+
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
+        .mix( STRANDEDNESS.out.versions )
+
+    emit:
+    data = ch_out
+    versions =  ch_versions
 }
