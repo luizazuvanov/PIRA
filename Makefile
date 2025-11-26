@@ -33,7 +33,6 @@ resume: ## Resume test
 		-stub-run \
 		-resume \
 		-with-dag ./results/pipeline_info/pipeline.mmd \
-		--download \
 		--outdir ./results
 
 .PHONY: run

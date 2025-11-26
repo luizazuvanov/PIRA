@@ -13,9 +13,8 @@ process RMATS_POST {
     path(b2)
     val(tmp_1)
     val(tmp_2)
-    val(length_1)
-    val(length_2)
     val(readTypes)
+    val(readLength)
 
     output:
     tuple val(meta), path("post/tmp/"), emit: tmp
@@ -42,9 +41,6 @@ process RMATS_POST {
     cp $tmp_1/*.rmats post/tmp/
     cp $tmp_2/*.rmats post/tmp/
 
-    # calculate average read length
-    readLength=\$(awk "BEGIN {print ($length_1 + $length_2) / 2}")
-
     rmats.py \\
         --task post \\
         --gtf $gtf \\
@@ -53,7 +49,7 @@ process RMATS_POST {
         --od post/out \\
         --tmp post/tmp \\
         -t $readType \\
-        --readLength \$readLength \\
+        --readLength $readLength \\
         --nthread $threads \\
         $args \\
         1> post/tmp/rmats.log

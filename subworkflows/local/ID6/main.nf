@@ -1,7 +1,6 @@
 include { STRINGTIE_STRINGTIE } from '../../../modules/nf-core/stringtie/stringtie/main'
 include { STRINGTIE_MERGE     } from '../../../modules/nf-core/stringtie/merge/main'
 include { STRINGTIE_CLEAN     } from '../../../modules/local/stringtie/clean/main'
-include { STRANDEDNESS        } from '../../../modules/local/strandedness/main'
 
 workflow ID6_CLEAN {
 
@@ -28,35 +27,6 @@ workflow ID6_CLEAN {
     emit:
     data = ch_out
     versions = ch_versions
-}
-
-workflow ID6_STRANDEDNESS {
-    take:
-    ch_input
-
-    main:
-
-    // strandedness
-
-    STRANDEDNESS(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.infer) }
-    )
-
-    ch_out = Channel.empty()
-    STRANDEDNESS.out.infer
-        .map { it -> file(it) }
-        .splitCsv( header: true, strip: true )
-        .set { ch_out }
-
-    // versions
-
-    ch_versions = Channel.empty()
-    ch_versions
-        .mix( STRANDEDNESS.out.versions )
-
-    emit:
-    data = ch_out
-    versions =  ch_versions
 }
 
 workflow ID6_STRINGTIE {

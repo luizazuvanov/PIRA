@@ -9,11 +9,12 @@ include { ID2                                     } from '../../subworkflows/loc
 include { ID3_NOVO                                } from '../../subworkflows/local/ID3/main'
 include { ID3_DENOVO                              } from '../../subworkflows/local/ID3/main'
 include { ID4_EXPERIMENT                          } from '../../subworkflows/local/ID4/main'
-include { ID5                                     } from '../../subworkflows/local/ID5/main'
+include { ID5_RSEQC                               } from '../../subworkflows/local/ID5/main'
+include { ID5_STRANDEDNESS                        } from '../../subworkflows/local/ID5/main'
 include { ID6_CLEAN                               } from '../../subworkflows/local/ID6/main'
-include { ID6_STRANDEDNESS                        } from '../../subworkflows/local/ID6/main'
 include { ID6_STRINGTIE                           } from '../../subworkflows/local/ID6/main'
 include { ID6_MERGE                               } from '../../subworkflows/local/ID6/main'
+include { ID7_RMATS_LENGTH                        } from '../../subworkflows/local/ID7/main'
 include { ID7_RMATS_PREP as ID7_RMATS_PREP_NOVO   } from '../../subworkflows/local/ID7/main'
 include { ID7_RMATS_POST as ID7_RMATS_POST_NOVO   } from '../../subworkflows/local/ID7/main'
 include { ID7_RMATS_PREP as ID7_RMATS_PREP_DENOVO } from '../../subworkflows/local/ID7/main'
@@ -30,7 +31,6 @@ include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore
 workflow PIRA {
 
     take:
-    // run, exp, cond
     ch_samples
     ch_index
     ch_bed
@@ -46,7 +46,7 @@ workflow PIRA {
     // ch_fastq = run, exp, cond, []fastq
     //
 
-    if (params.download) {
+    if (!params.with_fastq) {
         ID1(ch_samples)
         ch_fastq = ID1.out.data
         ch_versions = ch_versions.mix(ID1.out.versions)
@@ -107,17 +107,19 @@ workflow PIRA {
 
     //
     // SUBWORKFLOW: ID5
-    // ch_infer = exp, alignment, cond, infer
+    // ch_strandedness = exp, alignment, cond, sequencing, strandedness, alias
     //
 
-    ID5(
+    ID5_RSEQC(
         ch_bam
             .combine(ch_bed)
             .map {row, bed -> row + [bed: bed.bed] },
     )
+    ch_versions = ch_versions.mix(ID5_RSEQC.out.versions)
 
-    ch_infer = ID5.out.data
-    ch_versions = ch_versions.mix(ID5.out.versions)
+    ID5_STRANDEDNESS(ID5_RSEQC.out.data)
+    ch_strandedness = ID5_STRANDEDNESS.out.data
+    ch_versions = ch_versions.mix(ID5_STRANDEDNESS.out.versions)
 
     //
     // SUBWORKFLOW: ID6 CLEAN
@@ -127,15 +129,6 @@ workflow PIRA {
     ID6_CLEAN(ch_gtf)
     ch_gtf_clean = ID6_CLEAN.out.data
     ch_versions = ch_versions.mix(ID6_CLEAN.out.versions)
-
-    //
-    // SUBWORKFLOW: ID6 STRANDEDNESS
-    // ch_strandedness = exp, alignment, cond, sequencing, strandedness, alias
-    //
-
-    ID6_STRANDEDNESS(ch_infer)
-    ch_strandedness = ID6_STRANDEDNESS.out.data
-    ch_versions = ch_versions.mix(ID6_STRANDEDNESS.out.versions)
 
     //
     // SUBWORKFLOW: ID6 STRINGTIE
@@ -180,23 +173,21 @@ workflow PIRA {
     // SUBWORKFLOW: ID7
     //
 
-    // NOVO
+    ch_stats_by_align = group_stats_by_align(ch_stats)
 
-    ch_novo_stats = group_stats_by_cond_align(
-        ch_stats
-            .filter { it -> it.alignment == "novo" }
-            .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
+    ID7_RMATS_LENGTH(
+        ch_stats_by_align
     )
+
+    ch_length = ID7_RMATS_LENGTH.out.data
+    ch_versions = ch_versions.mix(ID7_RMATS_LENGTH.out.versions)
+
+    // NOVO
 
     // assumes alias, sequencing and strandedness are unique per condition and alignment
     ch_novo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "novo" }
-    )
-
-    ch_novo_pre = combine_by_cond(
-        ch_novo_stats,
-        ch_novo_strandedness
     )
 
     ch_novo_bam = group_bam_by_cond_align(
@@ -206,12 +197,18 @@ workflow PIRA {
     )
 
     ch_novo_pre = combine_by_cond(
-        ch_novo_pre,
+        ch_novo_strandedness,
         ch_novo_bam
     )
 
     ID7_RMATS_PREP_NOVO(
         ch_novo_pre
+            .combine(
+                ch_length
+                    .filter { it -> it.alignment == "novo" }
+                    .map { it -> [ length: it.length ] }
+            )
+            .map { row, length -> row + [length: length.length] }
             .combine(ch_gtf)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
@@ -231,21 +228,10 @@ workflow PIRA {
 
     // DENOVO
 
-    ch_denovo_stats = group_stats_by_cond_align(
-        ch_stats
-            .filter { it -> it.alignment == "denovo" }
-            .map { it -> [condition: it.condition, alignment: it.alignment, stats: it.stats] }
-    )
-
     // assumes alias, sequencing and strandedness are unique per condition and alignment
     ch_denovo_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
             .filter { it -> it.alignment == "denovo" }
-    )
-
-    ch_denovo_pre = combine_by_cond(
-        ch_denovo_stats,
-        ch_denovo_strandedness
     )
 
     ch_denovo_bam = group_bam_by_cond_align(
@@ -255,12 +241,18 @@ workflow PIRA {
     )
 
     ch_denovo_pre = combine_by_cond(
-        ch_denovo_pre,
+        ch_denovo_strandedness,
         ch_denovo_bam
     )
 
     ID7_RMATS_PREP_DENOVO(
         ch_denovo_pre
+            .combine(
+                ch_length
+                    .filter { it -> it.alignment == "denovo" }
+                    .map { it -> [ length: it.length ] }
+            )
+            .map { row, length -> row + [length: length.length] }
             .combine(ch_gtf_denovo)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
@@ -322,50 +314,25 @@ workflow group_gtf_by_align {
     ch_gtf_by_align // align, []gtf
 }
 
-workflow group_stats_by_cond_align {
+workflow group_stats_by_align {
 
     take:
-    ch_stats // [cond, align, stats, ...]
+    ch_stats // [align, stats, ...]
 
     main:
 
     ch_out = Channel.empty()
     ch_stats
-        .map { it -> tuple(it.condition, it) }
+        .map { it -> tuple(it.alignment, it) }
         .groupTuple()
         .map { __, its -> [
-            condition: its.collect { it.condition }.unique().first(),
             alignment: its.collect { it.alignment }.unique().first(),
             stats: its.collect { it.stats }.flatten()
         ] }
         .set { ch_out }
 
     emit:
-    ch_out // cond, align, []stats
-}
-
-workflow reduce_strandedness_by_cond_align {
-
-    take:
-    ch_strandedness // [cond, align, alias, strandedness, sequencing]
-
-    main:
-
-    ch_out = Channel.empty()
-    ch_strandedness
-        .map { it -> tuple(it.condition, it) }
-        .groupTuple()
-        .map { __, its -> [
-            condition: its.collect { it.condition }.unique().first(),
-            alignment: its.collect { it.alignment }.unique().first(),
-            alias: its.collect { it.alias }.first(),
-            sequencing: its.collect { it.sequencing }.first(),
-            strandedness: its.collect { it.strandedness }.first()
-        ] }
-        .set { ch_out }
-
-    emit:
-    ch_out // cond, align, alias, strandedness, sequencing
+    ch_out // align, []stats
 }
 
 workflow group_bam_by_cond_align {
@@ -460,8 +427,7 @@ workflow compute_pairs_by_cond {
                         bam_2: cond_2.bam,
                         tmp_1: cond_1.tmp,
                         tmp_2: cond_2.tmp,
-                        length_1: cond_1.length,
-                        length_2: cond_2.length,
+                        length: cond_1.length,
                         alignment: cond_1.alignment, // both have same alignment
                         sequencing: [cond_1.sequencing, cond_2.sequencing],
                     ]
@@ -474,6 +440,30 @@ workflow compute_pairs_by_cond {
 
     emit:
     ch_out // [cond1_vs_cond2, ...]
+}
+
+workflow reduce_strandedness_by_cond_align {
+
+    take:
+    ch_strandedness // [cond, align, alias, strandedness, sequencing]
+
+    main:
+
+    ch_out = Channel.empty()
+    ch_strandedness
+        .map { it -> tuple(it.condition, it) }
+        .groupTuple()
+        .map { __, its -> [
+            condition: its.collect { it.condition }.unique().first(),
+            alignment: its.collect { it.alignment }.unique().first(),
+            alias: its.collect { it.alias }.first(),
+            sequencing: its.collect { it.sequencing }.first(),
+            strandedness: its.collect { it.strandedness }.first()
+        ] }
+        .set { ch_out }
+
+    emit:
+    ch_out // cond, align, alias, strandedness, sequencing
 }
 
 /*
