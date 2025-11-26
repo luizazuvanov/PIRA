@@ -19,7 +19,7 @@ process BED {
 
     script:
     def args   = task.ext.args   ?: ''
-    def prefix = task.ext.prefix ?: "${gtf.baseName}"
+    def prefix = task.ext.prefix ?: "$gtf.baseName"
 
     """
     cat $gtf | gtf2bed $args > "$prefix".bed
@@ -31,7 +31,7 @@ process BED {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${gtf.baseName}"
+    def prefix = task.ext.prefix ?: "$gtf.baseName"
     """
     touch "$prefix".bed
 

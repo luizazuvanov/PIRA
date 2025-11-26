@@ -6,9 +6,11 @@
 
 include { ID1                                     } from '../../subworkflows/local/ID1/main'
 include { ID2                                     } from '../../subworkflows/local/ID2/main'
+include { ID3_INDEX                               } from '../../subworkflows/local/ID3/main'
 include { ID3_NOVO                                } from '../../subworkflows/local/ID3/main'
 include { ID3_DENOVO                              } from '../../subworkflows/local/ID3/main'
 include { ID4_EXPERIMENT                          } from '../../subworkflows/local/ID4/main'
+include { ID5_BED                                 } from '../../subworkflows/local/ID5/main'
 include { ID5_RSEQC                               } from '../../subworkflows/local/ID5/main'
 include { ID5_STRANDEDNESS                        } from '../../subworkflows/local/ID5/main'
 include { ID6_CLEAN                               } from '../../subworkflows/local/ID6/main'
@@ -32,8 +34,7 @@ workflow PIRA {
 
     take:
     ch_samples
-    ch_index
-    ch_bed
+    ch_fasta
     ch_gtf
 
     main:
@@ -67,6 +68,10 @@ workflow PIRA {
     // SUBWORKFLOW: ID3
     // ch_bam = exp, alignment, cond, bam
     //
+
+    ID3_INDEX(ch_fasta, ch_gtf)
+    ch_index = ID3_INDEX.out.data
+    ch_versions = ch_versions.mix(ID3_INDEX.out.versions)
 
     ID3_NOVO(
         ch_fastp
@@ -109,6 +114,10 @@ workflow PIRA {
     // SUBWORKFLOW: ID5
     // ch_strandedness = exp, alignment, cond, sequencing, strandedness, alias
     //
+
+    ID5_BED(ch_gtf)
+    ch_bed = ID5_BED.out.data
+    ch_versions = ch_versions.mix(ID5_BED.out.versions)
 
     ID5_RSEQC(
         ch_bam
