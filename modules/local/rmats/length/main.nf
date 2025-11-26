@@ -29,9 +29,9 @@ process RMATS_LENGTH {
         grep "^RL" \$filename >> "$prefix".merged.stats
     done
 
-    # compute the average read length, truncated to integer
+    # compute the most common read length, truncated to integer
     touch "$prefix".stats.csv
-    LENGTH=\$(grep "^RL" "$prefix".merged.stats | awk '{sum += \$3} END {printf "%.0f\\n", sum/NR}')
+    LENGTH=\$(grep "^RL" "$prefix".merged.stats | sort -nr -k3,3 | head -1 | awk '{print \$2}')
     echo -e "length" >> "$prefix".stats.csv
     echo -e \$LENGTH >> "$prefix".stats.csv
 
