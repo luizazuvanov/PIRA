@@ -9,7 +9,6 @@ config:
 flowchart TD
 
     A@{ shape: start }
-    B@{ shape: start }
     C@{ shape: stop }
 
     F1@{ shape: win-pane, label: "fastq" }
@@ -27,6 +26,7 @@ flowchart TD
     F14@{ shape: win-pane, label: "gtf" }
 
     M1@{ shape: circle, label: "group" }
+    M2@{ shape: diamond, label: "with fastq" }
 
     ID1A(PREFETCH)
     ID1B(FASTERQDUMP)
@@ -38,14 +38,15 @@ flowchart TD
     ID4B(SAMTOOLS INDEX)
     ID5A(RSEQC INFEREXPERIMENT)
     ID5B@{ shape: procs, label: "RSEQC \n JUNCTIONANNOTATION \n JUNCTIONSATURATION \n READDISTRIBUTION"}
-    ID6A(STRAND*)
+    ID5C(STRAND*)
     ID6B(STRINGTIE CLEAN*)
     ID6C(STRINGTIE)
     ID6D(STRINGTIE MERGE)
-    ID7A(STRAND*)
-    ID7B(RMATS DENOVO)
-    ID7C(STRAND*)
-    ID7D(RMATS)
+    ID7A(RMATS PREP)
+    ID7B(RMATS POST)
+    ID7C(RMATS PREP)
+    ID7D(RMATS POST)
+    ID7E(LENGTH*)
 
     subgraph INPUT
         F1
@@ -84,27 +85,29 @@ flowchart TD
 
     subgraph QUANTIFY
         subgraph ID5
-            ID5A
+            ID5A --> |infer| ID5C
             ID5B
         end
         subgraph ID6
-            ID6A --> |strandedness| ID6C
             ID6B --> F12 --> ID6C
             ID6C --> F13 --> ID6D
         end
     end
 
     subgraph SPLICING
+        ID7E --> |length| ID7A
+        ID7E --> |length| ID7C
         subgraph ID7_DENOVO
-            ID7A --> |strandedness| ID7B
+            ID7A --> |rmats| ID7B
         end
         subgraph ID7
-            ID7C --> |strandedness| ID7D
+            ID7C --> |rmats| ID7D
         end
     end
 
-    B  --> F1
-    A  -->|run| ID1A
+    A --> M2
+    M2 --> F1
+    M2 -->|no| ID1A
     F1 --> ID2A
     F2 --> ID6B
     F2 --> ID6D
@@ -121,15 +124,16 @@ flowchart TD
     F10 --> ID4B
     F10 --> ID5A
     F10 --> ID5B
+    F10 --> |bam| ID7A
+    F10 --> |bam denovo| ID7C
     F9 --> ID6C
-    ID5A --> |infer denovo| ID6A
-    ID5A --> |infer| ID7C
-    ID5A --> |infer denovo| ID7A
+    ID5C --> |strandedness| ID6C
     ID6D --> F14 --> ID7B
+    ID5C --> |strandedness| ID7A
+    ID5C --> |strandedness| ID7C
     ID7B --> C
     ID7D --> C
-    ID4A --> |stats denovo| ID7B
-    ID4A --> |stats| ID7D
+    ID4A --> |stats| ID7E
 
     style F1 fill:#D2E0D3
     style F2 fill:#D2E0D3
