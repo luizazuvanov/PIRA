@@ -32,7 +32,7 @@
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
-                    "pattern": "^\\S+\\.fasta$",
+                    "pattern": "^\\S+\\.(fasta|fa|fna)$",
                     "description": "TODO: explain what this field is for",
                     "fa_icon": "fas fa-file"
                 },

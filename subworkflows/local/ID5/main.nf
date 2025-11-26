@@ -88,7 +88,7 @@ workflow ID5_BED {
     main:
 
     BED(
-        ch_gtf.map { it -> tuple([ id: "bed" ], it.gtf) },
+        ch_gtf.map { it -> tuple([ id: "bed" ], it.gtf) }
     )
 
     // clean

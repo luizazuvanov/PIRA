@@ -12,7 +12,7 @@ workflow ID3_INDEX {
 
     STAR_GENOMEGENERATE(
         ch_fasta.map { it -> tuple([ id: "index" ], it.fasta) },
-        ch_gtf.map { it -> tuple([ id: "index" ], it.gtf) },
+        ch_gtf.map { it -> tuple([ id: "index" ], it.gtf) }
     )
 
     // clean

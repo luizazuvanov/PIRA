@@ -44,12 +44,12 @@ workflow NFCORE_PIRA {
 
     Channel
         .fromPath(params.fasta, type: "file")
-        .map { it: [fasta: it]}
+        .map { it -> [fasta: it]}
         .set { ch_fasta }
 
     Channel
         .fromPath(params.gtf, type: "file")
-        .map { it: [gtf: it]}
+        .map { it -> [gtf: it]}
         .set { ch_gtf }
 
     //
