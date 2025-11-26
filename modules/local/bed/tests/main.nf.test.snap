@@ -1,0 +1,35 @@
+{
+    "homo sapiens": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "bed"
+                        },
+                        "genome.bed:md5,adf1eccb7f7c03d218881fb17aa7fb46"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,1cce445db022bde3af50643a4049864b"
+                ],
+                "bed": [
+                    [
+                        {
+                            "id": "bed"
+                        },
+                        "genome.bed:md5,adf1eccb7f7c03d218881fb17aa7fb46"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,1cce445db022bde3af50643a4049864b"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.3"
+        },
+        "timestamp": "2025-11-26T22:57:53.450926"
+    }
+}
