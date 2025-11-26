@@ -1,0 +1,27 @@
+nextflow_process {
+
+    name "Test Process BED"
+    script "../main.nf"
+    process "BED"
+
+    test("homo sapiens") {
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id: 'bed' ],
+                    file(params.modules_testdata_base_path + 'genomics/homo_sapiens/genome/genome.gtf', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}
