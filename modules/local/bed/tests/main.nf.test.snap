@@ -7,22 +7,22 @@
                         {
                             "id": "bed"
                         },
-                        "genome.bed:md5,adf1eccb7f7c03d218881fb17aa7fb46"
+                        "genome.bed:md5,95522f3a7cd1d297a367abcc7432e1bf"
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,1cce445db022bde3af50643a4049864b"
+                    "versions.yml:md5,d982f607d32e7a026dfafa9716ef7487"
                 ],
                 "bed": [
                     [
                         {
                             "id": "bed"
                         },
-                        "genome.bed:md5,adf1eccb7f7c03d218881fb17aa7fb46"
+                        "genome.bed:md5,95522f3a7cd1d297a367abcc7432e1bf"
                     ]
                 ],
                 "versions": [
-                    "versions.yml:md5,1cce445db022bde3af50643a4049864b"
+                    "versions.yml:md5,d982f607d32e7a026dfafa9716ef7487"
                 ]
             }
         ],
@@ -30,6 +30,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.04.3"
         },
-        "timestamp": "2025-11-26T22:57:53.450926"
+        "timestamp": "2025-11-28T09:52:07.032295"
     }
 }
