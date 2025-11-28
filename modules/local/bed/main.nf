@@ -4,8 +4,8 @@ process BED {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bedops:2.4.41--h4ac6f70_2':
-        'biocontainers/bedops:2.4.41--h4ac6f70_2' }"
+        'oras://community.wave.seqera.io/library/ucsc-genepredtobed_ucsc-gtftogenepred:482--c2c4d1698fae524c':
+        'community.wave.seqera.io/library/ucsc-genepredtobed_ucsc-gtftogenepred:482--d40a6ae10bc14b92' }"
 
     input:
     tuple val(meta), path(gtf)
@@ -22,7 +22,8 @@ process BED {
     def prefix = task.ext.prefix ?: "$gtf.baseName"
 
     """
-    cat $gtf | gtf2bed $args > "$prefix".bed
+    gtfToGenePred -genePredExt $gtf "$prefix".genepred
+    genePredToBed "$prefix".genepred "$prefix".bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
