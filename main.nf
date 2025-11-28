@@ -32,8 +32,7 @@ workflow NFCORE_PIRA {
     main:
 
     ch_samples = Channel.empty()
-    ch_index = Channel.empty()
-    ch_bed = Channel.empty()
+    ch_fasta = Channel.empty()
     ch_gtf = Channel.empty()
 
     Channel
@@ -44,24 +43,19 @@ workflow NFCORE_PIRA {
         .set { ch_samples }
 
     Channel
-        .fromPath(params.index, type: "dir")
-        .map { it: [index: it]}
-        .set { ch_index }
-
-    Channel
-        .fromPath(params.bed, type: "file")
-        .map { it: [bed: it]}
-        .set { ch_bed }
+        .fromPath(params.fasta, type: "file")
+        .map { it -> [fasta: it]}
+        .set { ch_fasta }
 
     Channel
         .fromPath(params.gtf, type: "file")
-        .map { it: [gtf: it]}
+        .map { it -> [gtf: it]}
         .set { ch_gtf }
 
     //
     // WORKFLOW: Run workflows/pira pipeline
     //
-    PIRA (ch_samples, ch_index, ch_bed, ch_gtf)
+    PIRA (ch_samples, ch_fasta, ch_gtf)
 
     emit:
     multiqc_report = PIRA.out.multiqc_report
