@@ -22,7 +22,7 @@ process BED {
     def prefix = task.ext.prefix ?: "$gtf.baseName"
 
     """
-    gtfToGenePred -genePredExt $gtf "$prefix".genepred
+    gtfToGenePred -ignoreGroupsWithoutExons -genePredExt $gtf "$prefix".genepred
     genePredToBed "$prefix".genepred "$prefix".bed
 
     cat <<-END_VERSIONS > versions.yml
