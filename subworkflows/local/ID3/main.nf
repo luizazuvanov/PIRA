@@ -34,7 +34,7 @@ workflow ID3_INDEX {
 
 }
 
-workflow ID3_NOVO {
+workflow ID3_BASELINE {
 
     take:
     ch_input

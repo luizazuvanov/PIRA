@@ -4,23 +4,23 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID1                                     } from '../../subworkflows/local/ID1/main'
-include { ID2                                     } from '../../subworkflows/local/ID2/main'
-include { ID3_INDEX                               } from '../../subworkflows/local/ID3/main'
-include { ID3_NOVO                                } from '../../subworkflows/local/ID3/main'
-include { ID3_DENOVO                              } from '../../subworkflows/local/ID3/main'
-include { ID4_EXPERIMENT                          } from '../../subworkflows/local/ID4/main'
-include { ID5_BED                                 } from '../../subworkflows/local/ID5/main'
-include { ID5_RSEQC                               } from '../../subworkflows/local/ID5/main'
-include { ID5_STRANDEDNESS                        } from '../../subworkflows/local/ID5/main'
-include { ID6_CLEAN                               } from '../../subworkflows/local/ID6/main'
-include { ID6_STRINGTIE                           } from '../../subworkflows/local/ID6/main'
-include { ID6_MERGE                               } from '../../subworkflows/local/ID6/main'
-include { ID7_RMATS_LENGTH                        } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_PREP as ID7_RMATS_PREP_NOVO   } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_POST as ID7_RMATS_POST_NOVO   } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_PREP as ID7_RMATS_PREP_DENOVO } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_POST as ID7_RMATS_POST_DENOVO } from '../../subworkflows/local/ID7/main'
+include { ID1                                       } from '../../subworkflows/local/ID1/main'
+include { ID2                                       } from '../../subworkflows/local/ID2/main'
+include { ID3_INDEX                                 } from '../../subworkflows/local/ID3/main'
+include { ID3_BASELINE                              } from '../../subworkflows/local/ID3/main'
+include { ID3_DENOVO                                } from '../../subworkflows/local/ID3/main'
+include { ID4_EXPERIMENT                            } from '../../subworkflows/local/ID4/main'
+include { ID5_BED                                   } from '../../subworkflows/local/ID5/main'
+include { ID5_RSEQC                                 } from '../../subworkflows/local/ID5/main'
+include { ID5_STRANDEDNESS                          } from '../../subworkflows/local/ID5/main'
+include { ID6_CLEAN                                 } from '../../subworkflows/local/ID6/main'
+include { ID6_STRINGTIE                             } from '../../subworkflows/local/ID6/main'
+include { ID6_MERGE                                 } from '../../subworkflows/local/ID6/main'
+include { ID7_RMATS_LENGTH                          } from '../../subworkflows/local/ID7/main'
+include { ID7_RMATS_PREP as ID7_RMATS_PREP_BASELINE } from '../../subworkflows/local/ID7/main'
+include { ID7_RMATS_POST as ID7_RMATS_POST_BASELINE } from '../../subworkflows/local/ID7/main'
+include { ID7_RMATS_PREP as ID7_RMATS_PREP_DENOVO   } from '../../subworkflows/local/ID7/main'
+include { ID7_RMATS_POST as ID7_RMATS_POST_DENOVO   } from '../../subworkflows/local/ID7/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -73,22 +73,22 @@ workflow PIRA {
     ch_index = ID3_INDEX.out.data
     ch_versions = ch_versions.mix(ID3_INDEX.out.versions)
 
-    ID3_NOVO(
+    ID3_BASELINE(
         ch_fastp
             .combine(ch_index)
-            .map {row, index -> row + [index: index.index, alignment: "novo"] },
+            .map {row, index -> row + [index: index.index, alignment: "baseline"] },
     )
 
-    ch_novo = ID3_NOVO.out.data
-    ch_versions = ch_versions.mix(ID3_NOVO.out.versions)
+    ch_baseline = ID3_BASELINE.out.data
+    ch_versions = ch_versions.mix(ID3_BASELINE.out.versions)
 
-    ch_novo_by_exp = join_by_exp(
+    ch_baseline_by_exp = join_by_exp(
         ch_fastp,
-        ch_novo
+        ch_baseline
     )
 
     ID3_DENOVO(
-        ch_novo_by_exp
+        ch_baseline_by_exp
             .combine(ch_index)
             .map {row, index -> row + [index: index.index, alignment: "denovo"] },
     )
@@ -97,7 +97,7 @@ workflow PIRA {
     ch_versions = ch_versions.mix(ID3_DENOVO.out.versions)
 
     ch_bam = Channel.empty()
-    ch_novo
+    ch_baseline
         .mix(ch_denovo)
         .map { it -> [experiment: it.experiment, alignment: it.alignment, condition: it.condition, bam: it.bam] }
         .set { ch_bam }
@@ -194,46 +194,46 @@ workflow PIRA {
     // NOVO
 
     // assumes alias, sequencing and strandedness are unique per condition and alignment
-    ch_novo_strandedness = reduce_strandedness_by_cond_align(
+    ch_baseline_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
-            .filter { it -> it.alignment == "novo" }
+            .filter { it -> it.alignment == "baseline" }
     )
 
-    ch_novo_bam = group_bam_by_cond_align(
+    ch_baseline_bam = group_bam_by_cond_align(
         ch_bam
-            .filter { it -> it.alignment == "novo" }
+            .filter { it -> it.alignment == "baseline" }
             .map { it -> [condition: it.condition, alignment: it.alignment, bam: it.bam] }
     )
 
-    ch_novo_pre = combine_by_cond(
-        ch_novo_strandedness,
-        ch_novo_bam
+    ch_baseline_pre = combine_by_cond(
+        ch_baseline_strandedness,
+        ch_baseline_bam
     )
 
-    ID7_RMATS_PREP_NOVO(
-        ch_novo_pre
+    ID7_RMATS_PREP_BASELINE(
+        ch_baseline_pre
             .combine(
                 ch_length
-                    .filter { it -> it.alignment == "novo" }
+                    .filter { it -> it.alignment == "baseline" }
                     .map { it -> [ length: it.length ] }
             )
             .map { row, length -> row + [length: length.length] }
             .combine(ch_gtf)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
-    ch_novo_rmats_prep = ID7_RMATS_PREP_NOVO.out.data
-    ch_versions = ch_versions.mix(ID7_RMATS_PREP_NOVO.out.versions)
+    ch_baseline_rmats_prep = ID7_RMATS_PREP_BASELINE.out.data
+    ch_versions = ch_versions.mix(ID7_RMATS_PREP_BASELINE.out.versions)
 
-    ch_novo_rmats_post = compute_pairs_by_cond(
-        ch_novo_rmats_prep
+    ch_baseline_rmats_post = compute_pairs_by_cond(
+        ch_baseline_rmats_prep
     )
 
-    ID7_RMATS_POST_NOVO(
-        ch_novo_rmats_post
+    ID7_RMATS_POST_BASELINE(
+        ch_baseline_rmats_post
             .combine(ch_gtf)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
-    ch_versions = ch_versions.mix(ID7_RMATS_POST_NOVO.out.versions)
+    ch_versions = ch_versions.mix(ID7_RMATS_POST_BASELINE.out.versions)
 
     // DENOVO
 
