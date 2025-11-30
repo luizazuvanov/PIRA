@@ -14,7 +14,7 @@ workflow ID6_CLEAN {
     )
 
     ch_out = Channel.empty()
-    STRINGTIE_CLEAN.out.reference_clean
+    STRINGTIE_CLEAN.out.gtf_clean
         .map { it -> [reference: it] }
         .set { ch_out }
 
