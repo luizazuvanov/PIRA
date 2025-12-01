@@ -192,7 +192,7 @@ workflow PIRA {
     ch_length = SPLICING_LENGTH.out.data
     ch_versions = ch_versions.mix(SPLICING_LENGTH.out.versions)
 
-    // NOVO
+    // BASELINE
 
     // assumes alias, sequencing and strandedness are unique per condition and alignment
     ch_baseline_strandedness = reduce_strandedness_by_cond_align(

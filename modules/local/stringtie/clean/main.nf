@@ -15,8 +15,6 @@ process STRINGTIE_CLEAN {
     path("versions.yml") , emit: versions
 
     script:
-    def prefix = task.ext.prefix ?: "$gtf.baseName"
-
     """
     awk -F"\t" '\$3 != "gene"' "$gtf" > "$gtf".clean.gtf
 
@@ -27,8 +25,6 @@ process STRINGTIE_CLEAN {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "$gtf.baseName"
-
     """
     touch "$gtf".clean.gtf
 
