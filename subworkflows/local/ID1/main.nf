@@ -2,7 +2,7 @@ include { SRATOOLS_PREFETCH           } from '../../../modules/nf-core/sratools/
 include { SRATOOLS_FASTERQDUMP        } from '../../../modules/nf-core/sratools/fasterqdump/main'
 include { CUSTOM_SRATOOLSNCBISETTINGS } from '../../../modules/nf-core/custom/sratoolsncbisettings/main'
 
-workflow ID1 {
+workflow SAMPLES {
 
     take:
     ch_input

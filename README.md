@@ -78,7 +78,7 @@ For more details about the output files and reports, please refer to the
 
 ## Credits
 
-nf-core/pira was originally written by Andre Perez.
+nf-core/pira was originally written by Luíza Zuvanov and Andre Perez.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 

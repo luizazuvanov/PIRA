@@ -1,4 +1,4 @@
-process RMATS_PREP {
+process RMATS_PRE {
     tag "$meta.id"
     label 'process_medium'
 

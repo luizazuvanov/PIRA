@@ -1,5 +1,5 @@
 process STRINGTIE_CLEAN {
-    tag "$meta.id"
+    tag "$gtf"
     label 'process_nano'
 
     conda "conda-forge::gawk=5.3.1"
@@ -8,16 +8,15 @@ process STRINGTIE_CLEAN {
         'biocontainers/gawk:5.3.1' }"
 
     input:
-    tuple val(meta), path(reference)
+    tuple val(meta), path(gtf)
 
     output:
-    path('*.gtf'), emit: reference_clean
+    path('*.gtf'), emit: gtf_clean
     path("versions.yml") , emit: versions
 
     script:
-
     """
-    awk -F"\t" '\$3 != "gene"' "$reference" > "$reference".clean.gtf
+    awk -F"\t" '\$3 != "gene"' "$gtf" > "$gtf".clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -27,7 +26,7 @@ process STRINGTIE_CLEAN {
 
     stub:
     """
-    touch "$reference".clean.gtf
+    touch "$gtf".clean.gtf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

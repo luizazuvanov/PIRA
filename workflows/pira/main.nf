@@ -4,23 +4,23 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ID1                                     } from '../../subworkflows/local/ID1/main'
-include { ID2                                     } from '../../subworkflows/local/ID2/main'
-include { ID3_INDEX                               } from '../../subworkflows/local/ID3/main'
-include { ID3_NOVO                                } from '../../subworkflows/local/ID3/main'
-include { ID3_DENOVO                              } from '../../subworkflows/local/ID3/main'
-include { ID4_EXPERIMENT                          } from '../../subworkflows/local/ID4/main'
-include { ID5_BED                                 } from '../../subworkflows/local/ID5/main'
-include { ID5_RSEQC                               } from '../../subworkflows/local/ID5/main'
-include { ID5_STRANDEDNESS                        } from '../../subworkflows/local/ID5/main'
-include { ID6_CLEAN                               } from '../../subworkflows/local/ID6/main'
-include { ID6_STRINGTIE                           } from '../../subworkflows/local/ID6/main'
-include { ID6_MERGE                               } from '../../subworkflows/local/ID6/main'
-include { ID7_RMATS_LENGTH                        } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_PREP as ID7_RMATS_PREP_NOVO   } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_POST as ID7_RMATS_POST_NOVO   } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_PREP as ID7_RMATS_PREP_DENOVO } from '../../subworkflows/local/ID7/main'
-include { ID7_RMATS_POST as ID7_RMATS_POST_DENOVO } from '../../subworkflows/local/ID7/main'
+
+include { GENOME_BED                            } from '../../subworkflows/local/ID0/main'
+include { GENOME_INDEX                          } from '../../subworkflows/local/ID0/main'
+include { SAMPLES                               } from '../../subworkflows/local/ID1/main'
+include { CTRL1                                 } from '../../subworkflows/local/ID2/main'
+include { ALIGNMENT_BASELINE                    } from '../../subworkflows/local/ID3/main'
+include { ALIGNMENT_DENOVO                      } from '../../subworkflows/local/ID3/main'
+include { CTRL2                                 } from '../../subworkflows/local/ID4/main'
+include { CTRL3                                 } from '../../subworkflows/local/ID5/main'
+include { ASSEMBLY_PRE                          } from '../../subworkflows/local/ID6/main'
+include { ASSEMBLY_TRANSCRIPT                   } from '../../subworkflows/local/ID6/main'
+include { ASSEMBLY_MERGE                        } from '../../subworkflows/local/ID6/main'
+include { SPLICING_LENGTH                       } from '../../subworkflows/local/ID7/main'
+include { SPLICING_PRE as SPLICING_PRE_BASELINE } from '../../subworkflows/local/ID7/main'
+include { SPLICING_POS as SPLICING_POS_BASELINE } from '../../subworkflows/local/ID7/main'
+include { SPLICING_PRE as SPLICING_PRE_DENOVO   } from '../../subworkflows/local/ID7/main'
+include { SPLICING_POS as SPLICING_POS_DENOVO   } from '../../subworkflows/local/ID7/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -43,104 +43,105 @@ workflow PIRA {
     ch_multiqc_files = Channel.empty()
 
     //
-    // SUBWORKFLOW: ID1
+    // SUBWORKFLOW: GENOME
+    //
+
+    GENOME_BED(ch_gtf)
+    ch_bed = GENOME_BED.out.data
+    ch_versions = ch_versions.mix(GENOME_BED.out.versions)
+
+    GENOME_INDEX(ch_fasta, ch_gtf)
+    ch_index = GENOME_INDEX.out.data
+    ch_versions = ch_versions.mix(GENOME_INDEX.out.versions)
+
+    //
+    // SUBWORKFLOW: SAMPLES
     // ch_fastq = run, exp, cond, []fastq
     //
 
     if (!params.with_fastq) {
-        ID1(ch_samples)
-        ch_fastq = ID1.out.data
-        ch_versions = ch_versions.mix(ID1.out.versions)
+        SAMPLES(ch_samples)
+        ch_fastq = SAMPLES.out.data
+        ch_versions = ch_versions.mix(SAMPLES.out.versions)
     } else {
         ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] }
     }
 
     //
-    // SUBWORKFLOW: ID2
+    // SUBWORKFLOW: CTRL1
     // ch_fastp = run, exp, cond, []fastp
     //
 
-    ID2(ch_fastq)
-    ch_fastp = ID2.out.data
-    ch_versions = ch_versions.mix(ID2.out.versions)
+    CTRL1(ch_fastq)
+    ch_fastp = CTRL1.out.data
+    ch_versions = ch_versions.mix(CTRL1.out.versions)
 
     //
-    // SUBWORKFLOW: ID3
+    // SUBWORKFLOW: ALIGNMENT
     // ch_bam = exp, alignment, cond, bam
     //
 
-    ID3_INDEX(ch_fasta, ch_gtf)
-    ch_index = ID3_INDEX.out.data
-    ch_versions = ch_versions.mix(ID3_INDEX.out.versions)
-
-    ID3_NOVO(
+    ALIGNMENT_BASELINE(
         ch_fastp
             .combine(ch_index)
-            .map {row, index -> row + [index: index.index, alignment: "novo"] },
+            .map {row, index -> row + [index: index.index, alignment: "baseline"] },
     )
 
-    ch_novo = ID3_NOVO.out.data
-    ch_versions = ch_versions.mix(ID3_NOVO.out.versions)
+    ch_baseline = ALIGNMENT_BASELINE.out.data
+    ch_versions = ch_versions.mix(ALIGNMENT_BASELINE.out.versions)
 
-    ch_novo_by_exp = join_by_exp(
+    ch_baseline_by_exp = join_by_exp(
         ch_fastp,
-        ch_novo
+        ch_baseline
     )
 
-    ID3_DENOVO(
-        ch_novo_by_exp
+    ALIGNMENT_DENOVO(
+        ch_baseline_by_exp
             .combine(ch_index)
             .map {row, index -> row + [index: index.index, alignment: "denovo"] },
     )
 
-    ch_denovo = ID3_DENOVO.out.data
-    ch_versions = ch_versions.mix(ID3_DENOVO.out.versions)
+    ch_denovo = ALIGNMENT_DENOVO.out.data
+    ch_versions = ch_versions.mix(ALIGNMENT_DENOVO.out.versions)
 
     ch_bam = Channel.empty()
-    ch_novo
+    ch_baseline
         .mix(ch_denovo)
         .map { it -> [experiment: it.experiment, alignment: it.alignment, condition: it.condition, bam: it.bam] }
         .set { ch_bam }
 
     //
-    // SUBWORKFLOW: ID4
+    // SUBWORKFLOW: CTRL2
     // ch_stats = exp, alignment, cond, stats
     //
 
-    ID4_EXPERIMENT(ch_bam)
-    ch_stats = ID4_EXPERIMENT.out.data
+    CTRL2(ch_bam)
+    ch_stats = CTRL2.out.data
 
     //
-    // SUBWORKFLOW: ID5
+    // SUBWORKFLOW: CTRL3
     // ch_strandedness = exp, alignment, cond, sequencing, strandedness, alias
     //
 
-    ID5_BED(ch_gtf)
-    ch_bed = ID5_BED.out.data
-    ch_versions = ch_versions.mix(ID5_BED.out.versions)
-
-    ID5_RSEQC(
+    CTRL3(
         ch_bam
             .combine(ch_bed)
             .map {row, bed -> row + [bed: bed.bed] },
     )
-    ch_versions = ch_versions.mix(ID5_RSEQC.out.versions)
-
-    ID5_STRANDEDNESS(ID5_RSEQC.out.data)
-    ch_strandedness = ID5_STRANDEDNESS.out.data
-    ch_versions = ch_versions.mix(ID5_STRANDEDNESS.out.versions)
+    ch_strandedness = CTRL3.out.data
+    ch_versions = ch_versions.mix(CTRL3.out.versions)
 
     //
-    // SUBWORKFLOW: ID6 CLEAN
+    // SUBWORKFLOW: ASSEMBLY CLEAN
     // ch_gtf_clean = reference
     //
 
-    ID6_CLEAN(ch_gtf)
-    ch_gtf_clean = ID6_CLEAN.out.data
-    ch_versions = ch_versions.mix(ID6_CLEAN.out.versions)
+    ASSEMBLY_PRE(ch_gtf)
+    ch_gtf_clean = ASSEMBLY_PRE.out.data
+    ch_versions = ch_versions.mix(ASSEMBLY_PRE.out.versions)
 
     //
-    // SUBWORKFLOW: ID6 STRINGTIE
+    // SUBWORKFLOW: ASSEMBLY_TRANSCRIPT
     // ch_denovo = exp, alignment, cond, gtf
     //
 
@@ -152,88 +153,88 @@ workflow PIRA {
             .map { it -> [experiment: it.experiment, strandedness: it.strandedness]}
     )
 
-    ID6_STRINGTIE(
+    ASSEMBLY_TRANSCRIPT(
         ch_denovo
             .combine(ch_gtf_clean)
             .map {row, gtf -> row + [reference: gtf.reference] },
     )
 
-    ch_versions = ch_versions.mix(ID6_STRINGTIE.out.versions)
+    ch_versions = ch_versions.mix(ASSEMBLY_TRANSCRIPT.out.versions)
 
     //
-    // SUBWORKFLOW: ID6 MERGE
+    // SUBWORKFLOW: ASSEMBLY MERGE
     // ch_gtf_merged = alignment, gtf
     //
 
     ch_gtf_denovo = group_gtf_by_align(
-        ID6_STRINGTIE.out.data
+        ASSEMBLY_TRANSCRIPT.out.data
     )
 
-    ID6_MERGE(
+    ASSEMBLY_MERGE(
         ch_gtf_denovo
             .combine(ch_gtf_clean)
             .map {row, gtf -> row + [reference: gtf.reference] },
     )
 
-    ch_gtf_denovo = ID6_MERGE.out.data
-    ch_versions = ch_versions.mix(ID6_MERGE.out.versions)
+    ch_gtf_denovo = ASSEMBLY_MERGE.out.data
+    ch_versions = ch_versions.mix(ASSEMBLY_MERGE.out.versions)
 
     //
-    // SUBWORKFLOW: ID7
+    // SUBWORKFLOW: SPLICING
     //
 
     ch_stats_by_align = group_stats_by_align(ch_stats)
 
-    ID7_RMATS_LENGTH(
+    SPLICING_LENGTH(
         ch_stats_by_align
     )
 
-    ch_length = ID7_RMATS_LENGTH.out.data
-    ch_versions = ch_versions.mix(ID7_RMATS_LENGTH.out.versions)
+    ch_length = SPLICING_LENGTH.out.data
+    ch_versions = ch_versions.mix(SPLICING_LENGTH.out.versions)
 
-    // NOVO
+    // BASELINE
 
     // assumes alias, sequencing and strandedness are unique per condition and alignment
-    ch_novo_strandedness = reduce_strandedness_by_cond_align(
+    ch_baseline_strandedness = reduce_strandedness_by_cond_align(
         ch_strandedness
-            .filter { it -> it.alignment == "novo" }
+            .filter { it -> it.alignment == "baseline" }
     )
 
-    ch_novo_bam = group_bam_by_cond_align(
+    ch_baseline_bam = group_bam_by_cond_align(
         ch_bam
-            .filter { it -> it.alignment == "novo" }
+            .filter { it -> it.alignment == "baseline" }
             .map { it -> [condition: it.condition, alignment: it.alignment, bam: it.bam] }
     )
 
-    ch_novo_pre = combine_by_cond(
-        ch_novo_strandedness,
-        ch_novo_bam
+    ch_baseline_pre = combine_by_cond(
+        ch_baseline_strandedness,
+        ch_baseline_bam
     )
 
-    ID7_RMATS_PREP_NOVO(
-        ch_novo_pre
+    SPLICING_PRE_BASELINE(
+        ch_baseline_pre
             .combine(
                 ch_length
-                    .filter { it -> it.alignment == "novo" }
+                    .filter { it -> it.alignment == "baseline" }
                     .map { it -> [ length: it.length ] }
             )
             .map { row, length -> row + [length: length.length] }
             .combine(ch_gtf)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
-    ch_novo_rmats_prep = ID7_RMATS_PREP_NOVO.out.data
-    ch_versions = ch_versions.mix(ID7_RMATS_PREP_NOVO.out.versions)
+    ch_baseline_rmats_prep = SPLICING_PRE_BASELINE.out.data
+    ch_versions = ch_versions.mix(SPLICING_PRE_BASELINE.out.versions)
 
-    ch_novo_rmats_post = compute_pairs_by_cond(
-        ch_novo_rmats_prep
+    ch_baseline_rmats_post = compute_pairs_by_cond(
+        ch_baseline_rmats_prep
     )
 
-    ID7_RMATS_POST_NOVO(
-        ch_novo_rmats_post
+    SPLICING_POS_BASELINE(
+        ch_baseline_rmats_post
             .combine(ch_gtf)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
-    ch_versions = ch_versions.mix(ID7_RMATS_POST_NOVO.out.versions)
+    ch_versions = ch_versions.mix(SPLICING_POS_BASELINE.out.versions)
 
     // DENOVO
 
@@ -254,7 +255,7 @@ workflow PIRA {
         ch_denovo_bam
     )
 
-    ID7_RMATS_PREP_DENOVO(
+    SPLICING_PRE_DENOVO(
         ch_denovo_pre
             .combine(
                 ch_length
@@ -265,19 +266,19 @@ workflow PIRA {
             .combine(ch_gtf_denovo)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
-    ch_denovo_rmats_prep = ID7_RMATS_PREP_DENOVO.out.data
-    ch_versions = ch_versions.mix(ID7_RMATS_PREP_DENOVO.out.versions)
+    ch_denovo_rmats_prep = SPLICING_PRE_DENOVO.out.data
+    ch_versions = ch_versions.mix(SPLICING_PRE_DENOVO.out.versions)
 
     ch_denovo_rmats_post = compute_pairs_by_cond(
         ch_denovo_rmats_prep
     )
 
-    ID7_RMATS_POST_DENOVO(
+    SPLICING_POS_DENOVO(
         ch_denovo_rmats_post
             .combine(ch_gtf_denovo)
             .map { row, gtf -> row + [gtf: gtf.gtf] }
     )
-    ch_versions = ch_versions.mix(ID7_RMATS_POST_DENOVO.out.versions)
+    ch_versions = ch_versions.mix(SPLICING_POS_DENOVO.out.versions)
 
     //
     // WRAP UP
