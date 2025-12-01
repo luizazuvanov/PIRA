@@ -1,8 +1,8 @@
 include { RMATS_LENGTH } from '../../../modules/local/rmats/length/main'
-include { RMATS_PREP   } from '../../../modules/local/rmats/prep/main'
-include { RMATS_POST   } from '../../../modules/local/rmats/post/main'
+include { RMATS_PRE   } from '../../../modules/local/rmats/prep/main'
+include { RMATS_POS   } from '../../../modules/local/rmats/post/main'
 
-workflow ID7_RMATS_LENGTH {
+workflow SPLICING_LENGTH {
     take:
     ch_input
 
@@ -29,13 +29,13 @@ workflow ID7_RMATS_LENGTH {
     versions = ch_versions
 }
 
-workflow ID7_RMATS_PREP {
+workflow SPLICING_PRE {
     take:
     ch_input
 
     main:
 
-    RMATS_PREP(
+    RMATS_PRE(
         ch_input.map { it -> tuple( [id: it.condition, alignment: it.alignment], it.gtf ) },
         ch_input.map { it -> it.bam },
         ch_input.map { it -> it.sequencing },
@@ -47,7 +47,7 @@ workflow ID7_RMATS_PREP {
     ch_input
         .map { it -> tuple( [it.condition, it.alignment], it ) }
         .join(
-            RMATS_PREP.out.tmp
+            RMATS_PRE.out.tmp
                 .map { it -> [condition: it[0].id, alignment: it[0].alignment, tmp: it[1]] }
                 .map { it -> tuple( [it.condition, it.alignment], it ) }
         )
@@ -58,20 +58,20 @@ workflow ID7_RMATS_PREP {
 
     ch_versions = Channel.empty()
     ch_versions
-        .mix( RMATS_PREP.out.versions )
+        .mix( RMATS_PRE.out.versions )
 
     emit:
     data = ch_out
     versions = ch_versions
 }
 
-workflow ID7_RMATS_POST {
+workflow SPLICING_POS {
     take:
     ch_input
 
     main:
 
-    RMATS_POST(
+    RMATS_POS(
         ch_input.map { it -> tuple( [id: it.condition, alignment: it.alignment], it.gtf ) },
         ch_input.map { it -> it.bam_1 },
         ch_input.map { it -> it.bam_2 },
@@ -85,7 +85,7 @@ workflow ID7_RMATS_POST {
 
     ch_versions = Channel.empty()
     ch_versions
-        .mix( RMATS_POST.out.versions )
+        .mix( RMATS_POS.out.versions )
 
     emit:
     versions = ch_versions

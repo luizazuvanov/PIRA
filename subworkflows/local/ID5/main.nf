@@ -3,9 +3,8 @@ include { RSEQC_JUNCTIONANNOTATION } from '../../../modules/nf-core/rseqc/juncti
 include { RSEQC_JUNCTIONSATURATION } from '../../../modules/nf-core/rseqc/junctionsaturation/main'
 include { RSEQC_READDISTRIBUTION   } from '../../../modules/nf-core/rseqc/readdistribution/main'
 include { STRANDEDNESS             } from '../../../modules/local/strandedness/main'
-include { BED                      } from '../../../modules/local/bed/main'
 
-workflow ID5_RSEQC {
+workflow CTRL3 {
 
     take:
     ch_input
@@ -15,6 +14,11 @@ workflow ID5_RSEQC {
     RSEQC_INFEREXPERIMENT(
         ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed }
+    )
+
+    STRANDEDNESS(
+        RSEQC_INFEREXPERIMENT.out.txt
+            .map { it -> tuple([id: it[0].id, alignment: it[0].alignment, condition: it[0].condition], it[1]) }
     )
 
     RSEQC_JUNCTIONANNOTATION(
@@ -35,35 +39,6 @@ workflow ID5_RSEQC {
     // clean
 
     ch_out = Channel.empty()
-    RSEQC_INFEREXPERIMENT.out.txt
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, infer: it[1]] }
-        .set { ch_out }
-
-    // versions
-
-    ch_versions = Channel.empty()
-    ch_versions
-        .mix( RSEQC_INFEREXPERIMENT.out.versions )
-        .mix( RSEQC_JUNCTIONANNOTATION.out.versions )
-        .mix( RSEQC_JUNCTIONSATURATION.out.versions )
-        .mix( RSEQC_READDISTRIBUTION.out.versions )
-
-    emit:
-    data = ch_out
-    versions = ch_versions
-}
-
-workflow ID5_STRANDEDNESS {
-    take:
-    ch_input
-
-    main:
-
-    STRANDEDNESS(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.infer) }
-    )
-
-    ch_out = Channel.empty()
     STRANDEDNESS.out.infer
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
@@ -73,36 +48,11 @@ workflow ID5_STRANDEDNESS {
 
     ch_versions = Channel.empty()
     ch_versions
+        .mix( RSEQC_INFEREXPERIMENT.out.versions )
         .mix( STRANDEDNESS.out.versions )
-
-    emit:
-    data = ch_out
-    versions =  ch_versions
-}
-
-workflow ID5_BED {
-
-    take:
-    ch_gtf
-
-    main:
-
-    BED(
-        ch_gtf.map { it -> tuple([ id: "bed" ], it.gtf) }
-    )
-
-    // clean
-
-    ch_out = Channel.empty()
-    BED.out.bed
-        .map { it -> [bed: it[1]] }
-        .set { ch_out }
-
-    // versions
-
-    ch_versions = Channel.empty()
-    ch_versions
-        .mix( BED.out.versions )
+        .mix( RSEQC_JUNCTIONANNOTATION.out.versions )
+        .mix( RSEQC_JUNCTIONSATURATION.out.versions )
+        .mix( RSEQC_READDISTRIBUTION.out.versions )
 
     emit:
     data = ch_out

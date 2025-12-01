@@ -1,4 +1,4 @@
-process RMATS_POST {
+process RMATS_POS {
     tag "$meta.id"
     label 'process_medium'
 
