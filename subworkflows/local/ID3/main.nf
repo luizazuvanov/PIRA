@@ -1,40 +1,7 @@
 include { SJ_FILTER } from '../../../modules/local/sj/filter/main'
 include { STAR_ALIGN } from '../../../modules/nf-core/star/align/main'
-include { STAR_GENOMEGENERATE } from '../../../modules/nf-core/star/genomegenerate/main'
 
-workflow ID3_INDEX {
-
-    take:
-    ch_fasta
-    ch_gtf
-
-    main:
-
-    STAR_GENOMEGENERATE(
-        ch_fasta.map { it -> tuple([ id: "index" ], it.fasta) },
-        ch_gtf.map { it -> tuple([ id: "index" ], it.gtf) }
-    )
-
-    // clean
-
-    ch_out = Channel.empty()
-    STAR_GENOMEGENERATE.out.index
-        .map { it -> [index: it[1]] }
-        .set { ch_out }
-
-    // versions
-
-    ch_versions = Channel.empty()
-    ch_versions
-        .mix( STAR_GENOMEGENERATE.out.versions )
-
-    emit:
-    data = ch_out
-    versions = ch_versions
-
-}
-
-workflow ID3_BASELINE {
+workflow ALIGNMENT_BASELINE {
 
     take:
     ch_input
@@ -90,7 +57,7 @@ workflow ID3_BASELINE {
     versions = ch_versions
 }
 
-workflow ID3_DENOVO {
+workflow ALIGNMENT_DENOVO {
 
     take:
     ch_input

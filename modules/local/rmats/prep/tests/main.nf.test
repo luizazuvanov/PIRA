@@ -1,8 +1,8 @@
 nextflow_process {
 
-    name "Test Process RMATS_PREP"
+    name "Test Process RMATS_PRE"
     script "../main.nf"
-    process "RMATS_PREP"
+    process "RMATS_PRE"
 
     test("sarscov2 - gtf - bam") {
 

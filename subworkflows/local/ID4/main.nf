@@ -2,7 +2,7 @@ include { SAMTOOLS_INDEX } from '../../../modules/nf-core/samtools/index/main'
 include { SAMTOOLS_MERGE } from '../../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_STATS } from '../../../modules/nf-core/samtools/stats/main'
 
-workflow ID4_EXPERIMENT {
+workflow CTRL2 {
 
     take:
     ch_input
@@ -43,7 +43,7 @@ workflow ID4_EXPERIMENT {
 }
 
 
-workflow ID4_CONDITION {
+workflow CTRL2_CONDITION {
 
     take:
     ch_input

@@ -2,7 +2,7 @@ include { STRINGTIE_STRINGTIE } from '../../../modules/nf-core/stringtie/stringt
 include { STRINGTIE_MERGE     } from '../../../modules/nf-core/stringtie/merge/main'
 include { STRINGTIE_CLEAN     } from '../../../modules/local/stringtie/clean/main'
 
-workflow ID6_CLEAN {
+workflow ASSEMBLY_PRE {
 
     take:
     ch_input
@@ -29,7 +29,7 @@ workflow ID6_CLEAN {
     versions = ch_versions
 }
 
-workflow ID6_STRINGTIE {
+workflow ASSEMBLY_TRANSCRIPT {
 
     take:
     ch_input
@@ -64,7 +64,7 @@ workflow ID6_STRINGTIE {
     versions = ch_versions
 }
 
-workflow ID6_MERGE {
+workflow ASSEMBLY_MERGE {
 
     take:
     ch_input
