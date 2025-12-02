@@ -85,13 +85,13 @@ process STAR_ALIGN {
     """
     echo "" | gzip > ${prefix}.unmapped_1.fastq.gz
     echo "" | gzip > ${prefix}.unmapped_2.fastq.gz
-    touch ${prefix}Xd.out.bam
+    # touch ${prefix}Xd.out.bam
     touch ${prefix}.Log.final.out
     touch ${prefix}.Log.out
     touch ${prefix}.Log.progress.out
-    touch ${prefix}.sortedByCoord.out.bam
-    touch ${prefix}.toTranscriptome.out.bam
-    touch ${prefix}.Aligned.unsort.out.bam
+    # touch ${prefix}.sortedByCoord.out.bam
+    # touch ${prefix}.toTranscriptome.out.bam
+    # touch ${prefix}.Aligned.unsort.out.bam
     touch ${prefix}.Aligned.sortedByCoord.out.bam
     touch ${prefix}.tab
     touch ${prefix}.SJ.out.tab
