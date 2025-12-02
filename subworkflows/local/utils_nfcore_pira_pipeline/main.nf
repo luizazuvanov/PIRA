@@ -39,8 +39,6 @@ workflow PIPELINE_INITIALISATION {
 
     main:
 
-    ch_versions = Channel.empty()
-
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
     //
@@ -91,40 +89,6 @@ workflow PIPELINE_INITIALISATION {
     UTILS_NFCORE_PIPELINE (
         nextflow_cli_args
     )
-
-    //
-    // Custom validation for pipeline parameters
-    //
-    validateInputParameters()
-
-    //
-    // Create channel from input file provided through params.input
-    //
-
-    // Channel
-    //     .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-    //     .map {
-    //         meta, fastq_1, fastq_2 ->
-    //             if (!fastq_2) {
-    //                 return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-    //             } else {
-    //                 return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-    //             }
-    //     }
-    //     .groupTuple()
-    //     .map { samplesheet ->
-    //         validateInputSamplesheet(samplesheet)
-    //     }
-    //     .map {
-    //         meta, fastqs ->
-    //             return [ meta, fastqs.flatten() ]
-    //     }
-    //     .set { ch_samplesheet }
-
-    emit:
-    // samplesheet = ch_samplesheet
-    samplesheet = Channel.empty()
-    versions    = ch_versions
 }
 
 /*
@@ -180,12 +144,6 @@ workflow PIPELINE_COMPLETION {
     FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-//
-// Check and validate pipeline parameters
-//
-def validateInputParameters() {
-    genomeExistsError()
-}
 
 //
 // Validate channels from input samplesheet
@@ -213,19 +171,6 @@ def getGenomeAttribute(attribute) {
     return null
 }
 
-//
-// Exit pipeline if incorrect --genome key provided
-//
-def genomeExistsError() {
-    if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
-        def error_string = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
-            "  Genome '${params.genome}' not found in any config files provided to the pipeline.\n" +
-            "  Currently, the available genome keys are:\n" +
-            "  ${params.genomes.keySet().join(", ")}\n" +
-            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        error(error_string)
-    }
-}
 //
 // Generate methods description for MultiQC
 //
