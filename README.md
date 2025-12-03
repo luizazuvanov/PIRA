@@ -78,11 +78,7 @@ For more details about the output files and reports, please refer to the
 
 ## Credits
 
-nf-core/pira was originally written by Luíza Zuvanov and Andre Perez.
-
-We thank the following people for their extensive assistance in the development of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+These scripts were originally written by [Luíza Zuvanov](@luizazuvanov). The pipeline was re-written in Nextflow DSL2 by [Andre Perez](@andre-marcos-perez) and is currently maintained by [Luíza Zuvanov](@luizazuvanov), [Andre Perez](@andre-marcos-perez) and the nf-core community.
 
 ## Contributions and Support
 
