@@ -1,14 +1,14 @@
 repository_type: pipeline
 
-nf_core_version: 3.4.1
+nf_core_version: 3.5.1
 
 lint: {}
 
 template:
   org: nf-core
   name: pira
-  description: Short description for pira
-  author: Andre Perez
+  description: Pipeline for Identifying RNA Alternatives
+  author: Luiza Zuvanov, Andre Perez
   version: 1.0.0dev
   force: true
   outdir: .
