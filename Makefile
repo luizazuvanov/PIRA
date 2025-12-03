@@ -19,7 +19,7 @@ render: ## Render pipeline
 	@make clean
 	@nextflow -log ./logs/nextflow.log \
 		run main.nf \
-		-profile test,docker \
+		-profile stub,docker \
 		-stub-run \
 		-preview \
 		-with-dag ./results/pipeline_info/pipeline.mmd \
@@ -29,7 +29,7 @@ render: ## Render pipeline
 resume: ## Resume test
 	@nextflow -log ./logs/nextflow.log \
 		run main.nf \
-		-profile test,docker \
+		-profile stub,docker \
 		-stub-run \
 		-resume \
 		-with-dag ./results/pipeline_info/pipeline.mmd \
@@ -45,14 +45,13 @@ debug: ## Run test with debug profile
 	@make clean
 	@nextflow -log ./logs/nextflow.log \
 		run main.nf \
-		-profile debug,test,docker \
+		-profile debug,stub,docker \
 		-stub-run \
 		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--outdir ./results
 
 .PHONY: clean
 clean: ## Clean up
-	@./bin/nf-test clean
 	@rm -rf ./results ./logs/nextflow.log* ./work ./.nextflow
 
 .PHONY: test
