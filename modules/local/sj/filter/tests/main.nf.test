@@ -11,7 +11,7 @@ nextflow_process {
                 """
                 input[0] = Channel.of([
                     [ id: 'minimal', alignment: 'alignment', condition: 'condition' ],
-                    [ file('${projectDir}/assets/test/minimal.SJ.out.tab', checkIfExists: true) ]
+                    [ file('${projectDir}/assets/data/minimal.SJ.out.tab', checkIfExists: true) ]
                 ])
                 """
             }
