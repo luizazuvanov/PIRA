@@ -14,16 +14,18 @@ nfcore-lint: ## Lint code with nf-core tools
 build: ## Build pipeline deps container
 	@docker build --no-cache . -t nfcore/pira:dev
 
-.PHONY: render
-render: ## Render pipeline
-	@make clean
-	@nextflow -log ./logs/nextflow.log \
-		run main.nf \
-		-profile stub,docker \
-		-stub-run \
-		-preview \
-		-with-dag ./results/pipeline_info/pipeline.mmd \
-		--outdir ./results
+.PHONY: clean
+clean: ## Clean up
+	@rm -rf ./results ./logs/nextflow.log* ./work ./.nextflow
+
+.PHONY: refactor-local
+refactor-local: ## Refactor pipeline for local testing
+	@git checkout subworkflows/local/ID4/main.nf
+	@sed -i '' -e "s/it.bam,/it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},/g" subworkflows/local/ID4/main.nf
+
+.PHONY: rollback-local
+rollback-local: ## Rollback pipeline refactor for local testing
+	@git checkout -- subworkflows/local/ID4/main.nf
 
 .PHONY: resume
 resume: ## Resume test
@@ -38,21 +40,9 @@ resume: ## Resume test
 .PHONY: run
 run: ## Run pipeline
 	@make clean
+	@make refactor-local
 	@make resume
-
-.PHONY: debug
-debug: ## Run test with debug profile
-	@make clean
-	@nextflow -log ./logs/nextflow.log \
-		run main.nf \
-		-profile debug,stub,docker \
-		-stub-run \
-		-with-dag ./results/pipeline_info/pipeline.mmd \
-		--outdir ./results
-
-.PHONY: clean
-clean: ## Clean up
-	@rm -rf ./results ./logs/nextflow.log* ./work ./.nextflow
+	@make rollback-local
 
 .PHONY: test
 test: ## Run tests
