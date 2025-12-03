@@ -78,8 +78,7 @@ For more details about the output files and reports, please refer to the
 
 ## Credits
 
-These scripts were originally written by [Luíza Zuvanov](@luizazuvanov). The pipeline was re-written in Nextflow DSL2 and is currently mantained by
-[Andre Perez](@andre-marcos-perez) and the nf-core community.
+These scripts were originally written by [Luíza Zuvanov](@luizazuvanov). The pipeline was re-written in Nextflow DSL2 by [Andre Perez](@andre-marcos-perez) and is currently maintained by [Luíza Zuvanov](@luizazuvanov), [Andre Perez](@andre-marcos-perez) and the nf-core community.
 
 ## Contributions and Support
 
