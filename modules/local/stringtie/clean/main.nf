@@ -1,6 +1,6 @@
 process STRINGTIE_CLEAN {
     tag "$gtf"
-    label 'process_nano'
+    label 'process_single'
 
     conda "conda-forge::gawk=5.3.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
