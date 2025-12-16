@@ -37,11 +37,31 @@ resume: ## Resume test
 		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--outdir ./results
 
+.PHONY: resume-with-flags
+resume-with-flags: ## Resume test with flags
+	@nextflow -log ./logs/nextflow.log \
+		run main.nf \
+		-profile stub,docker \
+		-stub-run \
+		-resume \
+		-with-dag ./results/pipeline_info/pipeline.mmd \
+		--with_fastq \
+		--with_index \
+		--index ./assets/data/index/ \
+		--outdir ./results
+
 .PHONY: run
 run: ## Run pipeline
 	@make clean
 	@make refactor-local
 	@make resume
+	@make rollback-local
+
+.PHONY: run-with-flags
+run-with-flags: ## Run pipeline with flags
+	@make clean
+	@make refactor-local
+	@make resume-with-flags
 	@make rollback-local
 
 .PHONY: test
