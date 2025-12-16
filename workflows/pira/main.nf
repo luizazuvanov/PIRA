@@ -36,6 +36,7 @@ workflow PIRA {
     ch_samples
     ch_fasta
     ch_gtf
+    ch_index_optional
 
     main:
 
@@ -50,21 +51,25 @@ workflow PIRA {
     ch_bed = GENOME_BED.out.data
     ch_versions = ch_versions.mix(GENOME_BED.out.versions)
 
-    GENOME_INDEX(ch_fasta, ch_gtf)
-    ch_index = GENOME_INDEX.out.data
-    ch_versions = ch_versions.mix(GENOME_INDEX.out.versions)
+    if (params.with_index) {
+        ch_index = ch_index_optional
+    } else {
+        GENOME_INDEX(ch_fasta, ch_gtf)
+        ch_index = GENOME_INDEX.out.data
+        ch_versions = ch_versions.mix(GENOME_INDEX.out.versions)
+    }
 
     //
     // SUBWORKFLOW: SAMPLES
     // ch_fastq = run, exp, cond, []fastq
     //
 
-    if (!params.with_fastq) {
+    if (params.with_fastq) {
+        ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] }
+    } else {
         SAMPLES(ch_samples)
         ch_fastq = SAMPLES.out.data
         ch_versions = ch_versions.mix(SAMPLES.out.versions)
-    } else {
-        ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] }
     }
 
     //

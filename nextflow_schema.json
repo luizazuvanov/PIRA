@@ -25,8 +25,13 @@
                 },
                 "with_fastq": {
                     "type": "boolean",
-                    "description": "Whether to use FASTQ files in the samplesheet, omit to download them.",
-                    "fa_icon": "fas fa-cloud-download"
+                    "description": "Whether to use FASTQ files from the samplesheet, omit to download them.",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "with_index": {
+                    "type": "boolean",
+                    "description": "Whether to use the provided genome index folder, omit to build it.",
+                    "fa_icon": "fas fa-check-circle"
                 },
                 "outdir": {
                     "type": "string",
