@@ -1,0 +1,131 @@
+{
+    "compute_pairs_by_cond": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "alignment": "align",
+                        "bam_1": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "bam_2": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "condition": "cond-1_vs_cond-2",
+                        "length": "len",
+                        "sequencing": [
+                            "seq-1",
+                            "seq-2"
+                        ],
+                        "tmp_1": "tmp-1",
+                        "tmp_2": "tmp-2"
+                    },
+                    {
+                        "alignment": "align",
+                        "bam_1": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "bam_2": [
+                            "bam-5",
+                            "bam-6"
+                        ],
+                        "condition": "cond-1_vs_cond-3",
+                        "length": "len",
+                        "sequencing": [
+                            "seq-1",
+                            "seq-3"
+                        ],
+                        "tmp_1": "tmp-1",
+                        "tmp_2": "tmp-3"
+                    },
+                    {
+                        "alignment": "align",
+                        "bam_1": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "bam_2": [
+                            "bam-5",
+                            "bam-6"
+                        ],
+                        "condition": "cond-2_vs_cond-3",
+                        "length": "len",
+                        "sequencing": [
+                            "seq-2",
+                            "seq-3"
+                        ],
+                        "tmp_1": "tmp-2",
+                        "tmp_2": "tmp-3"
+                    }
+                ],
+                "ch_out": [
+                    {
+                        "alignment": "align",
+                        "bam_1": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "bam_2": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "condition": "cond-1_vs_cond-2",
+                        "length": "len",
+                        "sequencing": [
+                            "seq-1",
+                            "seq-2"
+                        ],
+                        "tmp_1": "tmp-1",
+                        "tmp_2": "tmp-2"
+                    },
+                    {
+                        "alignment": "align",
+                        "bam_1": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "bam_2": [
+                            "bam-5",
+                            "bam-6"
+                        ],
+                        "condition": "cond-1_vs_cond-3",
+                        "length": "len",
+                        "sequencing": [
+                            "seq-1",
+                            "seq-3"
+                        ],
+                        "tmp_1": "tmp-1",
+                        "tmp_2": "tmp-3"
+                    },
+                    {
+                        "alignment": "align",
+                        "bam_1": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "bam_2": [
+                            "bam-5",
+                            "bam-6"
+                        ],
+                        "condition": "cond-2_vs_cond-3",
+                        "length": "len",
+                        "sequencing": [
+                            "seq-2",
+                            "seq-3"
+                        ],
+                        "tmp_1": "tmp-2",
+                        "tmp_2": "tmp-3"
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2025-12-18T17:57:26.355918"
+    }
+}
