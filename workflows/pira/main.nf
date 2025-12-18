@@ -26,7 +26,7 @@ include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore
 
 include { group_gtf_by_align                } from '../../subworkflows/local/utils_nextflow_pipeline/main'
 include { group_stats_by_align              } from '../../subworkflows/local/utils_nextflow_pipeline/main'
-include { group_bam_by_cond_align           } from '../../subworkflows/local/utils_nextflow_pipeline/main'
+include { group_bam_by_cond_keep_align           } from '../../subworkflows/local/utils_nextflow_pipeline/main'
 include { combine_by_cond                   } from '../../subworkflows/local/utils_nextflow_pipeline/main'
 include { join_by_exp                       } from '../../subworkflows/local/utils_nextflow_pipeline/main'
 include { compute_pairs_by_cond             } from '../../subworkflows/local/utils_nextflow_pipeline/main'
@@ -213,7 +213,7 @@ workflow PIRA {
             .filter { it -> it.alignment == "baseline" }
     )
 
-    ch_baseline_bam = group_bam_by_cond_align(
+    ch_baseline_bam = group_bam_by_cond_keep_align(
         ch_bam
             .filter { it -> it.alignment == "baseline" }
             .map { it -> [condition: it.condition, alignment: it.alignment, bam: it.bam] }
@@ -257,7 +257,7 @@ workflow PIRA {
             .filter { it -> it.alignment == "denovo" }
     )
 
-    ch_denovo_bam = group_bam_by_cond_align(
+    ch_denovo_bam = group_bam_by_cond_keep_align(
         ch_bam
             .filter { it -> it.alignment == "denovo" }
             .map { it -> [condition: it.condition, alignment: it.alignment, bam: it.bam] }

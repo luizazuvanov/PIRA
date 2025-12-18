@@ -20,7 +20,7 @@
                         ]
                     }
                 ],
-                "ch_gtf_by_align": [
+                "ch_out": [
                     {
                         "alignment": "align-1",
                         "gtf": [
@@ -44,6 +44,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2025-12-18T16:23:33.988267"
+        "timestamp": "2025-12-18T16:33:32.595206"
     }
 }
