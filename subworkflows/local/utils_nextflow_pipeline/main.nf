@@ -11,7 +11,7 @@
 workflow group_gtf_by_align {
 
     take:
-    ch_gtf // [align, []gtf, ...]
+    ch_gtf // [align, gtf, ...]
 
     main:
 
@@ -24,6 +24,8 @@ workflow group_gtf_by_align {
             gtf: its.collect { it.gtf }.flatten()
         ] }
         .set { ch_gtf_by_align }
+
+    ch_gtf_by_align.view().println()
 
     emit:
     ch_gtf_by_align // align, []gtf
