@@ -1,0 +1,31 @@
+nextflow_workflow {
+
+    name "Test Workflow join_by_exp"
+    script "../main.nf"
+    workflow "join_by_exp"
+
+    test("join_by_exp") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [ run: 'run-1', experiment: 'exp-1', condition: 'cond-1', fastp: ['fastp-1', 'fastp-2'] ],
+                    [ run: 'run-2', experiment: 'exp-2', condition: 'cond-1', fastp: ['fastp-3', 'fastp-4'] ]
+                )
+                input[1] = Channel.of(
+                    [ experiment: 'exp-1', alignment: 'align-1', condition: 'cond-1', bam: 'bam-1', spl: 'spl-1' ],
+                    [ experiment: 'exp-2', alignment: 'align-2', condition: 'cond-1', bam: 'bam-2', spl: 'spl-2' ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}
