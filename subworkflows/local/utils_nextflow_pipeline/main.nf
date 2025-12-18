@@ -53,7 +53,7 @@ workflow group_stats_by_align {
 workflow group_bam_by_cond_keep_align {
 
     take:
-    ch_bam // [cond, align, []bam, ...]
+    ch_bam // [cond, align, bam, ...]
 
     main:
 

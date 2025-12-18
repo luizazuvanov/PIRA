@@ -15,7 +15,7 @@ nextflow_workflow {
                     [ alignment: 'align-1', gtf: 'gtf-3' ],
                     [ alignment: 'align-2', gtf: 'gtf-4' ],
                     [ alignment: 'align-2', gtf: 'gtf-5' ],
-                    [ alignment: 'align-2', gtf: 'gtf-6' ],
+                    [ alignment: 'align-2', gtf: 'gtf-6' ]
                 )
                 """
             }
