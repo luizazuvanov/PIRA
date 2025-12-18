@@ -15,7 +15,7 @@ workflow group_gtf_by_align {
 
     main:
 
-    ch_gtf_by_align = Channel.empty()
+    ch_out = Channel.empty()
     ch_gtf
         .map { it -> tuple(it.alignment, it) }
         .groupTuple()
@@ -23,12 +23,10 @@ workflow group_gtf_by_align {
             alignment: its.collect { it.alignment }.unique().first(),
             gtf: its.collect { it.gtf }.flatten()
         ] }
-        .set { ch_gtf_by_align }
-
-    ch_gtf_by_align.view().println()
+        .set { ch_out }
 
     emit:
-    ch_gtf_by_align // align, []gtf
+    ch_out // align, []gtf
 }
 
 workflow group_stats_by_align {
@@ -52,7 +50,7 @@ workflow group_stats_by_align {
     ch_out // align, []stats
 }
 
-workflow group_bam_by_cond_align {
+workflow group_bam_by_cond_keep_align {
 
     take:
     ch_bam // [cond, align, []bam, ...]
