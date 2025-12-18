@@ -1,0 +1,49 @@
+{
+    "group_bam_by_cond_keep_align": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "alignment": "align",
+                        "bam": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "condition": "cond-1"
+                    },
+                    {
+                        "alignment": "align",
+                        "bam": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "condition": "cond-2"
+                    }
+                ],
+                "ch_out": [
+                    {
+                        "alignment": "align",
+                        "bam": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "condition": "cond-1"
+                    },
+                    {
+                        "alignment": "align",
+                        "bam": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "condition": "cond-2"
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2025-12-18T16:37:57.030544"
+    }
+}

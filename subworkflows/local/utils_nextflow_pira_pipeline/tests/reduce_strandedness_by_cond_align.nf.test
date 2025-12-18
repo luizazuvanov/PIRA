@@ -1,0 +1,29 @@
+nextflow_workflow {
+
+    name "Test Workflow reduce_strandedness_by_cond_align"
+    script "../main.nf"
+    workflow "reduce_strandedness_by_cond_align"
+
+    test("reduce_strandedness_by_cond_align") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [ experiment: 'exp-1', condition: 'cond-1', alignment: 'align', sequencing: 'seq', alias: 'alias', strandedness: 'strand'],
+                    [ experiment: 'exp-2', condition: 'cond-1', alignment: 'align', sequencing: 'seq', alias: 'alias', strandedness: 'strand'],
+                    [ experiment: 'exp-3', condition: 'cond-2', alignment: 'align', sequencing: 'seq', alias: 'alias', strandedness: 'strand'],
+                    [ experiment: 'exp-4', condition: 'cond-2', alignment: 'align', sequencing: 'seq', alias: 'alias', strandedness: 'strand'],
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

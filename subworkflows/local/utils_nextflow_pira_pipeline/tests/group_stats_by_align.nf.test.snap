@@ -1,0 +1,49 @@
+{
+    "group_stats_by_align": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "alignment": "align-1",
+                        "stats": [
+                            "stats-1",
+                            "stats-2",
+                            "stats-3"
+                        ]
+                    },
+                    {
+                        "alignment": "align-2",
+                        "stats": [
+                            "stats-4",
+                            "stats-5",
+                            "stats-6"
+                        ]
+                    }
+                ],
+                "ch_out": [
+                    {
+                        "alignment": "align-1",
+                        "stats": [
+                            "stats-1",
+                            "stats-2",
+                            "stats-3"
+                        ]
+                    },
+                    {
+                        "alignment": "align-2",
+                        "stats": [
+                            "stats-4",
+                            "stats-5",
+                            "stats-6"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2025-12-18T16:23:38.259612"
+    }
+}

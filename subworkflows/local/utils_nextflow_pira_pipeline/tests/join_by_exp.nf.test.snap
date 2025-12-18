@@ -1,0 +1,65 @@
+{
+    "join_by_exp": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "alignment": "align-1",
+                        "bam": "bam-1",
+                        "condition": "cond-1",
+                        "experiment": "exp-1",
+                        "fastp": [
+                            "fastp-1",
+                            "fastp-2"
+                        ],
+                        "run": "run-1",
+                        "spl": "spl-1"
+                    },
+                    {
+                        "alignment": "align-2",
+                        "bam": "bam-2",
+                        "condition": "cond-1",
+                        "experiment": "exp-2",
+                        "fastp": [
+                            "fastp-3",
+                            "fastp-4"
+                        ],
+                        "run": "run-2",
+                        "spl": "spl-2"
+                    }
+                ],
+                "ch_out": [
+                    {
+                        "alignment": "align-1",
+                        "bam": "bam-1",
+                        "condition": "cond-1",
+                        "experiment": "exp-1",
+                        "fastp": [
+                            "fastp-1",
+                            "fastp-2"
+                        ],
+                        "run": "run-1",
+                        "spl": "spl-1"
+                    },
+                    {
+                        "alignment": "align-2",
+                        "bam": "bam-2",
+                        "condition": "cond-1",
+                        "experiment": "exp-2",
+                        "fastp": [
+                            "fastp-3",
+                            "fastp-4"
+                        ],
+                        "run": "run-2",
+                        "spl": "spl-2"
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2025-12-18T17:39:47.199911"
+    }
+}

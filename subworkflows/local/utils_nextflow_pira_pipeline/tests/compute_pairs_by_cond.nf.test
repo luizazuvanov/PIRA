@@ -1,0 +1,28 @@
+nextflow_workflow {
+
+    name "Test Workflow compute_pairs_by_cond"
+    script "../main.nf"
+    workflow "compute_pairs_by_cond"
+
+    test("compute_pairs_by_cond") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [ condition: 'cond-1', alignment: 'align', length: 'len', bam: ['bam-1', 'bam-2'], tmp: 'tmp-1', sequencing: 'seq-1'],
+                    [ condition: 'cond-2', alignment: 'align', length: 'len', bam: ['bam-3', 'bam-4'], tmp: 'tmp-2', sequencing: 'seq-2'],
+                    [ condition: 'cond-3', alignment: 'align', length: 'len', bam: ['bam-5', 'bam-6'], tmp: 'tmp-3', sequencing: 'seq-3']
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}
