@@ -24,13 +24,13 @@ include { SPLICING_POS as SPLICING_POS_DENOVO   } from '../../subworkflows/local
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
-include { group_gtf_by_align                } from '../../subworkflows/local/utils_nextflow_pipeline/main'
-include { group_stats_by_align              } from '../../subworkflows/local/utils_nextflow_pipeline/main'
-include { group_bam_by_cond_keep_align      } from '../../subworkflows/local/utils_nextflow_pipeline/main'
-include { combine_by_cond                   } from '../../subworkflows/local/utils_nextflow_pipeline/main'
-include { join_by_exp                       } from '../../subworkflows/local/utils_nextflow_pipeline/main'
-include { compute_pairs_by_cond             } from '../../subworkflows/local/utils_nextflow_pipeline/main'
-include { reduce_strandedness_by_cond_align } from '../../subworkflows/local/utils_nextflow_pipeline/main'
+include { group_gtf_by_align                } from '../../subworkflows/local/utils_pira_nextflow_pipeline/main'
+include { group_stats_by_align              } from '../../subworkflows/local/utils_pira_nextflow_pipeline/main'
+include { group_bam_by_cond_keep_align      } from '../../subworkflows/local/utils_pira_nextflow_pipeline/main'
+include { combine_by_cond                   } from '../../subworkflows/local/utils_pira_nextflow_pipeline/main'
+include { join_by_exp                       } from '../../subworkflows/local/utils_pira_nextflow_pipeline/main'
+include { compute_pairs_by_cond             } from '../../subworkflows/local/utils_pira_nextflow_pipeline/main'
+include { reduce_strandedness_by_cond_align } from '../../subworkflows/local/utils_pira_nextflow_pipeline/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

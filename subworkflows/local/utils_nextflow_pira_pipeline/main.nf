@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality that may be useful for any Nextflow pipeline
+// Subworkflow with functionality specific to the nf-core/pira pipeline
 //
 
 /*
