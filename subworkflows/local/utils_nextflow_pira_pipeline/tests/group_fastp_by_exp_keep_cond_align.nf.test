@@ -1,0 +1,29 @@
+nextflow_workflow {
+
+    name "Test Workflow group_fastp_by_exp_keep_cond_align"
+    script "../main.nf"
+    workflow "group_fastp_by_exp_keep_cond_align"
+
+    test("group_fastp_by_exp_keep_cond_align") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [ experiment: 'exp-1', condition: 'cond-1', alignment: 'align', fastp: ['fastp-1-1', 'fastp-2-1'] ],
+                    [ experiment: 'exp-1', condition: 'cond-1', alignment: 'align', fastp: ['fastp-1-2', 'fastp-2-2'] ],
+                    [ experiment: 'exp-2', condition: 'cond-2', alignment: 'align', fastp: ['fastp-1-3', 'fastp-2-3'] ],
+                    [ experiment: 'exp-2', condition: 'cond-2', alignment: 'align', fastp: ['fastp-1-4', 'fastp-2-4'] ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

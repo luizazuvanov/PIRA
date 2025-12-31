@@ -1,0 +1,61 @@
+{
+    "group_fastp_by_exp_keep_cond_align": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "alignment": "align",
+                        "condition": "cond-1",
+                        "experiment": "exp-1",
+                        "fastp": [
+                            "fastp-1-1",
+                            "fastp-2-1",
+                            "fastp-1-2",
+                            "fastp-2-2"
+                        ]
+                    },
+                    {
+                        "alignment": "align",
+                        "condition": "cond-2",
+                        "experiment": "exp-2",
+                        "fastp": [
+                            "fastp-1-3",
+                            "fastp-2-3",
+                            "fastp-1-4",
+                            "fastp-2-4"
+                        ]
+                    }
+                ],
+                "ch_out": [
+                    {
+                        "alignment": "align",
+                        "condition": "cond-1",
+                        "experiment": "exp-1",
+                        "fastp": [
+                            "fastp-1-1",
+                            "fastp-2-1",
+                            "fastp-1-2",
+                            "fastp-2-2"
+                        ]
+                    },
+                    {
+                        "alignment": "align",
+                        "condition": "cond-2",
+                        "experiment": "exp-2",
+                        "fastp": [
+                            "fastp-1-3",
+                            "fastp-2-3",
+                            "fastp-1-4",
+                            "fastp-2-4"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2025-12-31T01:48:40.518934"
+    }
+}
