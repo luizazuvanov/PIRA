@@ -8,10 +8,10 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow group_fastp_by_exp_keep_cond_align {
+workflow group_fastp_by_exp_keep_cond {
 
     take:
-    ch_fastp // [exp, align, cond, []fastp]
+    ch_fastp // [exp, cond, []fastp]
 
     main:
 
@@ -21,14 +21,13 @@ workflow group_fastp_by_exp_keep_cond_align {
         .groupTuple()
         .map { __, its -> [
             experiment: its.collect { it.experiment }.unique().first(),
-            alignment: its.collect { it.alignment }.unique().first(),
             condition: its.collect { it.condition }.unique().first(),
             fastp: its.collect { it.fastp }.flatten()
         ] }
         .set { ch_out }
 
     emit:
-    ch_out // exp,   align, cond, []fastp
+    ch_out // exp, cond, []fastp
 }
 
 workflow group_gtf_by_align {

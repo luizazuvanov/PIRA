@@ -1,10 +1,9 @@
 {
-    "group_fastp_by_exp_keep_cond_align": {
+    "group_fastp_by_exp_keep_cond": {
         "content": [
             {
                 "0": [
                     {
-                        "alignment": "align",
                         "condition": "cond-1",
                         "experiment": "exp-1",
                         "fastp": [
@@ -15,7 +14,6 @@
                         ]
                     },
                     {
-                        "alignment": "align",
                         "condition": "cond-2",
                         "experiment": "exp-2",
                         "fastp": [
@@ -28,7 +26,6 @@
                 ],
                 "ch_out": [
                     {
-                        "alignment": "align",
                         "condition": "cond-1",
                         "experiment": "exp-1",
                         "fastp": [
@@ -39,7 +36,6 @@
                         ]
                     },
                     {
-                        "alignment": "align",
                         "condition": "cond-2",
                         "experiment": "exp-2",
                         "fastp": [
@@ -56,6 +52,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2025-12-31T01:48:40.518934"
+        "timestamp": "2026-01-01T13:38:02.834787"
     }
 }
