@@ -26,6 +26,7 @@ include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore
 
 include { group_gtf_by_align                } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_stats_by_align              } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
+include { group_fastp_by_exp_keep_cond      } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_bam_by_cond_keep_align      } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { combine_by_cond                   } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { join_by_exp                       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
@@ -94,8 +95,12 @@ workflow PIRA {
     // ch_bam = exp, alignment, cond, bam
     //
 
-    ALIGNMENT_BASELINE(
+    ch_fastp_by_exp = group_fastp_by_exp_keep_cond(
         ch_fastp
+    )
+
+    ALIGNMENT_BASELINE(
+        ch_fastp_by_exp
             .combine(ch_index)
             .map {row, index -> row + [index: index.index, alignment: "baseline"] },
     )
@@ -104,7 +109,7 @@ workflow PIRA {
     ch_versions = ch_versions.mix(ALIGNMENT_BASELINE.out.versions)
 
     ch_baseline_by_exp = join_by_exp(
-        ch_fastp,
+        ch_fastp_by_exp,
         ch_baseline
     )
 
