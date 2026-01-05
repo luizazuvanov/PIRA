@@ -21,7 +21,7 @@
 
 ## Introduction
 
-**nf-core/pira** is a bioinformatics pipeline that ...
+**nf-core/pira** is a bioinformatics pipeline to identifying RNA alternatives.
 
 <!-- TODO nf-core:
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
@@ -31,12 +31,23 @@
 
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/guidelines/graphic_design/workflow_diagrams#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+
+1. Reference genome:
+   1.1. Use or compute genome index with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
+   1.2. Compute `BED` file with [UCSC tools](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html).
+2. Samples:
+   2.1. Use or download sample data from `SRA` with NCBI's [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump).
+3. Quality control and trimming with [FASTP](https://github.com/OpenGene/fastp);
+4. Alignment with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
+5. Transcript assembly and merge with [StringTie2](https://ccb.jhu.edu/software/stringtie/);
+6. Alternative splicing analysis with [rMATS](http://rnaseq-mats.sourceforge.net/).
 
 ## Usage
 
 > [!NOTE]
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
+> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how
+> to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline)
+> with `-profile test` before running the workflow on actual data.
 
 <!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
      Explain what rows and columns represent. For instance (please edit as appropriate):
@@ -47,10 +58,14 @@ First, prepare a samplesheet with your input data that looks as follows:
 
 ```csv
 sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+run,experiment,condition,fastq_1,fastq_2
+SRR16496056,SRX12699021,COND1,SRR16496056_1.fastq.gz,SRR16496056_2.fastq.gz
+SRR16496066,SRX12699031,COND2,SRR16496066_1.fastq.gz,SRR16496066_2.fastq.gz
 ```
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
+Each row represents a fastq file (single-end) or a pair of fastq files (paired end). For aligment, rows with 'runs' with
+the same `experiment` value will be treated as replicates of the same experiment and merged. Similarly, for alternative
+splicing analysis, rows with the same `condition` value will be treated as replicates of the same condition.
 
 -->
 
@@ -61,8 +76,13 @@ Now, you can run the pipeline using:
 ```bash
 nextflow run nf-core/pira \
    -profile <docker/singularity/.../institute> \
-   --input samplesheet.csv \
-   --outdir <OUTDIR>
+   --input "samplesheet.csv" \
+   --outdir <OUTDIR> \
+   --fasta <FASTA> \
+   --gtf <GTF> \
+   --with_fastq \
+   --with_index \
+   --index <INDEX_DIR>
 ```
 
 > [!WARNING]
@@ -72,19 +92,22 @@ For more details and further functionality, please refer to the [usage documenta
 
 ## Pipeline output
 
-To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/pira/results) tab on the nf-core website pipeline page.
-For more details about the output files and reports, please refer to the
+To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/pira/results)
+tab on the nf-core website pipeline page. For more details about the output files and reports, please refer to the
 [output documentation](https://nf-co.re/pira/output).
 
 ## Credits
 
-These scripts were originally written by [Luíza Zuvanov](@luizazuvanov). The pipeline was re-written in Nextflow DSL2 by [Andre Perez](@andre-marcos-perez) and is currently maintained by [Luíza Zuvanov](@luizazuvanov), [Andre Perez](@andre-marcos-perez) and the nf-core community.
+These scripts were originally written by [Luíza Zuvanov](@luizazuvanov). The pipeline was re-written in Nextflow DSL2 by
+[Andre Perez](@andre-marcos-perez) and is currently maintained by [Luíza Zuvanov](@luizazuvanov),
+[Andre Perez](@andre-marcos-perez) and the nf-core community.
 
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
-For further information or help, don't hesitate to get in touch on the [Slack `#pira` channel](https://nfcore.slack.com/channels/pira) (you can join with [this invite](https://nf-co.re/join/slack)).
+For further information or help, don't hesitate to get in touch on the
+[Slack `#pira` channel](https://nfcore.slack.com/channels/pira) (you can join with [this invite](https://nf-co.re/join/slack)).
 
 ## Citations
 
