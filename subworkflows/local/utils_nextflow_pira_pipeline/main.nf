@@ -11,8 +11,8 @@
 /**
  * Groups FASTP files by experiment, condition, and single_end.
  *
- * Takes a channel of FASTP files with experiment, condition and single_end metadata, groups them metadata, and flattens
- * the FASTP files into a single list per group.
+ * Takes a channel of FASTP files with experiment, condition and single_end metadata, groups them by metadata, and
+ * flattens the FASTP files into a single list per group.
  *
  * @param ch_fastp Input channel containing maps with keys: experiment, condition, single_end, and fastp
  *                 Structure: [exp: String, cond: String, end: Boolean, fastp: List]
@@ -40,7 +40,7 @@ workflow group_fastp_by_exp_cond_end {
         .set { ch_out }
 
     emit:
-    ch_out // exp, cond, end,[]fastp
+    ch_out // exp, cond, end, []fastp
 }
 
 workflow group_gtf_by_align {
