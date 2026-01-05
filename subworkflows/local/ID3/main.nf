@@ -8,10 +8,8 @@ workflow ALIGNMENT_BASELINE {
 
     main:
 
-    def single_end = ch_input.map { it -> it.fastp }.collect().size() == 1
-
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition, single_end: single_end], it.fastp) },
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition, single_end: it.single_end], it.fastp) },
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
@@ -64,10 +62,8 @@ workflow ALIGNMENT_DENOVO {
 
     main:
 
-    def single_end = ch_input.map { it -> it.fastp }.collect().size() == 1
-
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition, single_end: single_end, spl: it.spl], it.fastp) },
+        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition, single_end: it.single_end, spl: it.spl], it.fastp) },
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
