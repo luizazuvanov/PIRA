@@ -26,7 +26,7 @@ include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore
 
 include { group_gtf_by_align                } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_stats_by_align              } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
-include { group_fastp_by_exp_keep_cond      } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
+include { group_fastp_by_exp_cond_end       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_bam_by_cond_keep_align      } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { combine_by_cond                   } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { join_by_exp                       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
@@ -70,11 +70,18 @@ workflow PIRA {
 
     //
     // SUBWORKFLOW: SAMPLES
-    // ch_fastq = run, exp, cond, []fastq
+    // ch_fastq = run, exp, cond, single_end, []fastq
     //
 
     if (params.with_fastq) {
-        ch_fastq = ch_samples.map { row -> row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ] }
+        ch_fastq = ch_samples.map {
+                row ->
+                    if (row.single_end) {
+                        row + [ fastq: [file(row.fastq_1)] ]
+                    } else {
+                        row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ]
+                    }
+            }
     } else {
         SAMPLES(ch_samples)
         ch_fastq = SAMPLES.out.data
@@ -83,7 +90,7 @@ workflow PIRA {
 
     //
     // SUBWORKFLOW: CTRL1
-    // ch_fastp = run, exp, cond, []fastp
+    // ch_fastp = run, exp, cond, single_end, []fastp
     //
 
     CTRL1(ch_fastq)
@@ -95,7 +102,7 @@ workflow PIRA {
     // ch_bam = exp, alignment, cond, bam
     //
 
-    ch_fastp_by_exp = group_fastp_by_exp_keep_cond(
+    ch_fastp_by_exp = group_fastp_by_exp_cond_end(
         ch_fastp
     )
 

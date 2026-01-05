@@ -8,26 +8,39 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow group_fastp_by_exp_keep_cond {
+/**
+ * Groups FASTP files by experiment, condition, and single_end.
+ *
+ * Takes a channel of FASTP files with experiment, condition and single_end metadata, groups them by metadata, and
+ * flattens the FASTP files into a single list per group.
+ *
+ * @param ch_fastp Input channel containing maps with keys: experiment, condition, single_end, and fastp
+ *                 Structure: [exp: String, cond: String, end: Boolean, fastp: List]
+ *
+ * @return ch_out Output channel with grouped FASTP results
+ *                Structure: [experiment: String, condition: String, single_end: Boolean, fastp: List]
+ */
+workflow group_fastp_by_exp_cond_end {
 
     take:
-    ch_fastp // [exp, cond, []fastp]
+    ch_fastp // [exp, cond, end, []fastp]
 
     main:
 
     ch_out = Channel.empty()
     ch_fastp
-        .map { it -> tuple(it.experiment, it) }
-        .groupTuple()
-        .map { __, its -> [
-            experiment: its.collect { it.experiment }.unique().first(),
-            condition: its.collect { it.condition }.unique().first(),
+        .map { it -> tuple(it.experiment, it.condition, it.single_end, it) }
+        .groupTuple(by: [0, 1, 2])
+        .map { experiment, condition, single_end, its -> [
+            experiment: experiment,
+            condition: condition,
+            single_end: single_end,
             fastp: its.collect { it.fastp }.flatten()
         ] }
         .set { ch_out }
 
     emit:
-    ch_out // exp, cond, []fastp
+    ch_out // exp, cond, end, []fastp
 }
 
 workflow group_gtf_by_align {
