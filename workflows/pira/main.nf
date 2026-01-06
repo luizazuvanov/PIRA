@@ -87,19 +87,15 @@ workflow PIRA {
 
     } else if (params.step in ["preprocessing"]) {
 
+        //
         // Assume FASTQ files are provided in the samplesheet
-
-        ch_fastq = ch_samples.map {row ->
-            def single_end = row.fastq_2 == null || row.fastq_2.trim() == ""
-            row + [ single_end: single_end ]
-        }
+        // ch_fastq = run, exp, cond, single_end, []fastq
+        //
 
         ch_fastq = ch_samples.map { row ->
-            if (row.single_end) {
-                row + [ fastq: [file(row.fastq_1)] ]
-            } else {
-                row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ]
-            }
+            def single_end = row.fastq_2 == null || row.fastq_2.trim() == ""
+            def fastq = single_end ? file(row.fastq_1) : [file(row.fastq_1), file(row.fastq_2)]
+            row + [ single_end: single_end, fastq: fastq ]
         }
     }
 
@@ -116,19 +112,15 @@ workflow PIRA {
 
     } else if (params.step in ["alignment"]) {
 
-        // Assume FASTQ files have already been preprocessed by FASTP
-
-        ch_fastp = ch_samples.map {row ->
-            def single_end = row.fastp_2 == null || row.fastp_2.trim() == ""
-            row + [ single_end: single_end ]
-        }
+        //
+        // Assume FASTP processed FASTQ files are provided in the samplesheet
+        // ch_fastp = run, exp, cond, single_end, []fastp
+        //
 
         ch_fastp = ch_samples.map { row ->
-            if (row.single_end) {
-                row + [ fastp: [file(row.fastp_1)] ]
-            } else {
-                row + [ fastp: [file(row.fastp_1), file(row.fastp_2)] ]
-            }
+            def single_end = row.fastp_2 == null || row.fastp_2.trim() == ""
+            def fastp = single_end ? file(row.fastp_1) : [file(row.fastp_1), file(row.fastp_2)]
+            row + [ single_end: single_end, fastp: fastp ]
         }
     }
 
