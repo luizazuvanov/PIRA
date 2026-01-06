@@ -26,10 +26,10 @@
 ![nf-core/pira metro map](docs/images/nf-core-pira_map_light.png)
 
 1. Reference genome:
-   1.1. Use or compute genome index with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
-   1.2. Compute `BED` file with [UCSC tools](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html).
+1.1. Use or compute genome index with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
+1.2. Compute `BED` file with [UCSC tools](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html).
 2. Samples:
-   2.1. Use or download sample data from `SRA` with NCBI's [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump).
+2.1. Use or download sample data from `SRA` with NCBI's [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump).
 3. Quality control and trimming with [FASTP](https://github.com/OpenGene/fastp);
 4. Alignment and quantification with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
 5. Sort and index `BAM` files with [SAMtools](http://www.htslib.org/);
