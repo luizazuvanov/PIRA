@@ -94,7 +94,7 @@ workflow PIRA {
 
         ch_fastq = ch_samples.map { row ->
             def single_end = row.fastq_2 == null || row.fastq_2.trim() == ""
-            def fastq = single_end ? file(row.fastq_1) : [file(row.fastq_1), file(row.fastq_2)]
+            def fastq = single_end ? [file(row.fastq_1)] : [file(row.fastq_1), file(row.fastq_2)]
             row + [ single_end: single_end, fastq: fastq ]
         }
     }
@@ -119,7 +119,7 @@ workflow PIRA {
 
         ch_fastp = ch_samples.map { row ->
             def single_end = row.fastp_2 == null || row.fastp_2.trim() == ""
-            def fastp = single_end ? file(row.fastp_1) : [file(row.fastp_1), file(row.fastp_2)]
+            def fastp = single_end ? [file(row.fastp_1)] : [file(row.fastp_1), file(row.fastp_2)]
             row + [ single_end: single_end, fastp: fastp ]
         }
     }
