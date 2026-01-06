@@ -60,7 +60,8 @@ workflow PIRA {
     ch_bed = GENOME_BED.out.data
     ch_versions = ch_versions.mix(GENOME_BED.out.versions)
 
-    if (params.with_index) {
+    def with_index = !(params.index == null || params.index.trim() == "")
+    if (with_index) {
         ch_index = ch_index_optional
     } else {
         GENOME_INDEX(ch_fasta, ch_gtf)
