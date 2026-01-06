@@ -23,14 +23,7 @@
 
 **nf-core/pira** is a bioinformatics pipeline to identifying RNA alternatives.
 
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
-
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/guidelines/graphic_design/workflow_diagrams#examples for examples.   -->
+![nf-core/pira metro map](docs/images/nf-core-pira_map_light.png)
 
 1. Reference genome:
    1.1. Use or compute genome index with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
@@ -38,9 +31,11 @@
 2. Samples:
    2.1. Use or download sample data from `SRA` with NCBI's [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump).
 3. Quality control and trimming with [FASTP](https://github.com/OpenGene/fastp);
-4. Alignment with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
-5. Transcript assembly and merge with [StringTie2](https://ccb.jhu.edu/software/stringtie/);
-6. Alternative splicing analysis with [rMATS](http://rnaseq-mats.sourceforge.net/).
+4. Alignment and quantification with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
+5. Sort and index `BAM` files with [SAMtools](http://www.htslib.org/);
+6. Alignment quality control with [RSeQC](http://rseqc.sourceforge.net/);
+7. Transcript assembly and merge with [StringTie2](https://ccb.jhu.edu/software/stringtie/);
+8. Alternative splicing analysis with [rMATS](http://rnaseq-mats.sourceforge.net/).
 
 ## Usage
 
