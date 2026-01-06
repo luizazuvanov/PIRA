@@ -69,7 +69,7 @@ workflow PIRA {
         ch_versions = ch_versions.mix(GENOME_INDEX.out.versions)
     }
 
-    if (params.step == "download") {
+    if (params.step in ["download"]) {
 
         //
         // SUBWORKFLOW: SAMPLES
@@ -80,8 +80,20 @@ workflow PIRA {
         ch_fastq = SAMPLES.out.data
         ch_versions = ch_versions.mix(SAMPLES.out.versions)
 
-    } else {
+        ch_fastq = ch_fastq.map {row ->
+            def single_end = (row.fastq.size() == 1)
+            row + [ single_end: single_end ]
+        }
+
+    } else if (params.step in ["preprocessing"]) {
+
         // Assume FASTQ files are provided in the samplesheet
+
+        ch_fastq = ch_samples.map {row ->
+            def single_end = row.fastq_2 == null || row.fastq_2.trim() == ""
+            row + [ single_end: single_end ]
+        }
+
         ch_fastq = ch_samples.map { row ->
             if (row.single_end) {
                 row + [ fastq: [file(row.fastq_1)] ]
@@ -91,12 +103,7 @@ workflow PIRA {
         }
     }
 
-    ch_fastq = ch_fastq.map {row ->
-        def single_end = (row.fastq.size() == 1)
-        row + [ single_end: single_end ]
-    }
-
-    if (params.step == "preprocessing") {
+    if (params.step in ["download", "preprocessing"]) {
 
         //
         // SUBWORKFLOW: CTRL1
@@ -107,8 +114,15 @@ workflow PIRA {
         ch_fastp = CTRL1.out.data
         ch_versions = ch_versions.mix(CTRL1.out.versions)
 
-    } else {
+    } else if (params.step in ["alignment"]) {
+
         // Assume FASTQ files have already been preprocessed by FASTP
+
+        ch_fastp = ch_samples.map {row ->
+            def single_end = row.fastp_2 == null || row.fastp_2.trim() == ""
+            row + [ single_end: single_end ]
+        }
+
         ch_fastp = ch_samples.map { row ->
             if (row.single_end) {
                 row + [ fastp: [file(row.fastp_1)] ]
@@ -116,11 +130,6 @@ workflow PIRA {
                 row + [ fastp: [file(row.fastp_1), file(row.fastp_2)] ]
             }
         }
-    }
-
-    ch_fastp = ch_fastp.map {row ->
-        def single_end = (row.fastp.size() == 1)
-        row + [ single_end: single_end ]
     }
 
     //
