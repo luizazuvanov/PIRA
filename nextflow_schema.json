@@ -23,10 +23,13 @@
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/pira/usage#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
                 },
-                "with_fastq": {
-                    "type": "boolean",
-                    "description": "Whether to use FASTQ files from the samplesheet, omit to download them.",
-                    "fa_icon": "fas fa-check-circle"
+                "step": {
+                    "type": "string",
+                    "default": "mapping",
+                    "fa_icon": "fas fa-play",
+                    "description": "Starting step",
+                    "help_text": "The step to start the pipeline from. Useful if you want to skip some initial steps and start from a later point in the workflow. Note that you will need to provide all required input files for the step you are starting from.",
+                    "enum": ["preprocessing", "alignment", "control"]
                 },
                 "outdir": {
                     "type": "string",

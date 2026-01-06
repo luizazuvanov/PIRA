@@ -35,6 +35,20 @@
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?q\\.gz$",
                 "errorMessage": "File path to the second FASTQ file for this sample (if paired-end)"
+            },
+            "fastp_1": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "errorMessage": "File path to the first FASTP processed FASTQ file for this sample"
+            },
+            "fastp_2": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "errorMessage": "File path to the second FASTP processed FASTQ file for this sample (if paired-end)"
             }
         },
         "required": ["run", "experiment", "condition"]

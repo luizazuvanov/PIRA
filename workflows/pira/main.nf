@@ -49,6 +49,8 @@ workflow PIRA {
 
     main:
 
+    def with_index = !(params.index == null || params.index.trim() == "")
+
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
 
@@ -60,7 +62,6 @@ workflow PIRA {
     ch_bed = GENOME_BED.out.data
     ch_versions = ch_versions.mix(GENOME_BED.out.versions)
 
-    def with_index = !(params.index == null || params.index.trim() == "")
     if (with_index) {
         ch_index = ch_index_optional
     } else {
@@ -74,8 +75,11 @@ workflow PIRA {
     // ch_fastq = run, exp, cond, single_end, []fastq
     //
 
-    if (params.with_fastq) {
-        ch_fastq = ch_samples.map {
+    // must download or use provided fastq files
+    if (params.step == "preprocessing") {
+
+        if (params.with_fastq) {
+            ch_fastq = ch_samples.map {
                 row ->
                     if (row.single_end) {
                         row + [ fastq: [file(row.fastq_1)] ]
@@ -83,20 +87,32 @@ workflow PIRA {
                         row + [ fastq: [file(row.fastq_1), file(row.fastq_2)] ]
                     }
             }
+        } else {
+            SAMPLES(ch_samples)
+            ch_fastq = SAMPLES.out.data
+            ch_versions = ch_versions.mix(SAMPLES.out.versions)
+        }
+
+        //
+        // SUBWORKFLOW: CTRL1
+        // ch_fastp = run, exp, cond, single_end, []fastp
+        //
+
+        CTRL1(ch_fastq)
+        ch_fastp = CTRL1.out.data
+        ch_versions = ch_versions.mix(CTRL1.out.versions)
+
+    // must use provided fastp processed fastq files
     } else {
-        SAMPLES(ch_samples)
-        ch_fastq = SAMPLES.out.data
-        ch_versions = ch_versions.mix(SAMPLES.out.versions)
+        ch_fastp = ch_samples.map {
+            row ->
+                if (row.single_end) {
+                    row + [ fastp: [file(row.fastp_1)] ]
+                } else {
+                    row + [ fastp: [file(row.fastp_1), file(row.fastp_2)] ]
+                }
+        }
     }
-
-    //
-    // SUBWORKFLOW: CTRL1
-    // ch_fastp = run, exp, cond, single_end, []fastp
-    //
-
-    CTRL1(ch_fastq)
-    ch_fastp = CTRL1.out.data
-    ch_versions = ch_versions.mix(CTRL1.out.versions)
 
     //
     // SUBWORKFLOW: ALIGNMENT
