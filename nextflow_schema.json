@@ -29,7 +29,7 @@
                     "fa_icon": "fas fa-play",
                     "description": "Starting step",
                     "help_text": "The step to start the pipeline from. Useful if you want to skip some initial steps and start from a later point in the workflow. Note that you will need to provide all required input files for the step you are starting from.",
-                    "enum": ["preprocessing", "alignment", "control"]
+                    "enum": ["download", "preprocessing", "alignment"]
                 },
                 "outdir": {
                     "type": "string",
