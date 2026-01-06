@@ -73,10 +73,9 @@ nextflow run nf-core/pira \
    -profile <docker/singularity/.../institute> \
    --input "samplesheet.csv" \
    --outdir <OUTDIR> \
+   --with_fastq \
    --fasta <FASTA> \
    --gtf <GTF> \
-   --with_fastq \
-   --with_index \
    --index <INDEX_DIR>
 ```
 
