@@ -53,9 +53,9 @@ First, prepare a samplesheet with your input data that looks as follows:
 
 ```csv
 sample,fastq_1,fastq_2
-run,experiment,condition,fastq_1,fastq_2
-SRR16496056,SRX12699021,COND1,SRR16496056_1.fastq.gz,SRR16496056_2.fastq.gz
-SRR16496066,SRX12699031,COND2,SRR16496066_1.fastq.gz,SRR16496066_2.fastq.gz
+run,experiment,condition,single_end,fastq_1,fastq_2
+SRR16496056,SRX12699021,COND1,false,SRR16496056_1.fastq.gz,SRR16496056_2.fastq.gz
+SRR16496066,SRX12699031,COND2,false,SRR16496066_1.fastq.gz,SRR16496066_2.fastq.gz
 ```
 
 Each row represents a fastq file (single-end) or a pair of fastq files (paired end). For aligment, rows with 'runs' with
@@ -73,7 +73,7 @@ nextflow run nf-core/pira \
    -profile <docker/singularity/.../institute> \
    --input "samplesheet.csv" \
    --outdir <OUTDIR> \
-   --with_fastq \
+   --step preprocessing \
    --fasta <FASTA> \
    --gtf <GTF> \
    --index <INDEX_DIR>
