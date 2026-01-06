@@ -28,11 +28,6 @@
                     "description": "Whether to use FASTQ files from the samplesheet, omit to download them.",
                     "fa_icon": "fas fa-check-circle"
                 },
-                "with_index": {
-                    "type": "boolean",
-                    "description": "Whether to use the provided genome index folder, omit to build it.",
-                    "fa_icon": "fas fa-check-circle"
-                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -63,6 +58,13 @@
                     "pattern": "^\\S+\\.gtf$",
                     "description": "Path to GTF annotation file.",
                     "fa_icon": "fas fa-file"
+                },
+                "index": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "exists": true,
+                    "description": "Path to genome index folder.",
+                    "fa_icon": "fas fa-folder-open"
                 }
             }
         },

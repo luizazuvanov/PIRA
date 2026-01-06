@@ -57,7 +57,8 @@ workflow NFCORE_PIRA {
         .map { it -> [gtf: it]}
         .set { ch_gtf }
 
-    if (params.with_index) {
+    def with_index = !(params.index == null || params.index.trim() == "")
+    if (with_index) {
         Channel
             .fromPath(params.index, type: "dir")
             .map { it -> [index: it]}
