@@ -22,10 +22,6 @@
                 "pattern": "[a-zA-Z0-9]",
                 "errorMessage": "Custom condition name to group replicates together"
             },
-            "single_end": {
-                "type": "boolean",
-                "errorMessage": "Indicates if the sample is single-end or paired-end"
-            },
             "fastq_1": {
                 "type": "string",
                 "format": "file-path",

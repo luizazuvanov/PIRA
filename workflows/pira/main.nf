@@ -91,6 +91,11 @@ workflow PIRA {
         }
     }
 
+    ch_fastq = ch_fastq.map {row ->
+        def single_end = (row.fastq.size() == 1)
+        row + [ single_end: single_end ]
+    }
+
     if (params.step == "preprocessing") {
 
         //
@@ -111,6 +116,11 @@ workflow PIRA {
                 row + [ fastp: [file(row.fastp_1), file(row.fastp_2)] ]
             }
         }
+    }
+
+    ch_fastp = ch_fastp.map {row ->
+        def single_end = (row.fastp.size() == 1)
+        row + [ single_end: single_end ]
     }
 
     //
