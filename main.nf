@@ -41,10 +41,7 @@ workflow NFCORE_PIRA {
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
         .unique()
-        .map { it ->
-            def single_end = it.fastq_2 == null || it.fastq_2.trim() == ""
-            it + [ single_end: single_end.toBoolean() ]
-        }
+        .map { it -> it + [single_end: it.single_end.toBoolean()] }
         .set { ch_samples }
 
     Channel
