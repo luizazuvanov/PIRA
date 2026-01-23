@@ -30,14 +30,14 @@
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
                 "errorMessage": "File path to the first FASTQ file for this sample"
             },
             "fastq_2": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
                 "errorMessage": "File path to the second FASTQ file for this sample (if paired-end)"
             }
         },
