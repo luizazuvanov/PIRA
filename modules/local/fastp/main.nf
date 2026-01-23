@@ -40,7 +40,7 @@ process FASTP {
     // Use single ended for interleaved. Add --interleaved_in in config.
     if ( task.ext.args?.contains('--interleaved_in') ) {
         """
-        ext=\$(if [[ "$reads" == *.gz ]]; then echo ".gz"; echo ""; fi)
+        ext=\$(if [[ "$reads" == *.gz ]]; then echo ".gz"; else echo ""; fi)
         [ ! -f  ${prefix}.fastq\${ext} ] && ln -sf $reads ${prefix}.fastq\${ext}
 
         fastp \\
@@ -62,7 +62,7 @@ process FASTP {
         """
     } else if (meta.single_end) {
         """
-        ext=\$(if [[ "$reads" == *.gz ]]; then echo ".gz"; echo ""; fi)
+        ext=\$(if [[ "$reads" == *.gz ]]; then echo ".gz"; else echo ""; fi)
         [ ! -f  ${prefix}.fastq\${ext} ] && ln -sf $reads ${prefix}.fastq\${ext}
 
         fastp \\
@@ -84,7 +84,7 @@ process FASTP {
     } else {
         def merge_fastq = save_merged ? "-m --merged_out ${prefix}.merged.fastq.gz" : ''
         """
-        ext=\$(if [[ "$reads" == *.gz ]]; then echo ".gz"; echo ""; fi)
+        ext=\$(if [[ "$reads" == *.gz ]]; then echo ".gz"; else echo ""; fi)
         [ ! -f  ${prefix}_1.fastq\${ext} ] && ln -sf ${reads[0]} ${prefix}_1.fastq\${ext}
         [ ! -f  ${prefix}_2.fastq\${ext} ] && ln -sf ${reads[1]} ${prefix}_2.fastq\${ext}
         fastp \\
@@ -122,9 +122,6 @@ process FASTP {
     touch "${prefix}.fastp.json"
     touch "${prefix}.fastp.html"
     touch "${prefix}.fastp.log"
-
-    ext=\$(if [[ "$reads" == *.gz ]]; then echo ".gz"; echo ""; fi)
-    echo ${prefix}_1.fastq\${ext}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
