@@ -1,4 +1,4 @@
-include { FASTP } from '../../../modules/nf-core/fastp/main'
+include { FASTP } from '../../../modules/local/fastp/main'
 
 workflow CTRL1 {
 
