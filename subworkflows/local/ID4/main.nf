@@ -12,7 +12,7 @@ workflow CTRL2 {
     SAMTOOLS_STATS(
         ch_input.map { it -> tuple(
             [id: it.experiment, alignment: it.alignment, condition: it.condition],
-            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},
+            it.bam,
             []
         ) },
         [[], []]
@@ -21,7 +21,7 @@ workflow CTRL2 {
     SAMTOOLS_INDEX(
         ch_input.map { it -> tuple(
             [id: it.experiment, alignment: it.alignment],
-            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},
+            it.bam,
         ) }
     )
 
@@ -53,7 +53,7 @@ workflow CTRL2_CONDITION {
     SAMTOOLS_MERGE(
         ch_input.map { it -> tuple(
             [id: it.condition, alignment: it.alignment],
-            it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},
+            it.bam,
         ) },
         [[], []],
         [[], []],
