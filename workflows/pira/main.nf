@@ -121,14 +121,23 @@ workflow PIRA {
         ch_baseline
     )
 
-    ALIGNMENT_DENOVO(
-        ch_baseline_by_exp
-            .combine(ch_index)
-            .map {row, index -> row + [index: index.index, alignment: "denovo"] },
-    )
+    if (params.with_twopass) {
 
-    ch_denovo = ALIGNMENT_DENOVO.out.data
-    ch_versions = ch_versions.mix(ALIGNMENT_DENOVO.out.versions)
+        ALIGNMENT_DENOVO(
+            ch_baseline_by_exp
+                .combine(ch_index)
+                .map {row, index -> row + [index: index.index, alignment: "denovo"] },
+        )
+
+        ch_denovo = ALIGNMENT_DENOVO.out.data
+        ch_versions = ch_versions.mix(ALIGNMENT_DENOVO.out.versions)
+
+    } else {
+
+        ch_denovo = ALIGNMENT_BASELINE.out.data
+            .map { row -> row + [alignment: "denovo"] }
+
+    }
 
     ch_bam = Channel.empty()
     ch_baseline
