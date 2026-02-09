@@ -30,7 +30,12 @@
                 },
                 "with_twopass": {
                     "type": "boolean",
-                    "description": "Whether to return STAR two-pass mapping, default is true.",
+                    "description": "Whether to run STAR aligner's two-pass mapping, default is true.",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "with_transcriptassembly": {
+                    "type": "boolean",
+                    "description": "Whether to run transcript assembly, default is true.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "outdir": {

@@ -166,53 +166,60 @@ workflow PIRA {
     ch_strandedness = CTRL3.out.data
     ch_versions = ch_versions.mix(CTRL3.out.versions)
 
-    //
-    // SUBWORKFLOW: ASSEMBLY CLEAN
-    // ch_gtf_clean = reference
-    //
+    if (params.with_transcriptassembly) {
 
-    ASSEMBLY_PRE(ch_gtf)
-    ch_gtf_clean = ASSEMBLY_PRE.out.data
-    ch_versions = ch_versions.mix(ASSEMBLY_PRE.out.versions)
+        //
+        // SUBWORKFLOW: ASSEMBLY CLEAN
+        // ch_gtf_clean = reference
+        //
 
-    //
-    // SUBWORKFLOW: ASSEMBLY_TRANSCRIPT
-    // ch_denovo = exp, alignment, cond, gtf
-    //
+        ASSEMBLY_PRE(ch_gtf)
+        ch_gtf_clean = ASSEMBLY_PRE.out.data
+        ch_versions = ch_versions.mix(ASSEMBLY_PRE.out.versions)
 
-    ch_denovo = join_by_exp(
-        ch_bam
-            .filter {it -> it.alignment == "denovo"},
-        ch_strandedness
-            .filter {it -> it.alignment == "denovo"}
-            .map { it -> [experiment: it.experiment, strandedness: it.strandedness]}
-    )
+        //
+        // SUBWORKFLOW: ASSEMBLY_TRANSCRIPT
+        // ch_denovo = exp, alignment, cond, gtf
+        //
 
-    ASSEMBLY_TRANSCRIPT(
-        ch_denovo
-            .combine(ch_gtf_clean)
-            .map {row, gtf -> row + [reference: gtf.reference] },
-    )
+        ch_denovo = join_by_exp(
+            ch_bam
+                .filter {it -> it.alignment == "denovo"},
+            ch_strandedness
+                .filter {it -> it.alignment == "denovo"}
+                .map { it -> [experiment: it.experiment, strandedness: it.strandedness]}
+        )
 
-    ch_versions = ch_versions.mix(ASSEMBLY_TRANSCRIPT.out.versions)
+        ASSEMBLY_TRANSCRIPT(
+            ch_denovo
+                .combine(ch_gtf_clean)
+                .map {row, gtf -> row + [reference: gtf.reference] },
+        )
 
-    //
-    // SUBWORKFLOW: ASSEMBLY MERGE
-    // ch_gtf_merged = alignment, gtf
-    //
+        ch_versions = ch_versions.mix(ASSEMBLY_TRANSCRIPT.out.versions)
 
-    ch_gtf_denovo = group_gtf_by_align(
-        ASSEMBLY_TRANSCRIPT.out.data
-    )
+        //
+        // SUBWORKFLOW: ASSEMBLY MERGE
+        // ch_gtf_merged = alignment, gtf
+        //
 
-    ASSEMBLY_MERGE(
-        ch_gtf_denovo
-            .combine(ch_gtf_clean)
-            .map {row, gtf -> row + [reference: gtf.reference] },
-    )
+        ch_gtf_denovo = group_gtf_by_align(
+            ASSEMBLY_TRANSCRIPT.out.data
+        )
 
-    ch_gtf_denovo = ASSEMBLY_MERGE.out.data
-    ch_versions = ch_versions.mix(ASSEMBLY_MERGE.out.versions)
+        ASSEMBLY_MERGE(
+            ch_gtf_denovo
+                .combine(ch_gtf_clean)
+                .map {row, gtf -> row + [reference: gtf.reference] },
+        )
+
+        ch_gtf_denovo = ASSEMBLY_MERGE.out.data
+        ch_versions = ch_versions.mix(ASSEMBLY_MERGE.out.versions)
+
+    } else {
+
+        ch_gtf_denovo = ch_gtf
+    }
 
     //
     // SUBWORKFLOW: SPLICING
