@@ -47,6 +47,7 @@ resume-with-flags: ## Resume test with flags
 		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--with_fastq \
 		--with_twopass false \
+		--with_novelss false \
 		--with_transcriptassembly false \
 		--index ./assets/data/index/ \
 		--outdir ./results

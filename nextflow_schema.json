@@ -35,7 +35,12 @@
                 },
                 "with_transcriptassembly": {
                     "type": "boolean",
-                    "description": "Whether to run transcript assembly, default is true.",
+                    "description": "Whether to run STRINGTIE's transcript assembly, default is true.",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "with_novelss": {
+                    "type": "boolean",
+                    "description": "Whether to run rMATS' novel splice site detection (novelSS param), default is true.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "outdir": {

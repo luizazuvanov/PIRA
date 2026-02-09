@@ -5,22 +5,23 @@
 */
 
 
-include { GENOME_BED                            } from '../../subworkflows/local/ID0/main'
-include { GENOME_INDEX                          } from '../../subworkflows/local/ID0/main'
-include { SAMPLES                               } from '../../subworkflows/local/ID1/main'
-include { CTRL1                                 } from '../../subworkflows/local/ID2/main'
-include { ALIGNMENT_BASELINE                    } from '../../subworkflows/local/ID3/main'
-include { ALIGNMENT_DENOVO                      } from '../../subworkflows/local/ID3/main'
-include { CTRL2                                 } from '../../subworkflows/local/ID4/main'
-include { CTRL3                                 } from '../../subworkflows/local/ID5/main'
-include { ASSEMBLY_PRE                          } from '../../subworkflows/local/ID6/main'
-include { ASSEMBLY_TRANSCRIPT                   } from '../../subworkflows/local/ID6/main'
-include { ASSEMBLY_MERGE                        } from '../../subworkflows/local/ID6/main'
-include { SPLICING_LENGTH                       } from '../../subworkflows/local/ID7/main'
-include { SPLICING_PRE as SPLICING_PRE_BASELINE } from '../../subworkflows/local/ID7/main'
-include { SPLICING_POS as SPLICING_POS_BASELINE } from '../../subworkflows/local/ID7/main'
-include { SPLICING_PRE as SPLICING_PRE_DENOVO   } from '../../subworkflows/local/ID7/main'
-include { SPLICING_POS as SPLICING_POS_DENOVO   } from '../../subworkflows/local/ID7/main'
+include { GENOME_BED                               } from '../../subworkflows/local/ID0/main'
+include { GENOME_INDEX                             } from '../../subworkflows/local/ID0/main'
+include { SAMPLES                                  } from '../../subworkflows/local/ID1/main'
+include { CTRL1                                    } from '../../subworkflows/local/ID2/main'
+include { ALIGNMENT_BASELINE                       } from '../../subworkflows/local/ID3/main'
+include { ALIGNMENT_DENOVO                         } from '../../subworkflows/local/ID3/main'
+include { CTRL2                                    } from '../../subworkflows/local/ID4/main'
+include { CTRL3                                    } from '../../subworkflows/local/ID5/main'
+include { ASSEMBLY_PRE                             } from '../../subworkflows/local/ID6/main'
+include { ASSEMBLY_TRANSCRIPT                      } from '../../subworkflows/local/ID6/main'
+include { ASSEMBLY_MERGE                           } from '../../subworkflows/local/ID6/main'
+include { SPLICING_LENGTH                          } from '../../subworkflows/local/ID7/main'
+include { SPLICING_PRE as SPLICING_PRE_BASELINE    } from '../../subworkflows/local/ID7/main'
+include { SPLICING_POS as SPLICING_POS_BASELINE    } from '../../subworkflows/local/ID7/main'
+include { SPLICING_PRE as SPLICING_PRE_DENOVO      } from '../../subworkflows/local/ID7/main'
+include { SPLICING_PRE as SPLICING_PRE_DENOVO_NOSS } from '../../subworkflows/local/ID7/main'
+include { SPLICING_POS as SPLICING_POS_DENOVO      } from '../../subworkflows/local/ID7/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -297,19 +298,39 @@ workflow PIRA {
         ch_denovo_bam
     )
 
-    SPLICING_PRE_DENOVO(
-        ch_denovo_pre
-            .combine(
-                ch_length
-                    .filter { it -> it.alignment == "denovo" }
-                    .map { it -> [ length: it.length ] }
-            )
-            .map { row, length -> row + [length: length.length] }
-            .combine(ch_gtf_denovo)
-            .map { row, gtf -> row + [gtf: gtf.gtf] }
-    )
-    ch_denovo_rmats_prep = SPLICING_PRE_DENOVO.out.data
-    ch_versions = ch_versions.mix(SPLICING_PRE_DENOVO.out.versions)
+    if (params.with_novelss) {
+
+        SPLICING_PRE_DENOVO(
+            ch_denovo_pre
+                .combine(
+                    ch_length
+                        .filter { it -> it.alignment == "denovo" }
+                        .map { it -> [ length: it.length ] }
+                )
+                .map { row, length -> row + [length: length.length] }
+                .combine(ch_gtf_denovo)
+                .map { row, gtf -> row + [gtf: gtf.gtf] }
+        )
+        ch_denovo_rmats_prep = SPLICING_PRE_DENOVO.out.data
+        ch_versions = ch_versions.mix(SPLICING_PRE_DENOVO.out.versions)
+
+    } else {
+
+        SPLICING_PRE_DENOVO_NOSS(
+            ch_denovo_pre
+                .combine(
+                    ch_length
+                        .filter { it -> it.alignment == "denovo" }
+                        .map { it -> [ length: it.length ] }
+                )
+                .map { row, length -> row + [length: length.length] }
+                .combine(ch_gtf_denovo)
+                .map { row, gtf -> row + [gtf: gtf.gtf] }
+        )
+        ch_denovo_rmats_prep = SPLICING_PRE_DENOVO_NOSS.out.data
+        ch_versions = ch_versions.mix(SPLICING_PRE_DENOVO_NOSS.out.versions)
+
+    }
 
     ch_denovo_rmats_post = compute_pairs_by_cond(
         ch_denovo_rmats_prep
