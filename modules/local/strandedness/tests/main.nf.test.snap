@@ -3,13 +3,13 @@
         "content": [
             {
                 "0": [
-                    "infer.csv:md5,d1d30a5bfad55191148e0e9c26b415b4"
+                    "infer.csv:md5,ee618e561d549c73c4060b444280cdc8"
                 ],
                 "1": [
                     "versions.yml:md5,f98f244602bbc5c900aceccfa38a03d6"
                 ],
                 "infer": [
-                    "infer.csv:md5,d1d30a5bfad55191148e0e9c26b415b4"
+                    "infer.csv:md5,ee618e561d549c73c4060b444280cdc8"
                 ],
                 "versions": [
                     "versions.yml:md5,f98f244602bbc5c900aceccfa38a03d6"
@@ -18,8 +18,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.04.3"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2025-11-25T22:30:38.015723"
+        "timestamp": "2026-05-05T13:57:20.285118"
     }
 }

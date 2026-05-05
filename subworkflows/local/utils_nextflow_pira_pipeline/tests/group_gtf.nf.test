@@ -1,0 +1,31 @@
+nextflow_workflow {
+
+    name "Test Workflow group_gtf"
+    script "../main.nf"
+    workflow "group_gtf"
+
+    test("group_gtf") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [ gtf: 'gtf-1' ],
+                    [ gtf: 'gtf-2' ],
+                    [ gtf: 'gtf-3' ],
+                    [ gtf: 'gtf-4' ],
+                    [ gtf: 'gtf-5' ],
+                    [ gtf: 'gtf-6' ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

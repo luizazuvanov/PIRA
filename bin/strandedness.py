@@ -75,8 +75,8 @@ if __name__ == "__main__":
 
     out: dict[str, str] = parse(filepath=sys.argv[1])
 
-    row: list[str] = [sys.argv[2], sys.argv[3], sys.argv[4]]
-    header: list[str] = ["experiment", "alignment", "condition"]
+    row: list[str] = [sys.argv[2], sys.argv[3]]
+    header: list[str] = ["experiment", "condition"]
 
     row_str: str = ",".join(row + list(out.values()))
     header_str: str = ",".join(header + list(out.keys()))

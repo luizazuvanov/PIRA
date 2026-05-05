@@ -1,49 +1,45 @@
 {
-    "combine_by_cond": {
+    "reduce_strandedness_by_cond": {
         "content": [
             {
                 "0": [
                     {
                         "alias": "alias-1",
-                        "bam": [
-                            "bam-1",
-                            "bam-2"
-                        ],
                         "condition": "cond-1",
                         "sequencing": "seq-1",
                         "strandedness": "strand-1"
                     },
                     {
                         "alias": "alias-2",
-                        "bam": [
-                            "bam-3",
-                            "bam-4"
-                        ],
                         "condition": "cond-2",
                         "sequencing": "seq-2",
                         "strandedness": "strand-2"
+                    },
+                    {
+                        "alias": "alias-3",
+                        "condition": "cond-3",
+                        "sequencing": "seq-3",
+                        "strandedness": "strand-3"
                     }
                 ],
                 "ch_out": [
                     {
                         "alias": "alias-1",
-                        "bam": [
-                            "bam-1",
-                            "bam-2"
-                        ],
                         "condition": "cond-1",
                         "sequencing": "seq-1",
                         "strandedness": "strand-1"
                     },
                     {
                         "alias": "alias-2",
-                        "bam": [
-                            "bam-3",
-                            "bam-4"
-                        ],
                         "condition": "cond-2",
                         "sequencing": "seq-2",
                         "strandedness": "strand-2"
+                    },
+                    {
+                        "alias": "alias-3",
+                        "condition": "cond-3",
+                        "sequencing": "seq-3",
+                        "strandedness": "strand-3"
                     }
                 ]
             }
@@ -52,6 +48,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2026-05-05T15:30:05.658223"
+        "timestamp": "2026-05-05T13:52:31.445793"
     }
 }

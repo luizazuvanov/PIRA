@@ -10,7 +10,7 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [ id: 'condition', alignment: 'alignment' ],
+                    [ id: 'condition' ],
                     file(params.modules_testdata_base_path + "genomics/sarscov2/genome/genome.gtf", checkIfExists: true)
                 ])
                 input[1] = Channel.of([

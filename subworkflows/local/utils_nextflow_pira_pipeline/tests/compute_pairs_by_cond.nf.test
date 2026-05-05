@@ -10,9 +10,9 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of(
-                    [ condition: 'cond-1', alignment: 'align', length: 'len', bam: ['bam-1', 'bam-2'], tmp: 'tmp-1', sequencing: 'seq-1'],
-                    [ condition: 'cond-2', alignment: 'align', length: 'len', bam: ['bam-3', 'bam-4'], tmp: 'tmp-2', sequencing: 'seq-2'],
-                    [ condition: 'cond-3', alignment: 'align', length: 'len', bam: ['bam-5', 'bam-6'], tmp: 'tmp-3', sequencing: 'seq-3']
+                    [ condition: 'cond-1', length: 'len', bam: ['bam-1', 'bam-2'], tmp: 'tmp-1', sequencing: 'seq-1'],
+                    [ condition: 'cond-2', length: 'len', bam: ['bam-3', 'bam-4'], tmp: 'tmp-2', sequencing: 'seq-2'],
+                    [ condition: 'cond-3', length: 'len', bam: ['bam-5', 'bam-6'], tmp: 'tmp-3', sequencing: 'seq-3']
                 )
                 """
             }

@@ -10,7 +10,7 @@ workflow ASSEMBLY_PRE {
     main:
 
     STRINGTIE_CLEAN(
-        ch_input.map { it -> tuple([id: "gtf", alignment: "denovo"], it.gtf) }
+        ch_input.map { it -> tuple([id: "gtf"], it.gtf) }
     )
 
     ch_out = Channel.empty()
@@ -39,7 +39,7 @@ workflow ASSEMBLY_TRANSCRIPT {
     STRINGTIE_STRINGTIE(
         ch_input
         .map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment, condition: it.condition, strandedness: it.strandedness],
+            [id: it.experiment, condition: it.condition, strandedness: it.strandedness],
             it.bam
         ) },
         ch_input
@@ -50,7 +50,7 @@ workflow ASSEMBLY_TRANSCRIPT {
 
     ch_out = Channel.empty()
     STRINGTIE_STRINGTIE.out.transcript_gtf
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, gtf: it[1]] }
+        .map { it -> [experiment: it[0].id, condition: it[0].condition, gtf: it[1]] }
         .set { ch_out }
 
     // versions
@@ -81,7 +81,7 @@ workflow ASSEMBLY_MERGE {
     ch_out = Channel.empty()
     ch_input
         .combine(STRINGTIE_MERGE.out.gtf)
-        .map { row, gtf -> [alignment: row.alignment, gtf: gtf] }
+        .map { row, gtf -> [gtf: gtf] }
         .set { ch_out }
 
     // versions

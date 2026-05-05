@@ -9,7 +9,7 @@ nextflow_process {
         when {
             process {
                 """
-                input[0] = Channel.of([ id: 'condition', alignment: 'alignment' ])
+                input[0] = Channel.of([ id: 'condition'])
                 input[1] = Channel.of([
                     file('${projectDir}/assets/data/minimal.one.stats', checkIfExists: true),
                     file('${projectDir}/assets/data/minimal.two.stats', checkIfExists: true)

@@ -4,7 +4,6 @@
             {
                 "0": [
                     {
-                        "alignment": "align",
                         "bam_1": [
                             "bam-1",
                             "bam-2"
@@ -23,7 +22,6 @@
                         "tmp_2": "tmp-2"
                     },
                     {
-                        "alignment": "align",
                         "bam_1": [
                             "bam-1",
                             "bam-2"
@@ -42,7 +40,6 @@
                         "tmp_2": "tmp-3"
                     },
                     {
-                        "alignment": "align",
                         "bam_1": [
                             "bam-3",
                             "bam-4"
@@ -63,7 +60,6 @@
                 ],
                 "ch_out": [
                     {
-                        "alignment": "align",
                         "bam_1": [
                             "bam-1",
                             "bam-2"
@@ -82,7 +78,6 @@
                         "tmp_2": "tmp-2"
                     },
                     {
-                        "alignment": "align",
                         "bam_1": [
                             "bam-1",
                             "bam-2"
@@ -101,7 +96,6 @@
                         "tmp_2": "tmp-3"
                     },
                     {
-                        "alignment": "align",
                         "bam_1": [
                             "bam-3",
                             "bam-4"
@@ -126,6 +120,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2025-12-18T17:57:26.355918"
+        "timestamp": "2026-05-05T15:29:39.700422"
     }
 }

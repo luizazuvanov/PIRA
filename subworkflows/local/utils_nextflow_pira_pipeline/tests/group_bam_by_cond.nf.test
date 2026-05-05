@@ -1,0 +1,29 @@
+nextflow_workflow {
+
+    name "Test Workflow group_bam_by_cond"
+    script "../main.nf"
+    workflow "group_bam_by_cond"
+
+    test("group_bam_by_cond") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [ condition: 'cond-1', bam: 'bam-1' ],
+                    [ condition: 'cond-1', bam: 'bam-2' ],
+                    [ condition: 'cond-2', bam: 'bam-3' ],
+                    [ condition: 'cond-2', bam: 'bam-4' ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

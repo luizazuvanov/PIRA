@@ -12,27 +12,27 @@ workflow CTRL3 {
     main:
 
     RSEQC_INFEREXPERIMENT(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed }
     )
 
     STRANDEDNESS(
         RSEQC_INFEREXPERIMENT.out.txt
-            .map { it -> tuple([id: it[0].id, alignment: it[0].alignment, condition: it[0].condition], it[1]) }
+            .map { it -> tuple([id: it[0].id, condition: it[0].condition], it[1]) }
     )
 
     RSEQC_JUNCTIONANNOTATION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed}
     )
 
     RSEQC_JUNCTIONSATURATION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed }
     )
 
     RSEQC_READDISTRIBUTION(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition], it.bam) },
+        ch_input.map { it -> tuple([id: it.experiment, condition: it.condition], it.bam) },
         ch_input.map { it -> it.bed }
     )
 

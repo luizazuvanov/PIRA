@@ -1,7 +1,7 @@
 include { SJ_FILTER } from '../../../modules/local/sj/filter/main'
 include { STAR_ALIGN } from '../../../modules/nf-core/star/align/main'
 
-workflow ALIGNMENT_BASELINE {
+workflow ALIGNMENT {
 
     take:
     ch_input
@@ -9,7 +9,7 @@ workflow ALIGNMENT_BASELINE {
     main:
 
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition, single_end: it.single_end], it.fastp) },
+        ch_input.map { it -> tuple([id: it.experiment, condition: it.condition, single_end: it.single_end], it.fastp) },
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
@@ -18,14 +18,14 @@ workflow ALIGNMENT_BASELINE {
     )
 
     SJ_FILTER(
-        STAR_ALIGN.out.spl_junc_tab.map { it -> tuple([id: it[0].id, alignment: it[0].alignment, condition: it[0].condition], it[1]) }
+        STAR_ALIGN.out.spl_junc_tab.map { it -> tuple([id: it[0].id, condition: it[0].condition], it[1]) }
     )
 
     // clean
 
     ch_out_bam = Channel.empty()
     STAR_ALIGN.out.bam_sorted_aligned
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, bam: it[1]] }
+        .map { it -> [experiment: it[0].id, condition: it[0].condition, bam: it[1]] }
         .set { ch_out_bam }
 
     ch_out_spl = Channel.empty()
@@ -63,7 +63,7 @@ workflow ALIGNMENT_DENOVO {
     main:
 
     STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: it.alignment, condition: it.condition, single_end: it.single_end, spl: it.spl], it.fastp) },
+        ch_input.map { it -> tuple([id: it.experiment, condition: it.condition, single_end: it.single_end, spl: it.spl], it.fastp) },
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
         true,
@@ -75,7 +75,7 @@ workflow ALIGNMENT_DENOVO {
 
     ch_out = Channel.empty()
     STAR_ALIGN.out.bam_sorted_aligned
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, bam: it[1]] }
+        .map { it -> [experiment: it[0].id, condition: it[0].condition, bam: it[1]] }
         .set { ch_out }
 
     // versions
