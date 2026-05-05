@@ -138,8 +138,6 @@ workflow PIRA {
         .map { it -> [experiment: it.experiment, condition: it.condition, bam: it.bam] }
         .set { ch_bam }
 
-    ch_bam.collect().println()
-
     //
     // SUBWORKFLOW: CTRL2
     // ch_stats = exp, cond, stats
