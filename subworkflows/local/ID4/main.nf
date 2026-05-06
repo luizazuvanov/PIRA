@@ -11,7 +11,7 @@ workflow CTRL2 {
 
     SAMTOOLS_STATS(
         ch_input.map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment, condition: it.condition],
+            [id: it.experiment, condition: it.condition],
             it.bam,
             []
         ) },
@@ -20,14 +20,14 @@ workflow CTRL2 {
 
     SAMTOOLS_INDEX(
         ch_input.map { it -> tuple(
-            [id: it.experiment, alignment: it.alignment],
+            [id: it.experiment],
             it.bam,
         ) }
     )
 
     ch_out = Channel.empty()
     SAMTOOLS_STATS.out.stats
-        .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, stats: it[1]] }
+        .map { it -> [experiment: it[0].id, condition: it[0].condition, stats: it[1]] }
         .set { ch_out }
 
     // versions
@@ -52,7 +52,7 @@ workflow CTRL2_CONDITION {
 
     SAMTOOLS_MERGE(
         ch_input.map { it -> tuple(
-            [id: it.condition, alignment: it.alignment],
+            [id: it.condition],
             it.bam,
         ) },
         [[], []],

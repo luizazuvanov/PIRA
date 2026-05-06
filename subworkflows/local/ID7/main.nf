@@ -9,13 +9,13 @@ workflow SPLICING_LENGTH {
     main:
 
     RMATS_LENGTH(
-        ch_input.map { it -> [id: it.alignment] },
+        ch_input.map { it -> [id: "length"] },
         ch_input.map { it -> it.stats }
     )
 
     ch_out = Channel.empty()
     RMATS_LENGTH.out.stats
-        .map { it -> [alignment: it[0].id, length: it[1]] }
+        .map { it -> [length: it[1]] }
         .set { ch_out }
 
     // versions
@@ -36,7 +36,7 @@ workflow SPLICING_PRE {
     main:
 
     RMATS_PRE(
-        ch_input.map { it -> tuple( [id: it.condition, alignment: it.alignment], it.gtf ) },
+        ch_input.map { it -> tuple( [id: it.condition], it.gtf ) },
         ch_input.map { it -> it.bam },
         ch_input.map { it -> it.sequencing },
         ch_input.map { it -> it.length },
@@ -45,11 +45,11 @@ workflow SPLICING_PRE {
 
     ch_out = Channel.empty()
     ch_input
-        .map { it -> tuple( [it.condition, it.alignment], it ) }
+        .map { it -> tuple( [it.condition], it ) }
         .join(
             RMATS_PRE.out.tmp
-                .map { it -> [condition: it[0].id, alignment: it[0].alignment, tmp: it[1]] }
-                .map { it -> tuple( [it.condition, it.alignment], it ) }
+                .map { it -> [condition: it[0].id, tmp: it[1]] }
+                .map { it -> tuple( [it.condition], it ) }
         )
         .map { __, a, b -> a + b } // drop join key
         .set { ch_out }
@@ -72,7 +72,7 @@ workflow SPLICING_POS {
     main:
 
     RMATS_POS(
-        ch_input.map { it -> tuple( [id: it.condition, alignment: it.alignment], it.gtf ) },
+        ch_input.map { it -> tuple( [id: it.condition], it.gtf ) },
         ch_input.map { it -> it.bam_1 },
         ch_input.map { it -> it.bam_2 },
         ch_input.map { it -> it.tmp_1 },

@@ -43,52 +43,48 @@ workflow group_fastp_by_exp_cond_end {
     ch_out // exp, cond, end, []fastp
 }
 
-workflow group_gtf_by_align {
+workflow group_gtf {
 
     take:
-    ch_gtf // [align, gtf, ...]
+    ch_gtf // [gtf, ...]
 
     main:
 
     ch_out = Channel.empty()
     ch_gtf
-        .map { it -> tuple(it.alignment, it) }
-        .groupTuple()
-        .map { __, its -> [
-            alignment: its.collect { it.alignment }.unique().first(),
+        .collect()
+        .map { its -> [
             gtf: its.collect { it.gtf }.flatten()
         ] }
         .set { ch_out }
 
     emit:
-    ch_out // align, []gtf
+    ch_out // []gtf
 }
 
-workflow group_stats_by_align {
+workflow group_stats {
 
     take:
-    ch_stats // [align, stats, ...]
+    ch_gtf // [gtf, ...]
 
     main:
 
     ch_out = Channel.empty()
-    ch_stats
-        .map { it -> tuple(it.alignment, it) }
-        .groupTuple()
-        .map { __, its -> [
-            alignment: its.collect { it.alignment }.unique().first(),
+    ch_gtf
+        .collect()
+        .map { its -> [
             stats: its.collect { it.stats }.flatten()
         ] }
         .set { ch_out }
 
     emit:
-    ch_out // align, []stats
+    ch_out // []stats
 }
 
-workflow group_bam_by_cond_keep_align {
+workflow group_bam_by_cond {
 
     take:
-    ch_bam // [cond, align, bam, ...]
+    ch_bam // [cond, bam, ...]
 
     main:
 
@@ -98,13 +94,12 @@ workflow group_bam_by_cond_keep_align {
         .groupTuple()
         .map { __, its -> [
             condition: its.collect { it.condition }.unique().first(),
-            alignment: its.collect { it.alignment }.unique().first(),
             bam: its.collect { it.bam }.flatten()
         ] }
         .set { ch_out }
 
     emit:
-    ch_out // cond, align, []bam
+    ch_out // cond, []bam
 }
 
 workflow combine_by_cond {
@@ -167,10 +162,11 @@ workflow compute_pairs_by_cond {
         .collect()
         .flatMap { items ->
             def combinations = []
-            for (int i = 0; i < items.size(); i++) {
-                for (int j = i + 1; j < items.size(); j++) {
-                    def cond_1 = items[i]
-                    def cond_2 = items[j]
+            def sorted = items.sort { it.condition }
+            for (int i = 0; i < sorted.size(); i++) {
+                for (int j = i + 1; j < sorted.size(); j++) {
+                    def cond_1 = sorted[i]
+                    def cond_2 = sorted[j]
                     def combined = [
                         condition: "${cond_1.condition}_vs_${cond_2.condition}",
                         bam_1: cond_1.bam,
@@ -178,7 +174,6 @@ workflow compute_pairs_by_cond {
                         tmp_1: cond_1.tmp,
                         tmp_2: cond_2.tmp,
                         length: cond_1.length,
-                        alignment: cond_1.alignment, // both have same alignment
                         sequencing: [cond_1.sequencing, cond_2.sequencing],
                     ]
                     combinations.add(combined)
@@ -192,10 +187,10 @@ workflow compute_pairs_by_cond {
     ch_out // [cond1_vs_cond2, ...]
 }
 
-workflow reduce_strandedness_by_cond_align {
+workflow reduce_strandedness_by_cond {
 
     take:
-    ch_strandedness // [cond, align, alias, strandedness, sequencing]
+    ch_strandedness // [cond, alias, strandedness, sequencing]
 
     main:
 
@@ -205,7 +200,6 @@ workflow reduce_strandedness_by_cond_align {
         .groupTuple()
         .map { __, its -> [
             condition: its.collect { it.condition }.unique().first(),
-            alignment: its.collect { it.alignment }.unique().first(),
             alias: its.collect { it.alias }.first(),
             sequencing: its.collect { it.sequencing }.first(),
             strandedness: its.collect { it.strandedness }.first()
@@ -213,5 +207,5 @@ workflow reduce_strandedness_by_cond_align {
         .set { ch_out }
 
     emit:
-    ch_out // cond, align, alias, strandedness, sequencing
+    ch_out // cond, alias, strandedness, sequencing
 }

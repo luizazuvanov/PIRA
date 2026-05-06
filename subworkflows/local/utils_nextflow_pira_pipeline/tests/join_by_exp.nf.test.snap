@@ -4,7 +4,6 @@
             {
                 "0": [
                     {
-                        "alignment": "align-1",
                         "bam": "bam-1",
                         "condition": "cond-1",
                         "experiment": "exp-1",
@@ -16,7 +15,6 @@
                         "spl": "spl-1"
                     },
                     {
-                        "alignment": "align-2",
                         "bam": "bam-2",
                         "condition": "cond-1",
                         "experiment": "exp-2",
@@ -30,7 +28,6 @@
                 ],
                 "ch_out": [
                     {
-                        "alignment": "align-1",
                         "bam": "bam-1",
                         "condition": "cond-1",
                         "experiment": "exp-1",
@@ -42,7 +39,6 @@
                         "spl": "spl-1"
                     },
                     {
-                        "alignment": "align-2",
                         "bam": "bam-2",
                         "condition": "cond-1",
                         "experiment": "exp-2",
@@ -60,6 +56,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2025-12-18T17:39:47.199911"
+        "timestamp": "2026-05-05T15:28:54.483418"
     }
 }

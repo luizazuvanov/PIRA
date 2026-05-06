@@ -5,8 +5,7 @@
                 "0": [
                     [
                         {
-                            "id": "condition",
-                            "alignment": "alignment"
+                            "id": "condition"
                         },
                         "100"
                     ]
@@ -14,8 +13,7 @@
                 "1": [
                     [
                         {
-                            "id": "condition",
-                            "alignment": "alignment"
+                            "id": "condition"
                         },
                         "condition.stats.csv:md5,37eb2d1d5d7e98d3f07f50de5d51517e"
                     ]
@@ -23,8 +21,7 @@
                 "2": [
                     [
                         {
-                            "id": "condition",
-                            "alignment": "alignment"
+                            "id": "condition"
                         },
                         "condition.merged.stats:md5,b422cf77c168cb9ad06a0bedff24976d"
                     ]
@@ -35,8 +32,7 @@
                 "average": [
                     [
                         {
-                            "id": "condition",
-                            "alignment": "alignment"
+                            "id": "condition"
                         },
                         "condition.stats.csv:md5,37eb2d1d5d7e98d3f07f50de5d51517e"
                     ]
@@ -44,8 +40,7 @@
                 "merged": [
                     [
                         {
-                            "id": "condition",
-                            "alignment": "alignment"
+                            "id": "condition"
                         },
                         "condition.merged.stats:md5,b422cf77c168cb9ad06a0bedff24976d"
                     ]
@@ -53,8 +48,7 @@
                 "stats": [
                     [
                         {
-                            "id": "condition",
-                            "alignment": "alignment"
+                            "id": "condition"
                         },
                         "100"
                     ]
@@ -66,8 +60,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.04.3"
+            "nextflow": "25.10.2"
         },
-        "timestamp": "2025-11-26T12:34:37.947966"
+        "timestamp": "2026-05-05T15:36:34.185285"
     }
 }

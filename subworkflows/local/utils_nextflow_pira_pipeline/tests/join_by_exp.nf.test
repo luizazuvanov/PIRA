@@ -14,8 +14,8 @@ nextflow_workflow {
                     [ run: 'run-2', experiment: 'exp-2', condition: 'cond-1', fastp: ['fastp-3', 'fastp-4'] ]
                 )
                 input[1] = Channel.of(
-                    [ experiment: 'exp-1', alignment: 'align-1', condition: 'cond-1', bam: 'bam-1', spl: 'spl-1' ],
-                    [ experiment: 'exp-2', alignment: 'align-2', condition: 'cond-1', bam: 'bam-2', spl: 'spl-2' ]
+                    [ experiment: 'exp-1', condition: 'cond-1', bam: 'bam-1', spl: 'spl-1' ],
+                    [ experiment: 'exp-2', condition: 'cond-1', bam: 'bam-2', spl: 'spl-2' ]
                 )
                 """
             }
