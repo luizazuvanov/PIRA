@@ -19,7 +19,8 @@ include { ASSEMBLY_MERGE                           } from '../../subworkflows/lo
 include { SPLICING_LENGTH                          } from '../../subworkflows/local/ID7/main'
 include { SPLICING_PRE as SPLICING_PRE_WITH_NSS    } from '../../subworkflows/local/ID7/main'
 include { SPLICING_PRE as SPLICING_PRE_WITHOUT_NSS } from '../../subworkflows/local/ID7/main'
-include { SPLICING_POS                             } from '../../subworkflows/local/ID7/main'
+include { SPLICING_POS as SPLICING_POS_WITH_NSS    } from '../../subworkflows/local/ID7/main'
+include { SPLICING_POS as SPLICING_POS_WITHOUT_NSS } from '../../subworkflows/local/ID7/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -274,12 +275,24 @@ workflow PIRA {
         ch_splicing_prep
     )
 
-    SPLICING_POS(
-        ch_splicing_post
-            .combine(ch_gtf)
-            .map { row, gtf -> row + [gtf: gtf.gtf] }
-    )
-    ch_versions = ch_versions.mix(SPLICING_POS.out.versions)
+    if (params.with_novelss) {
+
+        SPLICING_POS_WITH_NSS(
+            ch_splicing_post
+                .combine(ch_gtf)
+                .map { row, gtf -> row + [gtf: gtf.gtf] }
+        )
+        ch_versions = ch_versions.mix(SPLICING_POS_WITH_NSS.out.versions)
+
+    } else {
+
+        SPLICING_POS_WITHOUT_NSS(
+            ch_splicing_post
+                .combine(ch_gtf)
+                .map { row, gtf -> row + [gtf: gtf.gtf] }
+        )
+        ch_versions = ch_versions.mix(SPLICING_POS_WITHOUT_NSS.out.versions)
+    }
 
     //
     // WRAP UP
