@@ -162,10 +162,11 @@ workflow compute_pairs_by_cond {
         .collect()
         .flatMap { items ->
             def combinations = []
-            for (int i = 0; i < items.size(); i++) {
-                for (int j = i + 1; j < items.size(); j++) {
-                    def cond_1 = items[i]
-                    def cond_2 = items[j]
+            def sorted = items.sort { it.condition }
+            for (int i = 0; i < sorted.size(); i++) {
+                for (int j = i + 1; j < sorted.size(); j++) {
+                    def cond_1 = sorted[i]
+                    def cond_2 = sorted[j]
                     def combined = [
                         condition: "${cond_1.condition}_vs_${cond_2.condition}",
                         bam_1: cond_1.bam,
