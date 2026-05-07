@@ -23,17 +23,17 @@ process RMATS_LENGTH {
 
     """
     # concatenate stats files
-    touch "$prefix".merged.stats
+    touch length.merged.stats
     for file in $stats; do
         filename=\$(echo "\$file" | tr -d '[],')
-        grep "^RL" \$filename >> "$prefix".merged.stats
+        grep "^RL" \$filename >> length.merged.stats
     done
 
     # compute the most common read length, truncated to integer
-    touch "$prefix".stats.csv
-    LENGTH=\$(grep "^RL" "$prefix".merged.stats | sort -nr -k3,3 | head -1 | awk '{print \$2}')
-    echo -e "length" >> "$prefix".stats.csv
-    echo -e \$LENGTH >> "$prefix".stats.csv
+    touch length.stats.csv
+    LENGTH=\$(grep "^RL" length.merged.stats | sort -nr -k3,3 | head -1 | awk '{print \$2}')
+    echo -e "length" >> length.stats.csv
+    echo -e \$LENGTH >> length.stats.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -46,16 +46,16 @@ process RMATS_LENGTH {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    touch "$prefix".merged.stats
+    touch length.merged.stats
     for file in $stats; do
         filename=\$(echo "\$file" | tr -d '[],')
-        echo -e \$filename >> "$prefix".merged.stats
+        echo -e \$filename >> length.merged.stats
     done
 
-    touch "$prefix".stats.csv
+    touch length.stats.csv
     LENGTH=30
-    echo -e "length" >> "$prefix".stats.csv
-    echo -e \$LENGTH >> "$prefix".stats.csv
+    echo -e "length" >> length.stats.csv
+    echo -e \$LENGTH >> length.stats.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
