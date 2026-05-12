@@ -147,8 +147,6 @@ A custom filtering step removes low-confidence and artefactual junctions from th
 
 The two-pass alignment re-runs STAR using the filtered splice junctions discovered in the baseline pass (`--sjdbFileChrStartEnd`). This improves sensitivity for novel and lowly-expressed splice junctions. The two-pass step is enabled by default (`--with_twopass true`) and can be disabled with `--with_twopass false`.
 
----
-
 ## Alignment post-processing
 
 ### SAMtools
@@ -239,7 +237,7 @@ When `--with_transcriptassembly false` is set, the original input GTF is passed 
 
 [rMATS-turbo](https://github.com/Xinglab/rmats-turbo) (v4.3.0) is used to detect and quantify differential alternative splicing events between pairs of conditions. The pipeline runs rMATS in a two-step mode:
 
-1. **Prep step (`--task prep`)** — processes each condition's BAM files independently to compute per-condition splicing statistics. The read length is determined automatically from the SAMtools stats output. Strandedness is set from the RSeQC inference.
+1. **Prep step (`--task prep`)** — processes each condition's BAM files independently to compute per-condition splicing statistics. The read length is determined automatically from the SAMtools stats output by computing a weighted average across all experiments within each condition. When runs within the same condition have variable read lengths (e.g., from different sequencing runs), the pipeline uses the `--variable-read-length` flag for rMATS, which relaxes the fixed-length assumption and handles length heterogeneity gracefully.
 2. **Post step (`--task post`)** — combines the prep-step outputs from both conditions to perform the pairwise statistical test and generate the final output tables.
 
 All pairwise condition comparisons are performed automatically: for _n_ conditions, _n(n−1)/2_ comparisons are run.

@@ -58,7 +58,7 @@ SRR16496068,SRX12699033,9DA,false
 ```
 
 > [!TIP]
-> NCBI may require credentials or an API key for large downloads. See the [SRA Toolkit documentation](https://github.com/ncbi/sra-tools/wiki) for setup instructions.
+> NCBI may throttle or require credentials for bulk downloads. For more than ~10 runs or datasets larger than a few GB, configuring an [NCBI API key](https://www.ncbi.nlm.nih.gov/account/settings/) (set via the `NCBI_API_KEY` environment variable) is strongly recommended. See the [SRA Toolkit documentation](https://github.com/ncbi/sra-tools/wiki) for full setup instructions.
 
 ### Multiple runs per experiment (technical replicates)
 
