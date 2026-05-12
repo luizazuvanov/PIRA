@@ -102,6 +102,27 @@ workflow group_bam_by_cond {
     ch_out // cond, []bam
 }
 
+workflow group_spl_by_alignment {
+
+    take:
+    ch_spl // [alignment, spl, ...]
+
+    main:
+
+    ch_out = Channel.empty()
+    ch_spl
+        .map { it -> tuple(it.alignment, it) }
+        .groupTuple()
+        .map { __, its -> [
+            alignment: its.collect { it.alignment }.unique().first(),
+            spl: its.collect { it.spl }.flatten()
+        ] }
+        .set { ch_out }
+
+    emit:
+    ch_out // alignment, []spl
+}
+
 workflow combine_by_cond {
 
     take:
