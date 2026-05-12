@@ -17,36 +17,42 @@
                         "type": "integer"
                     }
                 ],
-                "errorMessage": "Run identifier. Use an NCBI Run accession ID (e.g. SRR16496056) or a custom identifier (e.g. sample-1 or 1)",
+                "description": "Unique run identifier. Use an NCBI SRA Run accession (e.g. SRR16496056) to download data automatically, or any alphanumeric string (e.g. sample-1 or 1) when supplying local FASTQ files with --with_fastq.",
+                "errorMessage": "Run identifier must be an alphanumeric string (e.g. SRR16496056 or sample-1) or an integer.",
                 "meta": ["id"]
             },
             "experiment": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9_-]+$",
-                "errorMessage": "NCBI Experiment accession ID (e.g. SRX12699021)"
+                "description": "Experiment identifier. Use an NCBI SRA Experiment accession (e.g. SRX12699021) or a custom alphanumeric label. Runs sharing the same experiment value are merged before alignment and treated as technical replicates.",
+                "errorMessage": "Experiment identifier must contain only letters, numbers, hyphens and underscores (e.g. SRX12699021 or experiment-1)."
             },
             "condition": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9_-]+$",
-                "errorMessage": "Custom condition name to group replicates together"
+                "description": "Condition label used to group biological replicates for the alternative splicing analysis (e.g. CTRL or TREAT). All experiments with the same condition value are pooled together when running rMATS pairwise comparisons.",
+                "errorMessage": "Condition identifier must contain only letters, numbers, hyphens and underscores (e.g. CTRL or treatment-1)."
             },
             "single_end": {
                 "type": "boolean",
-                "errorMessage": "Whether the sample is single-end"
+                "description": "Set to true for single-end sequencing libraries, false for paired-end. This value controls how FASTQ files are downloaded from SRA (fasterq-dump) and how fastp and STAR handle the reads.",
+                "errorMessage": "single_end must be a boolean value: true or false."
             },
             "fastq_1": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
-                "errorMessage": "File path to the first FASTQ file for this sample"
+                "description": "Absolute or relative path to the gzipped FASTQ file for read 1. Required when --with_fastq is set. The file must have the extension .fastq.gz or .fq.gz.",
+                "errorMessage": "fastq_1 must be a valid file path with extension .fastq.gz or .fq.gz and must not contain spaces."
             },
             "fastq_2": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
-                "errorMessage": "File path to the second FASTQ file for this sample (if paired-end)"
+                "description": "Absolute or relative path to the gzipped FASTQ file for read 2. Required when --with_fastq is set and the library is paired-end (single_end = false). Leave empty for single-end libraries.",
+                "errorMessage": "fastq_2 must be a valid file path with extension .fastq.gz or .fq.gz and must not contain spaces."
             }
         },
         "required": ["run", "experiment", "condition", "single_end"]

@@ -6,58 +6,111 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
+nf-core/pira is a pipeline for event-based alternative splicing analysis from bulk RNA-seq data. It covers the full workflow from raw FASTQ files (or NCBI SRA accession IDs) to differential splicing results produced by rMATS-turbo. The sections below describe how to prepare your inputs, run the pipeline, and customise its behaviour.
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location.
 
 ```bash
 --input '[path to samplesheet file]'
 ```
 
-### Multiple runs of the same sample
+The samplesheet must be a comma-separated file with a header row. The six supported columns are described in the table below. The `run`, `experiment`, `condition`, and `single_end` columns are **always required**. The `fastq_1` and `fastq_2` columns are required only when `--with_fastq` is set; when starting from NCBI SRA accession IDs they can be omitted.
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+| Column       | Required                     | Description                                                                                                                                                                                                 |
+| ------------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `run`        | Always                       | Unique run identifier. Use an NCBI SRA Run accession (e.g. `SRR16496056`) to download data automatically, or any alphanumeric string (e.g. `sample-1`) when providing local FASTQ files with `--with_fastq`. |
+| `experiment` | Always                       | NCBI SRA Experiment accession (e.g. `SRX12699021`) or a custom alphanumeric label. Runs sharing the same `experiment` value are merged before alignment and treated as technical replicates.                  |
+| `condition`  | Always                       | Condition label used to group biological replicates (e.g. `CTRL`, `TREAT`). All experiments belonging to the same condition are pooled for the alternative splicing analysis.                                 |
+| `single_end` | Always                       | `true` for single-end libraries, `false` for paired-end.                                                                                                                                                      |
+| `fastq_1`    | Only with `--with_fastq`     | Absolute or relative path to the gzipped FASTQ file for read 1 (extension must be `.fastq.gz` or `.fq.gz`).                                                                                                   |
+| `fastq_2`    | Only with `--with_fastq` (PE) | Absolute or relative path to the gzipped FASTQ file for read 2 (paired-end only). Leave empty for single-end libraries.                                                                                      |
 
-```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
-```
+### Starting from local FASTQ files
 
-### Full samplesheet
-
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
-
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
+When your data is already on disk, set the `--with_fastq` flag and provide paths in the `fastq_1` / `fastq_2` columns:
 
 ```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+run,experiment,condition,single_end,fastq_1,fastq_2
+SRR16496056,SRX12699021,0DY,false,/data/fastq/SRR16496056_1.fastq.gz,/data/fastq/SRR16496056_2.fastq.gz
+SRR16496057,SRX12699022,0DY,false,/data/fastq/SRR16496057_1.fastq.gz,/data/fastq/SRR16496057_2.fastq.gz
+SRR16496058,SRX12699023,0DY,false,/data/fastq/SRR16496058_1.fastq.gz,/data/fastq/SRR16496058_2.fastq.gz
+SRR16496066,SRX12699031,9DA,false,/data/fastq/SRR16496066_1.fastq.gz,/data/fastq/SRR16496066_2.fastq.gz
+SRR16496067,SRX12699032,9DA,false,/data/fastq/SRR16496067_1.fastq.gz,/data/fastq/SRR16496067_2.fastq.gz
+SRR16496068,SRX12699033,9DA,false,/data/fastq/SRR16496068_1.fastq.gz,/data/fastq/SRR16496068_2.fastq.gz
 ```
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
+In this example there are two conditions (`0DY` and `9DA`), each with three biological replicates. Each replicate is a distinct experiment, and each experiment has a single run.
+
+### Starting from NCBI SRA accessions
+
+When `--with_fastq` is **not** set, the pipeline uses the `run` column as an NCBI SRA Run accession and downloads the corresponding FASTQ files automatically via SRA Toolkit. The `fastq_1` and `fastq_2` columns can be omitted:
+
+```csv title="samplesheet.csv"
+run,experiment,condition,single_end
+SRR16496056,SRX12699021,0DY,false
+SRR16496057,SRX12699022,0DY,false
+SRR16496058,SRX12699023,0DY,false
+SRR16496066,SRX12699031,9DA,false
+SRR16496067,SRX12699032,9DA,false
+SRR16496068,SRX12699033,9DA,false
+```
+
+> [!TIP]
+> NCBI may require credentials or an API key for large downloads. See the [SRA Toolkit documentation](https://github.com/ncbi/sra-tools/wiki) for setup instructions.
+
+### Multiple runs per experiment (technical replicates)
+
+If a single experiment was sequenced across multiple runs (e.g. multiple flow-cell lanes), list each run as a separate row with the same `experiment` value. The pipeline merges their reads automatically before alignment:
+
+```csv title="samplesheet.csv"
+run,experiment,condition,single_end,fastq_1,fastq_2
+SRR16496056,SRX12699021,CTRL,false,SRR16496056_1.fastq.gz,SRR16496056_2.fastq.gz
+SRR16496057,SRX12699021,CTRL,false,SRR16496057_1.fastq.gz,SRR16496057_2.fastq.gz
+SRR16496058,SRX12699022,TREAT,false,SRR16496058_1.fastq.gz,SRR16496058_2.fastq.gz
+```
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
 ## Running the pipeline
 
-The typical command for running the pipeline is as follows:
+### Minimal run with local FASTQ files
 
 ```bash
-nextflow run nf-core/pira --input ./samplesheet.csv --outdir ./results  -profile docker
+nextflow run nf-core/pira \
+   -profile docker \
+   --input samplesheet.csv \
+   --outdir ./results \
+   --with_fastq \
+   --fasta /data/genome.fa \
+   --gtf /data/annotation.gtf
+```
+
+### Minimal run downloading data from NCBI SRA
+
+```bash
+nextflow run nf-core/pira \
+   -profile docker \
+   --input samplesheet.csv \
+   --outdir ./results \
+   --fasta /data/genome.fa \
+   --gtf /data/annotation.gtf
+```
+
+### Re-using a pre-built STAR index
+
+If you have already built a STAR genome index, pass it with `--index` to skip index generation:
+
+```bash
+nextflow run nf-core/pira \
+   -profile docker \
+   --input samplesheet.csv \
+   --outdir ./results \
+   --with_fastq \
+   --fasta /data/genome.fa \
+   --gtf /data/annotation.gtf \
+   --index /data/star_index/
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -89,10 +142,21 @@ with:
 ```yaml title="params.yaml"
 input: './samplesheet.csv'
 outdir: './results/'
-<...>
+with_fastq: true
+fasta: '/data/genome.fa'
+gtf: '/data/annotation.gtf'
 ```
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
+
+### Pipeline-specific options
+
+| Parameter                 | Default | Description                                                                                                                                |
+| ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--with_fastq`            | `false` | Use FASTQ files from the samplesheet. When not set, the pipeline downloads reads from NCBI SRA using the `run` accession ID.              |
+| `--with_twopass`          | `true`  | Run STAR's two-pass alignment. The baseline pass discovers splice junctions that are fed back into a second, more sensitive alignment step. |
+| `--with_transcriptassembly` | `true` | Assemble per-experiment transcripts with StringTie2 and merge them into a consensus GTF before running rMATS.                             |
+| `--with_novelss`          | `true`  | Enable rMATS novel splice-site detection (`--novelSS --mil 30`). Increases sensitivity but also run time.                                 |
 
 ### Updating the pipeline
 
@@ -173,6 +237,9 @@ Specify the path to a specific config file (this is a core Nextflow command). Se
 Whilst the default requirements set within the pipeline will hopefully work for most people and with most input data, you may find that you want to customise the compute resources that the pipeline requests. Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the pipeline steps, if the job exits with any of the error codes specified [here](https://github.com/nf-core/rnaseq/blob/4c27ef5610c87db00c3c5a3eed10b1d161abf575/conf/base.config#L18) it will automatically be resubmitted with higher resources request (2 x original, then 3 x original). If it still fails after the third attempt then the pipeline execution is stopped.
 
 To change the resource requests, please see the [max resources](https://nf-co.re/docs/usage/configuration#max-resources) and [tuning workflow resources](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources) section of the nf-core website.
+
+> [!NOTE]
+> STAR genome index generation is memory intensive. For a human-sized genome (~3 Gb) you will need approximately 40 GB of RAM.
 
 ### Custom Containers
 

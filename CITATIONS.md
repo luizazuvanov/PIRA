@@ -10,13 +10,37 @@
 
 ## Pipeline tools
 
-- [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+- [fastp](https://pubmed.ncbi.nlm.nih.gov/30423086/)
 
-> Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
+  > Chen S, Zhou Y, Chen Y, Gu J. fastp: an ultra-fast all-in-one FASTQ preprocessor. Bioinformatics. 2018 Sep 1;34(17):i884-i890. doi: 10.1093/bioinformatics/bty560. PubMed PMID: 30423086; PubMed Central PMCID: PMC6129281.
 
-- [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+- [STAR](https://pubmed.ncbi.nlm.nih.gov/23104886/)
 
-> Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+  > Dobin A, Davis CA, Schlesinger F, Drenkow J, Zaleski C, Jha S, Batut P, Chaisson M, Gingeras TR. STAR: ultrafast universal RNA-seq aligner. Bioinformatics. 2013 Jan 1;29(1):15-21. doi: 10.1093/bioinformatics/bts635. Epub 2012 Oct 25. PubMed PMID: 23104886; PubMed Central PMCID: PMC3530905.
+
+- [SAMtools](https://pubmed.ncbi.nlm.nih.gov/19505943/)
+
+  > Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. doi: 10.1093/bioinformatics/btp352. Epub 2009 Jun 8. PubMed PMID: 19505943; PubMed Central PMCID: PMC2723002.
+
+- [RSeQC](https://pubmed.ncbi.nlm.nih.gov/22743226/)
+
+  > Wang L, Wang S, Li W. RSeQC: quality control of RNA-seq experiments. Bioinformatics. 2012 Aug 15;28(16):2184-5. doi: 10.1093/bioinformatics/bts356. Epub 2012 Jun 27. PubMed PMID: 22743226.
+
+- [StringTie2](https://pubmed.ncbi.nlm.nih.gov/31842956/)
+
+  > Kovaka S, Zimin AV, Pertea GM, Razaghi R, Salzberg SL, Pertea M. Transcriptome assembly from long-read RNA-seq alignments with StringTie2. Genome Biol. 2019 Dec 16;20(1):278. doi: 10.1186/s13059-019-1910-1. PubMed PMID: 31842956; PubMed Central PMCID: PMC6912988.
+
+- [rMATS-turbo](https://pubmed.ncbi.nlm.nih.gov/25480548/)
+
+  > Shen S, Park JW, Lu ZX, Lin L, Henry MD, Wu YN, Zhou Q, Xing Y. rMATS: robust and flexible detection of differential alternative splicing from replicate RNA-Seq data. Proc Natl Acad Sci USA. 2014 Dec 23;111(51):E5593-601. doi: 10.1073/pnas.1419161111. Epub 2014 Dec 5. PubMed PMID: 25480548; PubMed Central PMCID: PMC4280593.
+
+- [SRA Toolkit](https://github.com/ncbi/sra-tools)
+
+  > NCBI SRA Toolkit Development Team. SRA Toolkit. National Center for Biotechnology Information (NCBI). Available at: https://github.com/ncbi/sra-tools.
+
+- [UCSC tools](https://pubmed.ncbi.nlm.nih.gov/20639541/)
+
+  > Kent WJ, Zweig AS, Barber G, Hinrichs AS, Karolchik D. BigWig and BigBed: enabling browsing of large distributed datasets. Bioinformatics. 2010 Sep 1;26(17):2204-7. doi: 10.1093/bioinformatics/btq351. Epub 2010 Jul 17. PubMed PMID: 20639541; PubMed Central PMCID: PMC2922891.
 
 ## Software packaging/containerisation tools
 
@@ -39,3 +63,4 @@
 - [Singularity](https://pubmed.ncbi.nlm.nih.gov/28494014/)
 
   > Kurtzer GM, Sochat V, Bauer MW. Singularity: Scientific containers for mobility of compute. PLoS One. 2017 May 11;12(5):e0177459. doi: 10.1371/journal.pone.0177459. eCollection 2017. PubMed PMID: 28494014; PubMed Central PMCID: PMC5426675.
+
