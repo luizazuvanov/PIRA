@@ -17,10 +17,6 @@ workflow ALIGNMENT {
         ""
     )
 
-    SJ_FILTER(
-        STAR_ALIGN.out.spl_junc_tab.map { it -> tuple([id: it[0].id, alignment: it[0].alignment, condition: it[0].condition], it[1]) }
-    )
-
     // clean
 
     ch_out_bam = Channel.empty()
@@ -29,7 +25,7 @@ workflow ALIGNMENT {
         .set { ch_out_bam }
 
     ch_out_spl = Channel.empty()
-    SJ_FILTER.out.spl_junc_tab
+    STAR_ALIGN.out.spl_junc_tab
         .map { it -> [experiment: it[0].id, condition: it[0].condition, spl: it[1]] }
         .set { ch_out_spl }
 
@@ -48,11 +44,40 @@ workflow ALIGNMENT {
     ch_versions = Channel.empty()
     ch_versions
         .mix( STAR_ALIGN.out.versions )
+
+    emit:
+    data = ch_out
+    versions = ch_versions
+}
+
+workflow ALIGNMENT_SPLICING_JUNCTION {
+
+    take:
+    ch_input
+
+    main:
+
+    SJ_FILTER(
+        ch_input.map { it -> tuple([id: it.alignment], it.spl) }
+    )
+
+    // clean
+
+    ch_out = Channel.empty()
+    SJ_FILTER.out.spl_junc_tab
+        .map { it -> [alignment: it[0].id, spl: it[1]] }
+        .set { ch_out }
+
+    // versions
+
+    ch_versions = Channel.empty()
+    ch_versions
         .mix( SJ_FILTER.out.versions )
 
     emit:
     data = ch_out
     versions = ch_versions
+
 }
 
 workflow ALIGNMENT_DENOVO {

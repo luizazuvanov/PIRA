@@ -11,6 +11,7 @@ include { SAMPLES                                  } from '../../subworkflows/lo
 include { CTRL1                                    } from '../../subworkflows/local/ID2/main'
 include { ALIGNMENT                                } from '../../subworkflows/local/ID3/main'
 include { ALIGNMENT_DENOVO                         } from '../../subworkflows/local/ID3/main'
+include { ALIGNMENT_SPLICING_JUNCTION              } from '../../subworkflows/local/ID3/main'
 include { CTRL2                                    } from '../../subworkflows/local/ID4/main'
 include { CTRL3                                    } from '../../subworkflows/local/ID5/main'
 include { ASSEMBLY_PRE                             } from '../../subworkflows/local/ID6/main'
@@ -28,6 +29,7 @@ include { group_gtf                         } from '../../subworkflows/local/uti
 include { group_stats                       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_fastp_by_exp_cond_end       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_bam_by_cond                 } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
+include { group_spl_by_alignment            } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { combine_by_cond                   } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { join_by_exp                       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { compute_pairs_by_cond             } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
@@ -118,6 +120,15 @@ workflow PIRA {
 
     if (params.with_twopass) {
 
+        ch_spl = group_spl_by_alignment(
+            ch_alignment
+                .map { it -> [alignment: it.alignment, spl: it.spl] }
+        )
+
+        ALIGNMENT_SPLICING_JUNCTION(ch_spl)
+        ch_spl = ALIGNMENT_SPLICING_JUNCTION.out.data
+        ch_versions = ch_versions.mix(ALIGNMENT_SPLICING_JUNCTION.out.versions)
+
         ch_alignment_by_exp = join_by_exp(
             ch_fastp_by_exp,
             ch_alignment
@@ -126,7 +137,9 @@ workflow PIRA {
         ALIGNMENT_DENOVO(
             ch_alignment_by_exp
                 .combine(ch_index)
-                .map {row, index -> row + [index: index.index] },
+                .map {row, index -> row + [index: index.index] }
+                .combine(ch_spl)
+                .map { row, spl -> row + [spl: spl.spl] }
         )
 
         ch_alignment = ALIGNMENT_DENOVO.out.data

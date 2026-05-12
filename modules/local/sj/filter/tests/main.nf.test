@@ -10,8 +10,11 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [ id: 'minimal', condition: 'condition' ],
-                    [ file('${projectDir}/assets/data/minimal.SJ.out.tab', checkIfExists: true) ]
+                    [ id: 'minimal' ],
+                    [
+                        file('${projectDir}/assets/data/minimal.one.SJ.out.tab', checkIfExists: true),
+                        file('${projectDir}/assets/data/minimal.two.SJ.out.tab', checkIfExists: true)
+                    ]
                 ])
                 """
             }

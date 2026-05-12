@@ -5,8 +5,7 @@
                 "0": [
                     [
                         {
-                            "id": "minimal",
-                            "condition": "condition"
+                            "id": "minimal"
                         },
                         "minimal.SJ.out.filter.tab:md5,05280f1d55c6d9bb0afeba9e5579dc4e"
                     ]
@@ -17,8 +16,7 @@
                 "spl_junc_tab": [
                     [
                         {
-                            "id": "minimal",
-                            "condition": "condition"
+                            "id": "minimal"
                         },
                         "minimal.SJ.out.filter.tab:md5,05280f1d55c6d9bb0afeba9e5579dc4e"
                     ]
@@ -32,6 +30,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.2"
         },
-        "timestamp": "2026-05-05T13:58:58.509957"
+        "timestamp": "2026-05-13T00:08:15.811092"
     }
 }
