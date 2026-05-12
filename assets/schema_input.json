@@ -17,7 +17,7 @@
                         "type": "integer"
                     }
                 ],
-                "errorMessage": "Run identifier. Use an NCBI Run accession ID (e.g. SRR16496056) or a custom identifier without spaces",
+                "errorMessage": "Run identifier. Use an NCBI Run accession ID (e.g. SRR16496056) or a custom identifier (e.g. sample-1 or 1)",
                 "meta": ["id"]
             },
             "experiment": {
