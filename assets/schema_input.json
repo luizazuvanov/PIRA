@@ -8,18 +8,26 @@
         "type": "object",
         "properties": {
             "run": {
-                "type": "string",
-                "errorMessage": "NCBI Run accession ID (e.g. SRR16496056)",
+                "anyOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]+$"
+                    },
+                    {
+                        "type": "integer"
+                    }
+                ],
+                "errorMessage": "Run identifier. Use an NCBI Run accession ID (e.g. SRR16496056) or a custom identifier (e.g. sample-1 or 1)",
                 "meta": ["id"]
             },
             "experiment": {
                 "type": "string",
-                "pattern": "[a-zA-Z0-9]",
+                "pattern": "^[A-Za-z0-9_-]+$",
                 "errorMessage": "NCBI Experiment accession ID (e.g. SRX12699021)"
             },
             "condition": {
                 "type": "string",
-                "pattern": "[a-zA-Z0-9]",
+                "pattern": "^[A-Za-z0-9_-]+$",
                 "errorMessage": "Custom condition name to group replicates together"
             },
             "single_end": {
