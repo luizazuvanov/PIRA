@@ -20,7 +20,7 @@ process SJ_FILTER {
 
     """
 
-    cat *.SJ.out.tab | awk '(\$5>1 && \$6==0 && \$7 > 2)' | cut -f1-6 | sort | uniq > "$prefix".SJ.out.filter.tab
+    cat *.SJ.out.tab | awk '(\$5>0 && \$6==0 && \$7 > 2)' | cut -f1-6 | sort | uniq > "$prefix".SJ.out.filter.tab
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
