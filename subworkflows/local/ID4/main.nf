@@ -1,5 +1,4 @@
 include { SAMTOOLS_INDEX } from '../../../modules/nf-core/samtools/index/main'
-include { SAMTOOLS_MERGE } from '../../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_STATS } from '../../../modules/nf-core/samtools/stats/main'
 
 workflow CTRL2 {
@@ -39,38 +38,5 @@ workflow CTRL2 {
 
     emit:
     data = ch_out
-    versions = ch_versions
-}
-
-
-workflow CTRL2_CONDITION {
-
-    take:
-    ch_input
-
-    main:
-
-    SAMTOOLS_MERGE(
-        ch_input.map { it -> tuple(
-            [id: it.condition],
-            it.bam,
-        ) },
-        [[], []],
-        [[], []],
-        [[], []]
-    )
-
-    SAMTOOLS_INDEX(
-        SAMTOOLS_MERGE.out.bam
-    )
-
-    // versions
-
-    ch_versions = Channel.empty()
-    ch_versions
-        .mix( SAMTOOLS_MERGE.out.versions )
-        .mix( SAMTOOLS_INDEX.out.versions )
-
-    emit:
     versions = ch_versions
 }
