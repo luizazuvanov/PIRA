@@ -1,5 +1,6 @@
 include { SJ_FILTER } from '../../../modules/local/sj/filter/main'
 include { STAR_ALIGN } from '../../../modules/nf-core/star/align/main'
+include { STAR_ALIGN_CUSTOM } from '../../../modules/local/star/align/main'
 
 workflow ALIGNMENT {
 
@@ -87,10 +88,11 @@ workflow ALIGNMENT_DENOVO {
 
     main:
 
-    STAR_ALIGN(
-        ch_input.map { it -> tuple([id: it.experiment, alignment: 'denovo', condition: it.condition, single_end: it.single_end, spl: it.spl], it.fastp) },
+    STAR_ALIGN_CUSTOM(
+        ch_input.map { it -> tuple([id: it.experiment, alignment: 'denovo', condition: it.condition, single_end: it.single_end], it.fastp) },
         ch_input.map { it -> tuple([id: it.experiment], it.index) },
         [[], []],
+        ch_input.map { it -> tuple([id: it.experiment], it.spl) },
         true,
         "",
         ""
@@ -99,7 +101,7 @@ workflow ALIGNMENT_DENOVO {
     // clean
 
     ch_out = Channel.empty()
-    STAR_ALIGN.out.bam_sorted_aligned
+    STAR_ALIGN_CUSTOM.out.bam_sorted_aligned
         .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, bam: it[1]] }
         .set { ch_out }
 
@@ -107,7 +109,7 @@ workflow ALIGNMENT_DENOVO {
 
     ch_versions = Channel.empty()
     ch_versions
-        .mix( STAR_ALIGN.out.versions )
+        .mix( STAR_ALIGN_CUSTOM.out.versions )
 
     emit:
     data = ch_out
