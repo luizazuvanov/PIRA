@@ -20,6 +20,9 @@ process BED {
     script:
     def args   = task.ext.args   ?: ''
     def prefix = task.ext.prefix ?: "$gtf.baseName"
+    // WARN: Version information not provided by tool on CLI.
+    // Please update this string when bumping container versions.
+    def VERSION = '482'
 
     """
     gtfToGenePred -ignoreGroupsWithoutExons -genePredExt $gtf "$prefix".genepred
@@ -27,18 +30,24 @@ process BED {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        gtf2bed: \$(bedops --version | grep version | awk ' { print \$2 } ')
+        gtfToGenePred: ${VERSION}
+        genePredToBed: ${VERSION}
     END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "$gtf.baseName"
+    // WARN: Version information not provided by tool on CLI.
+    // Please update this string when bumping container versions.
+    def VERSION = '482'
+
     """
     touch "$prefix".bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        gtf2bed: \$(bedops --version | grep version | awk ' { print \$2 } ')
+        gtfToGenePred: ${VERSION}
+        genePredToBed: ${VERSION}
     END_VERSIONS
     """
 
