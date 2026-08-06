@@ -1,4 +1,4 @@
-include { STRINGTIE_STRINGTIE } from '../../../modules/nf-core/stringtie/stringtie/main'
+include { STRINGTIE_STRINGTIE } from '../../../modules/local/stringtie/stringtie/main'
 include { STRINGTIE_MERGE     } from '../../../modules/nf-core/stringtie/merge/main'
 include { STRINGTIE_CLEAN     } from '../../../modules/local/stringtie/clean/main'
 

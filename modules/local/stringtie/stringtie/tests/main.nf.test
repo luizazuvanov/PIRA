@@ -54,7 +54,6 @@ nextflow_process {
             { assert process.success },
                 { assert snapshot(
                     process.out.abundance,
-                    process.out.ballgown,
                     process.out.transcript_gtf,
                     process.out.versions
                 ).match() }
@@ -107,7 +106,6 @@ nextflow_process {
                 { assert process.success },
                 { assert snapshot(
                     process.out.abundance,
-                    process.out.ballgown,
                     process.out.transcript_gtf,
                     process.out.versions
                 ).match() }
