@@ -320,8 +320,8 @@ workflow PIRA {
         )
 
     emit:
-    multiqc_report = Channel.empty()
     versions = ch_versions
+    multiqc_report = Channel.empty()
 }
 
 /*

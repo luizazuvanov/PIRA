@@ -21,8 +21,7 @@ workflow SPLICING_LENGTH {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( RMATS_LENGTH.out.versions )
+    RMATS_LENGTH.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
@@ -57,8 +56,7 @@ workflow SPLICING_PRE {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( RMATS_PRE.out.versions )
+    RMATS_PRE.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
@@ -84,8 +82,7 @@ workflow SPLICING_POS {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( RMATS_POS.out.versions )
+    RMATS_POS.out.versions.set { ch_versions }
 
     emit:
     versions = ch_versions

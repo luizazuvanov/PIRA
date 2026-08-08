@@ -22,8 +22,7 @@ workflow GENOME_BED {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( BED.out.versions )
+    BED.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
@@ -53,8 +52,7 @@ workflow GENOME_INDEX {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( STAR_GENOMEGENERATE.out.versions )
+    STAR_GENOMEGENERATE.out.versions.set { ch_versions }
 
     emit:
     data = ch_out

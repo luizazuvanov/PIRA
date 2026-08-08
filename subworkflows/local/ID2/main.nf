@@ -36,8 +36,7 @@ workflow CTRL1 {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( FASTP.out.versions )
+    FASTP.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
