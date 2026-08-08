@@ -68,6 +68,7 @@ workflow NFCORE_PIRA {
     PIRA (ch_samples, ch_fasta, ch_gtf, ch_index_optional)
 
     emit:
+    versions = PIRA.out.versions
     multiqc_report = PIRA.out.multiqc_report
 }
 /*

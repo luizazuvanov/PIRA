@@ -46,10 +46,10 @@ workflow SAMPLES {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( CUSTOM_SRATOOLSNCBISETTINGS.out.versions )
+    CUSTOM_SRATOOLSNCBISETTINGS.out.versions
         .mix( SRATOOLS_PREFETCH.out.versions )
         .mix( SRATOOLS_FASTERQDUMP.out.versions )
+        .set { ch_versions }
 
     emit:
     data = ch_out

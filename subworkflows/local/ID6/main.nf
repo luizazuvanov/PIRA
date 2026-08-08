@@ -21,8 +21,7 @@ workflow ASSEMBLY_PRE {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( STRINGTIE_CLEAN.out.versions )
+    STRINGTIE_CLEAN.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
@@ -56,8 +55,7 @@ workflow ASSEMBLY_TRANSCRIPT {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( STRINGTIE_STRINGTIE.out.versions )
+    STRINGTIE_STRINGTIE.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
@@ -87,8 +85,7 @@ workflow ASSEMBLY_MERGE {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( STRINGTIE_MERGE.out.versions )
+    STRINGTIE_MERGE.out.versions.set { ch_versions }
 
     emit:
     data = ch_out

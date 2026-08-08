@@ -13,8 +13,6 @@ process STRINGTIE_STRINGTIE {
 
     output:
     tuple val(meta), path("*.transcripts.gtf"), emit: transcript_gtf
-    tuple val(meta), path("*.abundance.txt")  , emit: abundance
-    tuple val(meta), path("*.coverage.gtf")   , optional: true, emit: coverage_gtf
     path  "versions.yml"                      , emit: versions
 
     when:
@@ -24,7 +22,6 @@ process STRINGTIE_STRINGTIE {
     def args      = task.ext.args ?: ''
     def prefix    = task.ext.prefix ?: "${meta.id}"
     def reference = annotation_gtf ? "-G $annotation_gtf" : ""
-    def coverage  = annotation_gtf ? "-C ${prefix}.coverage.gtf" : ""
 
     def strandedness = ''
     if (meta.strandedness == 'forward') {
@@ -38,8 +35,6 @@ process STRINGTIE_STRINGTIE {
         $strandedness \\
         $reference \\
         -o ${prefix}.transcripts.gtf \\
-        -A ${prefix}.gene.abundance.txt \\
-        $coverage \\
         -p $task.cpus \\
         $args
 
@@ -53,9 +48,6 @@ process STRINGTIE_STRINGTIE {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.transcripts.gtf
-    touch ${prefix}.gene.abundance.txt
-    touch ${prefix}.coverage.gtf
-    touch ${prefix}.ballgown
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

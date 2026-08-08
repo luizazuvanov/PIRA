@@ -42,8 +42,7 @@ workflow ALIGNMENT {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( STAR_ALIGN.out.versions )
+    STAR_ALIGN.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
@@ -71,8 +70,7 @@ workflow ALIGNMENT_SPLICING_JUNCTION {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( SJ_FILTER.out.versions )
+    SJ_FILTER.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
@@ -106,8 +104,7 @@ workflow ALIGNMENT_DENOVO {
     // versions
 
     ch_versions = Channel.empty()
-    ch_versions
-        .mix( STAR_ALIGN.out.versions )
+    STAR_ALIGN.out.versions.set { ch_versions }
 
     emit:
     data = ch_out
