@@ -9,7 +9,7 @@ process RMATS_LENGTH {
 
     input:
     val meta
-    val stats
+    path stats
 
     output:
     tuple val(meta), env('LENGTH')         , emit: stats
@@ -23,11 +23,7 @@ process RMATS_LENGTH {
 
     """
     # concatenate stats files
-    touch "$prefix".merged.stats
-    for file in $stats; do
-        filename=\$(echo "\$file" | tr -d '[],')
-        grep "^RL" \$filename >> "$prefix".merged.stats
-    done
+    grep -h "^RL" $stats > "$prefix".merged.stats
 
     # compute the most common read length, truncated to integer
     touch "$prefix".stats.csv
@@ -46,11 +42,7 @@ process RMATS_LENGTH {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    touch "$prefix".merged.stats
-    for file in $stats; do
-        filename=\$(echo "\$file" | tr -d '[],')
-        echo -e \$filename >> "$prefix".merged.stats
-    done
+    grep -h "^RL" $stats > "$prefix".merged.stats || true
 
     touch "$prefix".stats.csv
     LENGTH=30
