@@ -13,14 +13,14 @@ workflow ASSEMBLY_PRE {
         ch_input.map { it -> tuple([id: "gtf"], it.gtf) }
     )
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     STRINGTIE_CLEAN.out.gtf_clean
         .map { it -> [reference: it] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     STRINGTIE_CLEAN.out.versions.set { ch_versions }
 
     emit:
@@ -47,14 +47,14 @@ workflow ASSEMBLY_TRANSCRIPT {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     STRINGTIE_STRINGTIE.out.transcript_gtf
         .map { it -> [experiment: it[0].id, condition: it[0].condition, gtf: it[1]] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     STRINGTIE_STRINGTIE.out.versions.set { ch_versions }
 
     emit:
@@ -76,15 +76,15 @@ workflow ASSEMBLY_MERGE {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_input
         .combine(STRINGTIE_MERGE.out.gtf)
-        .map { row, gtf -> [gtf: gtf] }
+        .map { _row, gtf -> [gtf: gtf] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     STRINGTIE_MERGE.out.versions.set { ch_versions }
 
     emit:

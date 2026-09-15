@@ -24,14 +24,14 @@ workflow CTRL2 {
         ) }
     )
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     SAMTOOLS_STATS.out.stats
         .map { it -> [experiment: it[0].id, condition: it[0].condition, stats: it[1]] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     ch_versions
         .mix( SAMTOOLS_STATS.out.versions )
         .mix( SAMTOOLS_INDEX.out.versions )

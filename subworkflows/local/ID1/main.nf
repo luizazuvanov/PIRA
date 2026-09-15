@@ -27,7 +27,7 @@ workflow SAMPLES {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     SRATOOLS_FASTERQDUMP.out.reads
         .map { it -> [run: it[0].id, single_end: it[0].single_end, fastq: it[1]] }
         .set { ch_out }
@@ -45,7 +45,7 @@ workflow SAMPLES {
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     CUSTOM_SRATOOLSNCBISETTINGS.out.versions
         .mix( SRATOOLS_PREFETCH.out.versions )
         .mix( SRATOOLS_FASTERQDUMP.out.versions )
