@@ -34,7 +34,6 @@ resume: ## Resume test
 		-profile stub,docker \
 		-stub-run \
 		-resume \
-		-preview \
 		-with-dag \
 		--outdir ./results
 
