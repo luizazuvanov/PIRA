@@ -51,8 +51,8 @@ workflow PIRA {
 
     main:
 
-    ch_versions = Channel.empty()
-    ch_multiqc_files = Channel.empty()
+    ch_versions = channel.empty()
+    // ch_multiqc_files = channel.empty()
 
     //
     // SUBWORKFLOW: GENOME
@@ -147,7 +147,7 @@ workflow PIRA {
 
     }
 
-    ch_bam = Channel.empty()
+    ch_bam = channel.empty()
     ch_alignment
         .map { it -> [experiment: it.experiment, condition: it.condition, bam: it.bam] }
         .set { ch_bam }
@@ -321,7 +321,7 @@ workflow PIRA {
 
     emit:
     versions = ch_versions
-    multiqc_report = Channel.empty()
+    multiqc_report = channel.empty()
 }
 
 /*

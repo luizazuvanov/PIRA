@@ -9,18 +9,18 @@ workflow SPLICING_LENGTH {
     main:
 
     RMATS_LENGTH(
-        ch_input.map { it -> [id: "length"] },
+        ch_input.map { _it -> [id: "length"] },
         ch_input.map { it -> it.stats }
     )
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     RMATS_LENGTH.out.stats
         .map { it -> [length: it[1]] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     RMATS_LENGTH.out.versions.set { ch_versions }
 
     emit:
@@ -42,7 +42,7 @@ workflow SPLICING_PRE {
         ch_input.map { it -> it.strandedness }
     )
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_input
         .map { it -> tuple( [it.condition], it ) }
         .join(
@@ -55,7 +55,7 @@ workflow SPLICING_PRE {
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     RMATS_PRE.out.versions.set { ch_versions }
 
     emit:
@@ -81,7 +81,7 @@ workflow SPLICING_POS {
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     RMATS_POS.out.versions.set { ch_versions }
 
     emit:

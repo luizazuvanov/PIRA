@@ -17,7 +17,7 @@ workflow CTRL1 {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     FASTP.out.reads
         .map { it -> [run: it[0].id, single_end: it[0].single_end, fastp: it[1]] }
         .set { ch_out }
@@ -35,7 +35,7 @@ workflow CTRL1 {
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     FASTP.out.versions.set { ch_versions }
 
     emit:

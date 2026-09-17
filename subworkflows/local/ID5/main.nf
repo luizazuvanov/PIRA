@@ -20,7 +20,7 @@ workflow CTRL3 {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     STRANDEDNESS.out.infer
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
@@ -28,7 +28,7 @@ workflow CTRL3 {
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     RSEQC_INFEREXPERIMENT.out.versions
         .mix( STRANDEDNESS.out.versions )
         .set { ch_versions }

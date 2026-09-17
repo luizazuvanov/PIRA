@@ -2,24 +2,6 @@
 // Subworkflow with functionality specific to the nf-core/pira pipeline
 //
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    SUBWORKFLOW TO GROUP / COMBINE / JOIN CHANNELS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-/**
- * Groups FASTP files by experiment, condition, and single_end.
- *
- * Takes a channel of FASTP files with experiment, condition and single_end metadata, groups them by metadata, and
- * flattens the FASTP files into a single list per group.
- *
- * @param ch_fastp Input channel containing maps with keys: experiment, condition, single_end, and fastp
- *                 Structure: [exp: String, cond: String, end: Boolean, fastp: List]
- *
- * @return ch_out Output channel with grouped FASTP results
- *                Structure: [experiment: String, condition: String, single_end: Boolean, fastp: List]
- */
 workflow group_fastp_by_exp_cond_end {
 
     take:
@@ -27,7 +9,7 @@ workflow group_fastp_by_exp_cond_end {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_fastp
         .map { it -> tuple(it.experiment, it.condition, it.single_end, it) }
         .groupTuple(by: [0, 1, 2])
@@ -35,7 +17,7 @@ workflow group_fastp_by_exp_cond_end {
             experiment: experiment,
             condition: condition,
             single_end: single_end,
-            fastp: its.collect { it.fastp }.flatten()
+            fastp: its.collect { it -> it.fastp }.flatten()
         ] }
         .set { ch_out }
 
@@ -50,11 +32,11 @@ workflow group_gtf {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_gtf
         .collect()
         .map { its -> [
-            gtf: its.collect { it.gtf }.flatten()
+            gtf: its.collect { it -> it.gtf }.flatten()
         ] }
         .set { ch_out }
 
@@ -69,11 +51,11 @@ workflow group_stats {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_gtf
         .collect()
         .map { its -> [
-            stats: its.collect { it.stats }.flatten()
+            stats: its.collect { it -> it.stats }.flatten()
         ] }
         .set { ch_out }
 
@@ -88,13 +70,13 @@ workflow group_bam_by_cond {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_bam
         .map { it -> tuple(it.condition, it) }
         .groupTuple()
         .map { __, its -> [
-            condition: its.collect { it.condition }.unique().first(),
-            bam: its.collect { it.bam }.flatten()
+            condition: its.collect { it -> it.condition }.unique().first(),
+            bam: its.collect { it -> it.bam }.flatten()
         ] }
         .set { ch_out }
 
@@ -109,13 +91,13 @@ workflow group_spl_by_alignment {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_spl
         .map { it -> tuple(it.alignment, it) }
         .groupTuple()
         .map { __, its -> [
-            alignment: its.collect { it.alignment }.unique().first(),
-            spl: its.collect { it.spl }.flatten()
+            alignment: its.collect { it -> it.alignment }.unique().first(),
+            spl: its.collect { it -> it.spl }.flatten()
         ] }
         .set { ch_out }
 
@@ -131,7 +113,7 @@ workflow combine_by_cond {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
 
     ch_a
         .map { it -> tuple(it.condition, it) }
@@ -154,7 +136,7 @@ workflow join_by_exp {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
 
     ch_a
         .map { it -> tuple(it.experiment, it) }
@@ -177,18 +159,16 @@ workflow compute_pairs_by_cond {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
 
     ch_input
         .collect()
         .flatMap { items ->
             def combinations = []
-            def sorted = items.sort { it.condition }
-            for (int i = 0; i < sorted.size(); i++) {
-                for (int j = i + 1; j < sorted.size(); j++) {
-                    def cond_1 = sorted[i]
-                    def cond_2 = sorted[j]
-                    def combined = [
+            def sorted = items.sort { it -> it.condition }
+            sorted.eachWithIndex { cond_1, i ->
+                sorted.drop(i + 1).each { cond_2 ->
+                    combinations << [
                         condition: "${cond_1.condition}_vs_${cond_2.condition}",
                         bam_1: cond_1.bam,
                         bam_2: cond_2.bam,
@@ -197,7 +177,6 @@ workflow compute_pairs_by_cond {
                         length: cond_1.length,
                         sequencing: [cond_1.sequencing, cond_2.sequencing],
                     ]
-                    combinations.add(combined)
                 }
             }
             return combinations
@@ -215,15 +194,15 @@ workflow reduce_strandedness_by_cond {
 
     main:
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     ch_strandedness
         .map { it -> tuple(it.condition, it) }
         .groupTuple()
         .map { __, its -> [
-            condition: its.collect { it.condition }.unique().first(),
-            alias: its.collect { it.alias }.first(),
-            sequencing: its.collect { it.sequencing }.first(),
-            strandedness: its.collect { it.strandedness }.first()
+            condition: its.collect { it -> it.condition }.unique().first(),
+            alias: its.collect { it -> it.alias }.first(),
+            sequencing: its.collect { it -> it.sequencing }.first(),
+            strandedness: its.collect { it -> it.strandedness }.first()
         ] }
         .set { ch_out }
 

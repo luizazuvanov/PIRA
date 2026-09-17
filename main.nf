@@ -31,12 +31,12 @@ workflow NFCORE_PIRA {
 
     main:
 
-    ch_index_optional = Channel.empty()
-    ch_samples = Channel.empty()
-    ch_fasta = Channel.empty()
-    ch_gtf = Channel.empty()
+    ch_index_optional = channel.empty()
+    ch_samples = channel.empty()
+    ch_fasta = channel.empty()
+    ch_gtf = channel.empty()
 
-    Channel
+    channel
         .fromPath(params.input, type: "file")
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
@@ -44,19 +44,19 @@ workflow NFCORE_PIRA {
         .map { it -> it + [single_end: it.single_end.toBoolean()] }
         .set { ch_samples }
 
-    Channel
+    channel
         .fromPath(params.fasta, type: "file")
         .map { it -> [fasta: it]}
         .set { ch_fasta }
 
-    Channel
+    channel
         .fromPath(params.gtf, type: "file")
         .map { it -> [gtf: it]}
         .set { ch_gtf }
 
     def with_index = !(params.index == null || params.index.trim() == "")
     if (with_index) {
-        Channel
+        channel
             .fromPath(params.index, type: "dir")
             .map { it -> [index: it]}
             .set { ch_index_optional }

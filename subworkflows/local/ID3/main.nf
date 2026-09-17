@@ -19,12 +19,12 @@ workflow ALIGNMENT {
 
     // clean
 
-    ch_out_bam = Channel.empty()
+    ch_out_bam = channel.empty()
     STAR_ALIGN.out.bam_sorted_aligned
         .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, bam: it[1]] }
         .set { ch_out_bam }
 
-    ch_out_spl = Channel.empty()
+    ch_out_spl = channel.empty()
     STAR_ALIGN.out.spl_junc_tab
         .map { it -> [experiment: it[0].id, condition: it[0].condition, spl: it[1]] }
         .set { ch_out_spl }
@@ -41,7 +41,7 @@ workflow ALIGNMENT {
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     STAR_ALIGN.out.versions.set { ch_versions }
 
     emit:
@@ -62,14 +62,14 @@ workflow ALIGNMENT_SPLICING_JUNCTION {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     SJ_FILTER.out.spl_junc_tab
         .map { it -> [alignment: it[0].id, spl: it[1]] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     SJ_FILTER.out.versions.set { ch_versions }
 
     emit:
@@ -96,14 +96,14 @@ workflow ALIGNMENT_DENOVO {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     STAR_ALIGN.out.bam_sorted_aligned
         .map { it -> [experiment: it[0].id, alignment: it[0].alignment, condition: it[0].condition, bam: it[1]] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     STAR_ALIGN.out.versions.set { ch_versions }
 
     emit:

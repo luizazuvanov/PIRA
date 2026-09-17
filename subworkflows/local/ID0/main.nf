@@ -14,14 +14,14 @@ workflow GENOME_BED {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     BED.out.bed
         .map { it -> [bed: it[1]] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     BED.out.versions.set { ch_versions }
 
     emit:
@@ -44,14 +44,14 @@ workflow GENOME_INDEX {
 
     // clean
 
-    ch_out = Channel.empty()
+    ch_out = channel.empty()
     STAR_GENOMEGENERATE.out.index
         .map { it -> [index: it[1]] }
         .set { ch_out }
 
     // versions
 
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
     STAR_GENOMEGENERATE.out.versions.set { ch_versions }
 
     emit:
