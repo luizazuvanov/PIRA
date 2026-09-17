@@ -34,7 +34,7 @@ resume: ## Resume test
 		-profile stub,docker \
 		-stub-run \
 		-resume \
-		-with-dag \
+		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--outdir ./results
 
 .PHONY: resume-with-flags
