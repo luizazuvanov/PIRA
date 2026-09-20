@@ -1,8 +1,11 @@
 repository_type: pipeline
 
-nf_core_version: 3.5.1
+nf_core_version: 4.1.0
 
-lint: {}
+lint:
+  files_exist:
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
 
 template:
   org: nf-core
@@ -13,5 +16,6 @@ template:
   force: true
   outdir: .
   skip_features:
+    - igenomes
     - gpu
   is_nfcore: true
