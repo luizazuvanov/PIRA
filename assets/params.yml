@@ -1,0 +1,4 @@
+with_twopass: true
+with_transcriptassembly: true
+with_novelss: true
+with_fastq: true

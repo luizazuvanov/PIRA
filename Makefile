@@ -34,7 +34,6 @@ resume: ## Resume test
 		-profile stub,docker \
 		-stub-run \
 		-resume \
-		-with-dag ./results/pipeline_info/pipeline.mmd \
 		--outdir ./results
 
 .PHONY: resume-with-flags
@@ -44,11 +43,7 @@ resume-with-flags: ## Resume test with flags
 		-profile stub,docker \
 		-stub-run \
 		-resume \
-		-with-dag ./results/pipeline_info/pipeline.mmd \
-		--with_fastq \
-		--with_twopass false \
-		--with_novelss false \
-		--with_transcriptassembly false \
+		-params-file ./assets/params.yml \
 		--index ./assets/data/index/ \
 		--outdir ./results
 

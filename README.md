@@ -23,7 +23,7 @@
 
 **nf-core/pira** is a bioinformatics pipeline to identifying RNA alternatives.
 
-![nf-core/pira metro map](docs/images/nf-core-pira_map_light.png)
+![nf-core/pira metro map](docs/images/nf-core-pira_map_light.svg)
 
 1. Reference genome:
    1. Use or compute genome index with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);

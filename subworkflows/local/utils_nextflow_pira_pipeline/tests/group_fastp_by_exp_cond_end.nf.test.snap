@@ -52,11 +52,11 @@
                 ]
             }
         ],
+        "timestamp": "2026-09-20T14:01:31.134683",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
-        },
-        "timestamp": "2026-01-05T12:26:34.180458"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
     },
     "group_fastp_by_exp_cond_end - single end true": {
         "content": [
@@ -103,10 +103,10 @@
                 ]
             }
         ],
+        "timestamp": "2026-09-20T14:01:26.879446",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
-        },
-        "timestamp": "2026-01-05T12:26:29.824249"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
     }
 }
