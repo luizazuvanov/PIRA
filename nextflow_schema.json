@@ -25,28 +25,26 @@
                 },
                 "with_fastq": {
                     "type": "boolean",
+                    "hidden": false,
                     "description": "Whether to use FASTQ files from the samplesheet, omit to download them.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "with_twopass": {
                     "type": "boolean",
-                    "default": true,
-                    "hidden": true,
-                    "description": "Whether to run STAR aligner's two-pass mapping, default is true.",
+                    "hidden": false,
+                    "description": "Whether to run STAR aligner's two-pass mapping, omit to skip it.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "with_transcriptassembly": {
                     "type": "boolean",
-                    "default": true,
-                    "hidden": true,
-                    "description": "Whether to run STRINGTIE's transcript assembly, default is true.",
+                    "hidden": false,
+                    "description": "Whether to run STRINGTIE's transcript assembly, omit to skip it.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "with_novelss": {
                     "type": "boolean",
-                    "default": true,
-                    "hidden": true,
-                    "description": "Whether to run rMATS' novel splice site detection (novelSS param), default is true.",
+                    "hidden": false,
+                    "description": "Whether to run rMATS' novel splice site detection (novelSS param), omit to skip it.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "outdir": {
