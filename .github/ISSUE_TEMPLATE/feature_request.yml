@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an idea for the nf-core/template pipeline
+description: Suggest an idea for the nf-core/pira pipeline
 labels: enhancement
 body:
   - type: textarea

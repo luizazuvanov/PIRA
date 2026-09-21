@@ -1,5 +1,5 @@
 name: release-announcements
-# Automatic release toot and tweet anouncements
+# Automatic release toot and tweet announcements
 
 on:
   workflow_dispatch:

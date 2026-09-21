@@ -23,7 +23,7 @@
 
 **nf-core/pira** is a bioinformatics pipeline to identifying RNA alternatives.
 
-![nf-core/pira metro map](docs/images/nf-core-pira_map_light.svg)
+![nf-core/pira metro map](assets/metro_map.svg)
 
 1. Reference genome:
    1. Use or compute genome index with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
@@ -80,9 +80,11 @@ To see the results of an example test run with a full size dataset refer to the 
 For more details about the output files and reports, please refer to the
 [output documentation](https://nf-co.re/pira/output).
 
-## Credits
+## Creditsnf-metro
 
-nf-core/pira was originally written by TODO author.
+The original pipeline was implemented using Shell scripts and was originally written by [Luíza Zuvanov](@luizazuvanov).
+The pipeline was then re-written in Nextflow DSL2 by [Andre Perez](@andre-marcos-perez) and is currently maintained by
+[Luíza Zuvanov](@luizazuvanov), [Andre Perez](@andre-marcos-perez) and the nf-core community.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
