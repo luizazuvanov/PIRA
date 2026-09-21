@@ -27,7 +27,6 @@ process RMATS_POS {
     def bams2 = b2.join(',')
     def readType = readTypes.contains('single') ? 'single' : 'paired' // prioritize 'single' if present
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
     def threads = task.cpus
 
     """
@@ -64,8 +63,6 @@ process RMATS_POS {
 
     def bams1 = b1.join(',')
     def bams2 = b2.join(',')
-    def readType = readTypes.contains('single') ? 'single' : 'paired' // prioritize 'single' if present
-    def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
     mkdir -p post/tmp
