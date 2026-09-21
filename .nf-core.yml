@@ -1,6 +1,6 @@
 repository_type: pipeline
 
-nf_core_version: 3.5.1
+nf_core_version: 4.1.0
 
 lint: {}
 
@@ -13,5 +13,6 @@ template:
   force: true
   outdir: .
   skip_features:
+    - igenomes
     - gpu
   is_nfcore: true
