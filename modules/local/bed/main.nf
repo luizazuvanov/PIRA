@@ -18,7 +18,6 @@ process BED {
     task.ext.when == null || task.ext.when
 
     script:
-    def args   = task.ext.args   ?: ''
     def prefix = task.ext.prefix ?: "$gtf.baseName"
     // WARN: Version information not provided by tool on CLI.
     // Please update this string when bumping container versions.
