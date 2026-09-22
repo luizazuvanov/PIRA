@@ -18,15 +18,6 @@ build: ## Build pipeline deps container
 clean: ## Clean up
 	@rm -rf ./results ./logs/nextflow.log* ./work ./.nextflow
 
-.PHONY: refactor-local
-refactor-local: ## Refactor pipeline for local testing
-	@git checkout subworkflows/local/ID4/main.nf
-	@sed -i '' -e "s/it.bam,/it.bam.findAll { it.name.endsWith('.Aligned.sortedByCoord.out.bam')},/g" subworkflows/local/ID4/main.nf
-
-.PHONY: rollback-local
-rollback-local: ## Rollback pipeline refactor for local testing
-	@git checkout -- subworkflows/local/ID4/main.nf
-
 .PHONY: resume
 resume: ## Resume test
 	@nextflow -log ./logs/nextflow.log \
@@ -50,16 +41,12 @@ resume-with-flags: ## Resume test with flags
 .PHONY: run
 run: ## Run pipeline
 	@make clean
-	@make refactor-local
 	@make resume
-	@make rollback-local
 
 .PHONY: run-with-flags
 run-with-flags: ## Run pipeline with flags
 	@make clean
-	@make refactor-local
 	@make resume-with-flags
-	@make rollback-local
 
 .PHONY: test
 test: ## Run tests

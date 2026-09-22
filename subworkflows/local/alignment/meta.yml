@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "ALIGNMENT"
+description: Align RNA-seq reads to a reference genome with STAR
+keywords:
+  - STAR
+  - alignment
+  - BAM
+  - RNA-seq
+components:
+  - star/align
+input:
+  - ch_input:
+      type: object
+      description: Trimmed FASTQ files, STAR genome index, and experiment, condition, and read-layout metadata
+output:
+  - data:
+      type: file
+      description: STAR-sorted BAM files and splice junction tables with experiment, alignment, and condition metadata
+  - versions:
+      type: file
+      description: Version of STAR used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

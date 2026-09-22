@@ -12,8 +12,8 @@ components:
   - custom/sratoolsncbisettings
 input:
   - ch_input:
-    type: object
-    description: Sample metadata containing SRA run identifiers and single-end or paired-end information
+      type: object
+      description: Sample metadata containing SRA run identifiers and single-end or paired-end information
 output:
   - data:
       type: file

@@ -11,8 +11,8 @@ components:
   - samtools/stats
 input:
   - ch_input:
-    type: object
-    description: BAM files with experiment and condition metadata
+      type: object
+      description: BAM files with experiment and condition metadata
 output:
   - data:
       type: file

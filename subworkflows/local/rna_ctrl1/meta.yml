@@ -7,11 +7,11 @@ keywords:
   - trimming
   - fastp
 components:
-  - local/fastp
+  - fastp
 input:
   - ch_input:
-    type: object
-    description: FASTQ files with run, experiment, condition, and single-end or paired-end metadata
+      type: object
+      description: FASTQ files with run, experiment, condition, and single-end or paired-end metadata
 output:
   - data:
       type: file

@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "ALIGNMENT_SPLICING_JUNCTION"
+description: Filter STAR splice junctions for two-pass RNA-seq alignment
+keywords:
+  - STAR
+  - splice junctions
+  - filtering
+  - RNA-seq
+components:
+  - sj/filter
+input:
+  - ch_input:
+      type: object
+      description: STAR splice junction tables with alignment metadata
+output:
+  - data:
+      type: file
+      description: Filtered splice junction tables with alignment metadata
+  - versions:
+      type: file
+      description: Version of the splice-junction filtering tool used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

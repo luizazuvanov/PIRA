@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "TRANSCRIPT_MERGE"
+description: Merge assembled transcript GTF files with a reference annotation using StringTie
+keywords:
+  - StringTie
+  - merge
+  - GTF
+  - reference
+components:
+  - stringtie/merge
+input:
+  - ch_input:
+      type: object
+      description: Transcript GTF files and reference GTF annotation
+output:
+  - data:
+      type: file
+      description: Merged transcript GTF file
+  - versions:
+      type: file
+      description: Version of StringTie used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

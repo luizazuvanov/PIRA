@@ -8,11 +8,11 @@ keywords:
   - RNA-seq
 components:
   - rseqc/inferexperiment
-  - local/strandedness
+  - strandedness
 input:
   - ch_input:
-    type: object
-    description: BAM files, BED annotation, and experiment and condition metadata
+      type: object
+      description: BAM files, BED annotation, and experiment and condition metadata
 output:
   - data:
       type: file
