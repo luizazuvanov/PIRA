@@ -25,9 +25,12 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_pira
 */
 
 //
-// WORKFLOW: Run main analysis pipeline
+// WORKFLOW: Run main analysis pipeline depending on type of input
 //
 workflow NFCORE_PIRA {
+
+    take:
+    samplesheet // channel: samplesheet read in from --input
 
     main:
 
@@ -36,12 +39,17 @@ workflow NFCORE_PIRA {
     ch_fasta = channel.empty()
     ch_gtf = channel.empty()
 
-    channel
-        .fromPath(params.input, type: "file")
-        .map { it -> file(it) }
-        .splitCsv( header: true, strip: true )
-        .unique()
-        .map { it -> it + [single_end: it.single_end.toBoolean()] }
+    samplesheet
+        .map { meta, fastqs ->
+            [
+                run: meta.id,
+                experiment: meta.experiment,
+                condition: meta.condition,
+                single_end: meta.single_end,
+                fastq_1: fastqs[0],
+                fastq_2: meta.single_end ? null : fastqs[1],
+            ]
+        }
         .set { ch_samples }
 
     channel
@@ -63,13 +71,13 @@ workflow NFCORE_PIRA {
     }
 
     //
-    // WORKFLOW: Run workflows/pira pipeline
+    // WORKFLOW: Run pipeline
     //
     PIRA (ch_samples, ch_fasta, ch_gtf, ch_index_optional)
 
     emit:
     versions = PIRA.out.versions
-    multiqc_report = PIRA.out.multiqc_report
+    multiqc_report = PIRA.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,12 +102,12 @@ workflow {
         params.help_full,
         params.show_hidden
     )
-
     //
     // WORKFLOW: Run main workflow
     //
-    NFCORE_PIRA ()
-
+    NFCORE_PIRA (
+        PIPELINE_INITIALISATION.out.samplesheet
+    )
     //
     // SUBWORKFLOW: Run completion tasks
     //
@@ -109,7 +117,6 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
         NFCORE_PIRA.out.multiqc_report
     )
 }
