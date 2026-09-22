@@ -2,6 +2,8 @@ process STRINGTIE_STRINGTIE {
     tag "$meta.id"
     label 'process_medium'
 
+    // Local copy of the nf-core/stringtie/stringtie module to avoid the expensive and unused ballgown computation
+
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/stringtie:2.2.3--h43eeafb_0' :

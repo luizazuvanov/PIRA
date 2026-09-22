@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "SPLICING_LENGTH"
+description: Determine the most common read length from STAR alignment statistics
+keywords:
+  - read length
+  - STAR
+  - statistics
+components:
+  - rmats/length
+input:
+  - ch_input:
+      type: object
+      description: STAR alignment statistics files containing read length records
+output:
+  - data:
+      type: integer
+      description: Most common read length used for rMATS analysis
+  - versions:
+      type: file
+      description: Version of the read-length extraction tool used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

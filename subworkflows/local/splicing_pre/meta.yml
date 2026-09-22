@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "SPLICING_PRE"
+description: Prepare BAM groups and intermediate files for rMATS alternative splicing analysis
+keywords:
+  - rMATS
+  - alternative splicing
+  - preparation
+  - BAM
+components:
+  - rmats/pre
+input:
+  - ch_input:
+      type: object
+      description: GTF annotation, BAM files, sequencing type, read length, strandedness, and condition metadata
+output:
+  - data:
+      type: directory
+      description: rMATS preparation intermediate files with condition metadata
+  - versions:
+      type: file
+      description: Version of rMATS used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

@@ -1,0 +1,41 @@
+name: sj_filter
+
+description: Filter STAR splice junctions for uniquely mapped junctions
+keywords:
+  - STAR
+  - splice junctions
+  - filtering
+  - RNA-seq
+tools:
+  - gawk:
+      description: GNU awk used to filter splice junction records
+      homepage: https://www.gnu.org/software/gawk/
+      documentation: https://www.gnu.org/software/gawk/manual/
+      licence: ["GPL-3.0-or-later"]
+      identifier: biotools:gawk
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing alignment information
+    - spl:
+        type: file
+        description: STAR splice junction output file
+        pattern: "*.SJ.out.tab"
+output:
+  - spl_junc_tab:
+      - meta:
+          type: map
+          description: Groovy Map containing alignment information
+      - "*.SJ.out.filter.tab":
+          type: file
+          description: Filtered splice junction table
+          pattern: "*.SJ.out.filter.tab"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

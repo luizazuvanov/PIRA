@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "SPLICING_POS"
+description: Run the rMATS post phase for alternative splicing analysis
+keywords:
+  - rMATS
+  - alternative splicing
+  - post-processing
+  - BAM
+components:
+  - rmats/pos
+input:
+  - ch_input:
+      type: object
+      description: GTF annotation, two BAM groups, rMATS preparation intermediates, sequencing type, and read length metadata
+output:
+  - versions:
+      type: file
+      description: Version of rMATS used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

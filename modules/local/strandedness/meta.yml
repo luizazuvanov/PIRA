@@ -1,0 +1,40 @@
+name: strandedness
+
+description: Parse RSeQC infer_experiment output to determine RNA-seq library strandedness
+keywords:
+  - rnaseq
+  - strandedness
+  - parsing
+  - python
+tools:
+  - python:
+      description: Python programming language used to parse RSeQC output
+      homepage: https://www.python.org/
+      documentation: https://docs.python.org/3/
+      licence: ["PSF-2.0"]
+      identifier: biotools:python
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing experiment and condition information
+          e.g. [ id:'test', condition:'control' ]
+    - infer:
+        type: file
+        description: RSeQC infer_experiment output file
+        pattern: "*.infer_experiment.txt"
+output:
+  - infer:
+      - infer.csv:
+          type: file
+          description: CSV file containing inferred sequencing and strandedness information
+          pattern: "infer.csv"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

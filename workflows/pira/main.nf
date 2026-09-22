@@ -5,23 +5,23 @@
 */
 
 
-include { GENOME_BED                               } from '../../subworkflows/local/ID0/main'
-include { GENOME_INDEX                             } from '../../subworkflows/local/ID0/main'
-include { SAMPLES                                  } from '../../subworkflows/local/ID1/main'
-include { CTRL1                                    } from '../../subworkflows/local/ID2/main'
-include { ALIGNMENT                                } from '../../subworkflows/local/ID3/main'
-include { ALIGNMENT_DENOVO                         } from '../../subworkflows/local/ID3/main'
-include { ALIGNMENT_SPLICING_JUNCTION              } from '../../subworkflows/local/ID3/main'
-include { CTRL2                                    } from '../../subworkflows/local/ID4/main'
-include { CTRL3                                    } from '../../subworkflows/local/ID5/main'
-include { ASSEMBLY_PRE                             } from '../../subworkflows/local/ID6/main'
-include { ASSEMBLY_TRANSCRIPT                      } from '../../subworkflows/local/ID6/main'
-include { ASSEMBLY_MERGE                           } from '../../subworkflows/local/ID6/main'
-include { SPLICING_LENGTH                          } from '../../subworkflows/local/ID7/main'
-include { SPLICING_PRE as SPLICING_PRE_WITH_NSS    } from '../../subworkflows/local/ID7/main'
-include { SPLICING_PRE as SPLICING_PRE_WITHOUT_NSS } from '../../subworkflows/local/ID7/main'
-include { SPLICING_POS as SPLICING_POS_WITH_NSS    } from '../../subworkflows/local/ID7/main'
-include { SPLICING_POS as SPLICING_POS_WITHOUT_NSS } from '../../subworkflows/local/ID7/main'
+include { GENOME_BED                               } from '../../subworkflows/local/genome_bed/main'
+include { GENOME_INDEX                             } from '../../subworkflows/local/genome_index/main'
+include { SAMPLES                                  } from '../../subworkflows/local/rna_samples/main'
+include { CTRL1                                    } from '../../subworkflows/local/rna_ctrl1/main'
+include { ALIGNMENT                                } from '../../subworkflows/local/alignment/main'
+include { ALIGNMENT_DENOVO                         } from '../../subworkflows/local/alignment_denovo/main'
+include { ALIGNMENT_SPLICING_JUNCTION              } from '../../subworkflows/local/alignment_splicing_junction/main'
+include { CTRL2                                    } from '../../subworkflows/local/quality_control_ctrl2/main'
+include { CTRL3                                    } from '../../subworkflows/local/quality_control_ctrl3/main'
+include { TRANSCRIPT_PRE                           } from '../../subworkflows/local/transcript_pre/main'
+include { TRANSCRIPT_ASSEMBLY                      } from '../../subworkflows/local/transcript_assembly/main'
+include { TRANSCRIPT_MERGE                         } from '../../subworkflows/local/transcript_merge/main'
+include { SPLICING_LENGTH                          } from '../../subworkflows/local/splicing_length/main'
+include { SPLICING_PRE as SPLICING_PRE_WITH_NSS    } from '../../subworkflows/local/splicing_pre/main'
+include { SPLICING_PRE as SPLICING_PRE_WITHOUT_NSS } from '../../subworkflows/local/splicing_pre/main'
+include { SPLICING_POS as SPLICING_POS_WITH_NSS    } from '../../subworkflows/local/splicing_pos/main'
+include { SPLICING_POS as SPLICING_POS_WITHOUT_NSS } from '../../subworkflows/local/splicing_pos/main'
 
 include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 
@@ -180,9 +180,9 @@ workflow PIRA {
         // ch_gtf_clean = reference
         //
 
-        ASSEMBLY_PRE(ch_gtf)
-        ch_gtf_clean = ASSEMBLY_PRE.out.data
-        ch_versions = ch_versions.mix(ASSEMBLY_PRE.out.versions)
+        TRANSCRIPT_PRE(ch_gtf)
+        ch_gtf_clean = TRANSCRIPT_PRE.out.data
+        ch_versions = ch_versions.mix(TRANSCRIPT_PRE.out.versions)
 
         //
         // SUBWORKFLOW: ASSEMBLY TRANSCRIPT
@@ -195,13 +195,13 @@ workflow PIRA {
                 .map { it -> [experiment: it.experiment, strandedness: it.strandedness]}
         )
 
-        ASSEMBLY_TRANSCRIPT(
+        TRANSCRIPT_ASSEMBLY(
             ch_assembly
                 .combine(ch_gtf_clean)
                 .map {row, gtf -> row + [reference: gtf.reference] },
         )
 
-        ch_versions = ch_versions.mix(ASSEMBLY_TRANSCRIPT.out.versions)
+        ch_versions = ch_versions.mix(TRANSCRIPT_ASSEMBLY.out.versions)
 
         //
         // SUBWORKFLOW: ASSEMBLY MERGE
@@ -209,18 +209,18 @@ workflow PIRA {
         //
 
         ch_transcript = group_gtf(
-            ASSEMBLY_TRANSCRIPT.out.data
+            TRANSCRIPT_ASSEMBLY.out.data
                 .map { it -> [gtf: it.gtf] }
         )
 
-        ASSEMBLY_MERGE(
+        TRANSCRIPT_MERGE(
             ch_transcript
                 .combine(ch_gtf_clean)
                 .map {row, gtf -> row + [reference: gtf.reference] },
         )
 
-        ch_gtf = ASSEMBLY_MERGE.out.data
-        ch_versions = ch_versions.mix(ASSEMBLY_MERGE.out.versions)
+        ch_gtf = TRANSCRIPT_MERGE.out.data
+        ch_versions = ch_versions.mix(TRANSCRIPT_MERGE.out.versions)
 
     }
 

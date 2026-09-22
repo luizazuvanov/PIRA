@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "CTRL3"
+description: Infer RNA-seq library strandedness from BAM files with RSeQC
+keywords:
+  - strandedness
+  - RSeQC
+  - BAM
+  - RNA-seq
+components:
+  - rseqc/inferexperiment
+  - strandedness
+input:
+  - ch_input:
+      type: object
+      description: BAM files, BED annotation, and experiment and condition metadata
+output:
+  - data:
+      type: file
+      description: Parsed strandedness records for each experiment and condition
+  - versions:
+      type: file
+      description: Versions of RSeQC and strandedness parsing tools used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

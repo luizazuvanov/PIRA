@@ -1,0 +1,38 @@
+name: stringtie_clean
+
+description: Clean gene-level records from a GTF annotation
+keywords:
+  - GTF
+  - annotation
+  - filtering
+  - StringTie
+tools:
+  - gawk:
+      description: GNU awk used to filter GTF records
+      homepage: https://www.gnu.org/software/gawk/
+      documentation: https://www.gnu.org/software/gawk/manual/
+      licence: ["GPL-3.0-or-later"]
+      identifier: biotools:gawk
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing annotation information
+    - gtf:
+        type: file
+        description: Input GTF annotation file
+        pattern: "*.{gtf,gtf.gz}"
+output:
+  - gtf_clean:
+      - "*.clean.gtf":
+          type: file
+          description: GTF annotation containing cleaned transcript-level records
+          pattern: "*.clean.gtf"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"
