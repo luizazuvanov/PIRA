@@ -1,0 +1,68 @@
+name: rmats_post
+
+description: Run the rMATS post phase to detect alternative splicing events
+keywords:
+  - rMATS
+  - alternative splicing
+  - post-processing
+  - BAM
+tools:
+  - rmats:
+      description: Replicate Multivariate Analysis of Transcript Splicing for alternative splicing detection
+      homepage: https://github.com/Xinglab/rmats-turbo
+      documentation: https://github.com/Xinglab/rmats-turbo
+      licence: ["MIT"]
+      identifier: biotools:rmats
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing condition information
+    - gtf:
+        type: file
+        description: Reference GTF annotation
+        pattern: "*.{gtf,gtf.gz}"
+  - - b1:
+        type: file
+        description: BAM files for the first comparison group
+        pattern: "*.bam"
+  - - b2:
+        type: file
+        description: BAM files for the second comparison group
+        pattern: "*.bam"
+  - - tmp_1:
+        type: directory
+        description: rMATS preparation files for the first group
+        pattern: "prep/tmp/"
+  - - tmp_2:
+        type: directory
+        description: rMATS preparation files for the second group
+        pattern: "prep/tmp/"
+  - - readTypes:
+        type: list
+        description: Read types available for the comparison
+  - - readLength:
+        type: integer
+        description: Read length used by rMATS
+output:
+  - tmp:
+      - meta:
+          type: map
+          description: Groovy Map containing condition information
+      - "post/tmp/":
+          type: directory
+          description: rMATS post-processing intermediate files
+          pattern: "post/tmp/"
+  - out:
+      - "post/out/":
+          type: directory
+          description: rMATS alternative splicing result files
+          pattern: "post/out/"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

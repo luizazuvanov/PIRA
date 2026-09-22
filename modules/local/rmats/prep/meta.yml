@@ -1,0 +1,54 @@
+name: rmats_prep
+
+description: Prepare BAM groups and intermediate files for rMATS alternative splicing analysis
+keywords:
+  - rMATS
+  - alternative splicing
+  - preparation
+  - BAM
+tools:
+  - rmats:
+      description: Replicate Multivariate Analysis of Transcript Splicing for alternative splicing detection
+      homepage: https://github.com/Xinglab/rmats-turbo
+      documentation: https://github.com/Xinglab/rmats-turbo
+      licence: ["MIT"]
+      identifier: biotools:rmats
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing condition information
+    - gtf:
+        type: file
+        description: Reference GTF annotation
+        pattern: "*.{gtf,gtf.gz}"
+  - - b1:
+        type: file
+        description: BAM files for the first comparison group
+        pattern: "*.{bam,bam.bai}"
+  - - readType:
+        type: string
+        description: Read type used by rMATS
+  - - readLength:
+        type: integer
+        description: Read length used by rMATS
+  - - strandedness:
+        type: string
+        description: Library strandedness passed to rMATS
+output:
+  - tmp:
+      - meta:
+          type: map
+          description: Groovy Map containing condition information
+      - "prep/tmp/":
+          type: directory
+          description: rMATS preparation intermediate files
+          pattern: "prep/tmp/"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

@@ -1,0 +1,56 @@
+name: rmats_length
+
+description: Extract the most common read length from STAR alignment statistics
+keywords:
+  - rMATS
+  - read length
+  - STAR
+  - statistics
+tools:
+  - gawk:
+      description: GNU awk used to extract and summarize read length statistics
+      homepage: https://www.gnu.org/software/gawk/
+      documentation: https://www.gnu.org/software/gawk/manual/
+      licence: ["GPL-3.0-or-later"]
+      identifier: biotools:gawk
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information
+    - stats:
+        type: file
+        description: STAR alignment statistics files containing read length records
+        pattern: "*.stats"
+output:
+  - stats:
+      - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - value:
+          type: integer
+          description: Most common read length
+  - average:
+      - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.stats.csv":
+          type: file
+          description: CSV file containing the inferred read length
+          pattern: "*.stats.csv"
+  - merged:
+      - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.merged.stats":
+          type: file
+          description: Concatenated STAR statistics records
+          pattern: "*.merged.stats"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

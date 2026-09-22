@@ -1,5 +1,5 @@
 name: stringtie_stringtie
-description: Transcript assembly and quantification for RNA-Se
+description: Transcript assembly and quantification for RNA-seq data
 keywords:
   - transcript
   - assembly
@@ -22,7 +22,7 @@ input:
     - bam:
         type: file
         description: |
-          Stringtie transcript gtf output(s).
+          BAM alignment file(s) for transcript assembly.
   - - annotation_gtf:
         type: file
         description: |

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Parse RSeQC infer_experiment output into sequencing metadata."""
 
 import re
 import sys
@@ -20,6 +21,19 @@ PATTERN: dict[str, str] = {
 
 
 def parse(filepath: str) -> Union[dict[str: str], Exception]:
+    """Parse an RSeQC infer_experiment report.
+
+    Args:
+        filepath: Path to an RSeQC infer_experiment output file.
+
+    Returns:
+        A dictionary containing the sequencing layout, inferred strandedness,
+        and the corresponding short alias.
+
+    Raises:
+        RuntimeError: If the report cannot be opened or read.
+        ValueError: If no recognized strandedness pattern is found.
+    """
 
     fractions: dict[str, float] = {"fr-secondstrand": 0.0, "fr-firststrand": 0.0}
 
@@ -31,7 +45,7 @@ def parse(filepath: str) -> Union[dict[str: str], Exception]:
             for line in fp:
                 line = line.strip().lower()
 
-                if "pairend" in line:
+                if "paired-end" in line or "pairend" in line:
                     sequencing = "paired"
                     continue
 

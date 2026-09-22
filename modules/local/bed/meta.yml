@@ -1,0 +1,45 @@
+name: bed
+
+description: Convert a GTF annotation to BED format
+keywords:
+  - gtf
+  - bed
+  - annotation
+  - conversion
+tools:
+  - ucsc:
+      description: UCSC utilities for converting gene annotations between formats
+      homepage: https://genome.cse.ucsc.edu/index.html
+      documentation: https://genome.ucsc.edu/util.html
+      licence: ["varies"]
+      identifier: biotools:ucsc
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'reference' ]
+    - gtf:
+        type: file
+        description: GTF annotation file
+        pattern: "*.{gtf,gtf.gz}"
+output:
+  - bed:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'reference' ]
+      - "*.bed":
+          type: file
+          description: Annotation converted to BED format
+          pattern: "*.bed"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"
