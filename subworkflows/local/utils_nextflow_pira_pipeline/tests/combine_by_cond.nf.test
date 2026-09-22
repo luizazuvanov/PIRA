@@ -1,19 +1,19 @@
 nextflow_workflow {
 
     name "Test Workflow combine_by_cond"
-    script "../main.nf"
-    workflow "combine_by_cond"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/combine_by_cond.nf"
+    workflow "TEST_COMBINE_BY_COND"
 
     test("combine_by_cond") {
 
         when {
             workflow {
                 """
-                input[0] = Channel.of(
+                input[0] = channel.of(
                     [ condition: 'cond-1', bam: ['bam-1', 'bam-2'] ],
                     [ condition: 'cond-2', bam: ['bam-3', 'bam-4'] ]
                 )
-                input[1] = Channel.of(
+                input[1] = channel.of(
                     [ condition: 'cond-1', alias: 'alias-1', sequencing: 'seq-1', strandedness: 'strand-1' ],
                     [ condition: 'cond-2', alias: 'alias-2', sequencing: 'seq-2', strandedness: 'strand-2' ]
                 )

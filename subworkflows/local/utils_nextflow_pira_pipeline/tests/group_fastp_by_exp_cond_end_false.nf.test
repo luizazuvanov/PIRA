@@ -1,0 +1,29 @@
+nextflow_workflow {
+
+    name "Test Workflow group_fastp_by_exp_cond_end - single end false"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/group_fastp_by_exp_cond_end_false.nf"
+    workflow "TEST_GROUP_FASTP_BY_EXP_COND_END_FALSE"
+
+    test("group_fastp_by_exp_cond_end - single end false") {
+
+        when {
+            workflow {
+                """
+                input[0] = channel.of(
+                    [ experiment: 'exp-1', condition: 'cond-1', single_end: false, fastp: ['fastp-1-1', 'fastp-2-1'] ],
+                    [ experiment: 'exp-1', condition: 'cond-1', single_end: false, fastp: ['fastp-1-2', 'fastp-2-2'] ],
+                    [ experiment: 'exp-2', condition: 'cond-2', single_end: false, fastp: ['fastp-1-3', 'fastp-2-3'] ],
+                    [ experiment: 'exp-2', condition: 'cond-2', single_end: false, fastp: ['fastp-1-4', 'fastp-2-4'] ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

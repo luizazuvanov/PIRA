@@ -1,58 +1,50 @@
 {
-    "join_by_exp": {
+    "group_fastp_by_exp_cond_end - single end true": {
         "content": [
             {
                 "0": [
                     {
-                        "bam": "bam-1",
                         "condition": "cond-1",
                         "experiment": "exp-1",
                         "fastp": [
                             "fastp-1",
                             "fastp-2"
                         ],
-                        "run": "run-1",
-                        "spl": "spl-1"
+                        "single_end": true
                     },
                     {
-                        "bam": "bam-2",
-                        "condition": "cond-1",
+                        "condition": "cond-2",
                         "experiment": "exp-2",
                         "fastp": [
                             "fastp-3",
                             "fastp-4"
                         ],
-                        "run": "run-2",
-                        "spl": "spl-2"
+                        "single_end": true
                     }
                 ],
                 "out": [
                     {
-                        "bam": "bam-1",
                         "condition": "cond-1",
                         "experiment": "exp-1",
                         "fastp": [
                             "fastp-1",
                             "fastp-2"
                         ],
-                        "run": "run-1",
-                        "spl": "spl-1"
+                        "single_end": true
                     },
                     {
-                        "bam": "bam-2",
-                        "condition": "cond-1",
+                        "condition": "cond-2",
                         "experiment": "exp-2",
                         "fastp": [
                             "fastp-3",
                             "fastp-4"
                         ],
-                        "run": "run-2",
-                        "spl": "spl-2"
+                        "single_end": true
                     }
                 ]
             }
         ],
-        "timestamp": "2026-09-22T23:51:53.414244",
+        "timestamp": "2026-09-22T23:51:37.824282",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

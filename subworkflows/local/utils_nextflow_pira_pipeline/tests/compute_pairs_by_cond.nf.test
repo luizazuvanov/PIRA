@@ -1,15 +1,15 @@
 nextflow_workflow {
 
     name "Test Workflow compute_pairs_by_cond"
-    script "../main.nf"
-    workflow "compute_pairs_by_cond"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/compute_pairs_by_cond.nf"
+    workflow "TEST_COMPUTE_PAIRS_BY_COND"
 
     test("compute_pairs_by_cond") {
 
         when {
             workflow {
                 """
-                input[0] = Channel.of(
+                input[0] = channel.of(
                     [ condition: 'cond-1', length: 'len', bam: ['bam-1', 'bam-2'], tmp: 'tmp-1', sequencing: 'seq-1'],
                     [ condition: 'cond-2', length: 'len', bam: ['bam-3', 'bam-4'], tmp: 'tmp-2', sequencing: 'seq-2'],
                     [ condition: 'cond-3', length: 'len', bam: ['bam-5', 'bam-6'], tmp: 'tmp-3', sequencing: 'seq-3']

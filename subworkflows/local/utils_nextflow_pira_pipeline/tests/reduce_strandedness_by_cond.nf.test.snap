@@ -22,7 +22,7 @@
                         "strandedness": "strand-3"
                     }
                 ],
-                "ch_out": [
+                "out": [
                     {
                         "alias": "alias-1",
                         "condition": "cond-1",
@@ -44,7 +44,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-09-20T14:01:52.21114",
+        "timestamp": "2026-09-22T23:51:57.33833",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
