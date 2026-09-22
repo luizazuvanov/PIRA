@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "SAMPLES"
+description: Download sequencing reads from the NCBI Sequence Read Archive
+keywords:
+  - SRA
+  - FASTQ
+  - download
+  - sequencing
+components:
+  - sratools/prefetch
+  - sratools/fasterqdump
+  - custom/sratoolsncbisettings
+input:
+  - ch_input:
+    type: object
+    description: Sample metadata containing SRA run identifiers and single-end or paired-end information
+output:
+  - data:
+      type: file
+      description: Downloaded FASTQ files with run, experiment, condition, and layout metadata
+  - versions:
+      type: file
+      description: Versions of the SRA Toolkit and related tools used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

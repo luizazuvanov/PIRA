@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "CTRL2"
+description: Generate alignment statistics and indexes for BAM files with samtools
+keywords:
+  - samtools
+  - BAM
+  - statistics
+  - indexing
+components:
+  - samtools/index
+  - samtools/stats
+input:
+  - ch_input:
+    type: object
+    description: BAM files with experiment and condition metadata
+output:
+  - data:
+      type: file
+      description: Alignment statistics files with experiment and condition metadata
+  - versions:
+      type: file
+      description: Versions of samtools used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

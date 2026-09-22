@@ -57,5 +57,4 @@ workflow GENOME_INDEX {
     emit:
     data = ch_out
     versions = ch_versions
-
 }

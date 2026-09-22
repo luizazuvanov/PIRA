@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "CTRL1"
+description: Perform FASTQ quality control and adapter trimming with fastp
+keywords:
+  - FASTQ
+  - quality control
+  - trimming
+  - fastp
+components:
+  - local/fastp
+input:
+  - ch_input:
+    type: object
+    description: FASTQ files with run, experiment, condition, and single-end or paired-end metadata
+output:
+  - data:
+      type: file
+      description: Quality-controlled and trimmed FASTQ files with sample metadata
+  - versions:
+      type: file
+      description: Version of fastp used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

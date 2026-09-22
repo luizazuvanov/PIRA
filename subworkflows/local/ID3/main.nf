@@ -75,7 +75,6 @@ workflow ALIGNMENT_SPLICING_JUNCTION {
     emit:
     data = ch_out
     versions = ch_versions
-
 }
 
 workflow ALIGNMENT_DENOVO {

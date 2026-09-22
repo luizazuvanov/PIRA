@@ -1,0 +1,78 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "ALIGNMENT"
+description: Align RNA-seq reads to a reference genome with STAR
+keywords:
+  - STAR
+  - alignment
+  - BAM
+  - RNA-seq
+components:
+  - star/align
+input:
+  - ch_input:
+      type: object
+      description: Trimmed FASTQ files, STAR genome index, and experiment, condition, and read-layout metadata
+output:
+  - data:
+      type: file
+      description: STAR-sorted BAM files and splice junction tables with experiment, alignment, and condition metadata
+  - versions:
+      type: file
+      description: Version of STAR used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "ALIGNMENT_SPLICING_JUNCTION"
+description: Filter STAR splice junctions for two-pass RNA-seq alignment
+keywords:
+  - STAR
+  - splice junctions
+  - filtering
+  - RNA-seq
+components:
+  - local/sj/filter
+input:
+  - ch_input:
+      type: object
+      description: STAR splice junction tables with alignment metadata
+output:
+  - data:
+      type: file
+      description: Filtered splice junction tables with alignment metadata
+  - versions:
+      type: file
+      description: Version of the splice-junction filtering tool used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "ALIGNMENT_DENOVO"
+description: Re-align RNA-seq reads with STAR using filtered splice junctions
+keywords:
+  - STAR
+  - alignment
+  - BAM
+  - splice junctions
+  - RNA-seq
+components:
+  - star/align
+input:
+  - ch_input:
+      type: object
+      description: Trimmed FASTQ files, STAR genome index, filtered splice junctions, and experiment, condition, and read-layout metadata
+output:
+  - data:
+      type: file
+      description: STAR-sorted BAM files and splice junction tables from de novo alignment
+  - versions:
+      type: file
+      description: Version of STAR used by the subworkflow
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"
