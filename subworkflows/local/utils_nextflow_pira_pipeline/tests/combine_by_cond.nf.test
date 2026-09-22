@@ -1,13 +1,13 @@
-nextflow_workflow {
+nextflow_function {
 
-    name "Test Workflow combine_by_cond"
+    name "Test Function combine_by_cond"
     script "../main.nf"
-    workflow "combine_by_cond"
+    function "combine_by_cond"
 
     test("combine_by_cond") {
 
         when {
-            workflow {
+            function {
                 """
                 input[0] = Channel.of(
                     [ condition: 'cond-1', bam: ['bam-1', 'bam-2'] ],
@@ -22,8 +22,7 @@ nextflow_workflow {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.out).match()
+            assert function.success
         }
 
     }

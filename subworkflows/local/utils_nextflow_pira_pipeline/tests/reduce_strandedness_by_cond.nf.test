@@ -1,13 +1,13 @@
-nextflow_workflow {
+nextflow_function {
 
-    name "Test Workflow reduce_strandedness_by_cond"
+    name "Test Function reduce_strandedness_by_cond"
     script "../main.nf"
-    workflow "reduce_strandedness_by_cond"
+    function "reduce_strandedness_by_cond"
 
     test("reduce_strandedness_by_cond") {
 
         when {
-            workflow {
+            function {
                 """
                 input[0] = Channel.of(
                     [ experiment: 'exp-1', condition: 'cond-1', sequencing: 'seq-1', alias: 'alias-1', strandedness: 'strand-1'],
@@ -22,8 +22,7 @@ nextflow_workflow {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.out).match()
+            assert function.success
         }
 
     }

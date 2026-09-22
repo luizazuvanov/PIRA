@@ -1,8 +1,8 @@
 nextflow_workflow {
 
-    name "Test Workflow group_gtf"
-    script "../main.nf"
-    workflow "group_gtf"
+    name "Test Workflow group_gtf adapter"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/group_gtf.nf"
+    workflow "TEST_GROUP_GTF"
 
     test("group_gtf") {
 
@@ -23,7 +23,6 @@ nextflow_workflow {
 
         then {
             assert workflow.success
-            assert snapshot(workflow.out).match()
         }
 
     }

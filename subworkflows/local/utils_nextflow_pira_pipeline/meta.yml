@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "UTILS_NEXTFLOW_PIRA_PIPELINE"
+description: Utility subworkflow for the nf-core/pira pipeline
+keywords:
+  - utility
+  - pipeline
+  - grouping
+  - joining
+  - channel operations
+components: []
+input: []
+output:
+  - dummy_emit:
+      type: boolean
+      description: Dummy emit to make nf-core subworkflow lint happy
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

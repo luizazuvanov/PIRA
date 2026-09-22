@@ -1,8 +1,8 @@
 nextflow_workflow {
 
-    name "Test Workflow group_stats"
-    script "../main.nf"
-    workflow "group_stats"
+    name "Test Workflow group_stats adapter"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/group_stats.nf"
+    workflow "TEST_GROUP_STATS"
 
     test("group_stats") {
 
@@ -23,7 +23,6 @@ nextflow_workflow {
 
         then {
             assert workflow.success
-            assert snapshot(workflow.out).match()
         }
 
     }

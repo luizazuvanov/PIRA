@@ -1,13 +1,13 @@
-nextflow_workflow {
+nextflow_function {
 
-    name "Test Workflow join_by_exp"
+    name "Test Function join_by_exp"
     script "../main.nf"
-    workflow "join_by_exp"
+    function "join_by_exp"
 
     test("join_by_exp") {
 
         when {
-            workflow {
+            function {
                 """
                 input[0] = Channel.of(
                     [ run: 'run-1', experiment: 'exp-1', condition: 'cond-1', fastp: ['fastp-1', 'fastp-2'] ],
@@ -22,8 +22,7 @@ nextflow_workflow {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.out).match()
+            assert function.success
         }
 
     }

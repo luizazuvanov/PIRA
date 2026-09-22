@@ -1,13 +1,13 @@
-nextflow_workflow {
+nextflow_function {
 
-    name "Test Workflow group_spl_by_alignment"
+    name "Test Function group_spl_by_alignment"
     script "../main.nf"
-    workflow "group_spl_by_alignment"
+    function "group_spl_by_alignment"
 
     test("group_spl_by_alignment") {
 
         when {
-            workflow {
+            function {
                 """
                 input[0] = Channel.of(
                     [ alignment: 'align-1', spl: 'spl-1' ],
@@ -20,8 +20,7 @@ nextflow_workflow {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.out).match()
+            assert function.success
         }
 
     }

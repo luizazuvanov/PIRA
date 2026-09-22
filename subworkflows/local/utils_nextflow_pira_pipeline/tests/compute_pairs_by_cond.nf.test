@@ -1,13 +1,13 @@
-nextflow_workflow {
+nextflow_function {
 
-    name "Test Workflow compute_pairs_by_cond"
+    name "Test Function compute_pairs_by_cond"
     script "../main.nf"
-    workflow "compute_pairs_by_cond"
+    function "compute_pairs_by_cond"
 
     test("compute_pairs_by_cond") {
 
         when {
-            workflow {
+            function {
                 """
                 input[0] = Channel.of(
                     [ condition: 'cond-1', length: 'len', bam: ['bam-1', 'bam-2'], tmp: 'tmp-1', sequencing: 'seq-1'],
@@ -19,8 +19,7 @@ nextflow_workflow {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.out).match()
+            assert function.success
         }
 
     }

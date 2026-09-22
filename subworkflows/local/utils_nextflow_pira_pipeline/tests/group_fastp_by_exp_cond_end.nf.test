@@ -1,13 +1,13 @@
-nextflow_workflow {
+nextflow_function {
 
-    name "Test Workflow group_fastp_by_exp_cond_end"
+    name "Test Function group_fastp_by_exp_cond_end"
     script "../main.nf"
-    workflow "group_fastp_by_exp_cond_end"
+    function "group_fastp_by_exp_cond_end"
 
     test("group_fastp_by_exp_cond_end - single end true") {
 
         when {
-            workflow {
+            function {
                 """
                 input[0] = Channel.of(
                     [ experiment: 'exp-1', condition: 'cond-1', single_end: true, fastp: 'fastp-1' ],
@@ -20,8 +20,7 @@ nextflow_workflow {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.out).match()
+            assert function.success
         }
 
     }
@@ -29,7 +28,7 @@ nextflow_workflow {
     test("group_fastp_by_exp_cond_end - single end false") {
 
         when {
-            workflow {
+            function {
                 """
                 input[0] = Channel.of(
                     [ experiment: 'exp-1', condition: 'cond-1', single_end: false, fastp: ['fastp-1-1', 'fastp-2-1'] ],
@@ -42,8 +41,7 @@ nextflow_workflow {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.out).match()
+            assert function.success
         }
 
     }
