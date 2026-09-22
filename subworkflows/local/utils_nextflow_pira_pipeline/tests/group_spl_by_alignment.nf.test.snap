@@ -1,0 +1,45 @@
+{
+    "group_spl_by_alignment": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "alignment": "align-1",
+                        "spl": [
+                            "spl-1",
+                            "spl-2"
+                        ]
+                    },
+                    {
+                        "alignment": "align-2",
+                        "spl": [
+                            "spl-3",
+                            "spl-4"
+                        ]
+                    }
+                ],
+                "out": [
+                    {
+                        "alignment": "align-1",
+                        "spl": [
+                            "spl-1",
+                            "spl-2"
+                        ]
+                    },
+                    {
+                        "alignment": "align-2",
+                        "spl": [
+                            "spl-3",
+                            "spl-4"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "timestamp": "2026-09-22T23:51:45.587284",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

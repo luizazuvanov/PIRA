@@ -1,15 +1,15 @@
-nextflow_function {
+nextflow_workflow {
 
-    name "Test Function group_bam_by_cond"
-    script "../main.nf"
-    function "group_bam_by_cond"
+    name "Test Workflow group_bam_by_cond"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/group_bam_by_cond.nf"
+    workflow "TEST_GROUP_BAM_BY_COND"
 
     test("group_bam_by_cond") {
 
         when {
-            function {
+            workflow {
                 """
-                input[0] = Channel.of(
+                input[0] = channel.of(
                     [ condition: 'cond-1', bam: 'bam-1' ],
                     [ condition: 'cond-1', bam: 'bam-2' ],
                     [ condition: 'cond-2', bam: 'bam-3' ],
@@ -20,7 +20,8 @@ nextflow_function {
         }
 
         then {
-            assert function.success
+            assert workflow.success
+            assert snapshot(workflow.out).match()
         }
 
     }

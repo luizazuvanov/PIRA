@@ -1,19 +1,19 @@
-nextflow_function {
+nextflow_workflow {
 
-    name "Test Function join_by_exp"
-    script "../main.nf"
-    function "join_by_exp"
+    name "Test Workflow join_by_exp"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/join_by_exp.nf"
+    workflow "TEST_JOIN_BY_EXP"
 
     test("join_by_exp") {
 
         when {
-            function {
+            workflow {
                 """
-                input[0] = Channel.of(
+                input[0] = channel.of(
                     [ run: 'run-1', experiment: 'exp-1', condition: 'cond-1', fastp: ['fastp-1', 'fastp-2'] ],
                     [ run: 'run-2', experiment: 'exp-2', condition: 'cond-1', fastp: ['fastp-3', 'fastp-4'] ]
                 )
-                input[1] = Channel.of(
+                input[1] = channel.of(
                     [ experiment: 'exp-1', condition: 'cond-1', bam: 'bam-1', spl: 'spl-1' ],
                     [ experiment: 'exp-2', condition: 'cond-1', bam: 'bam-2', spl: 'spl-2' ]
                 )
@@ -22,7 +22,8 @@ nextflow_function {
         }
 
         then {
-            assert function.success
+            assert workflow.success
+            assert snapshot(workflow.out).match()
         }
 
     }

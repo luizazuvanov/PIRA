@@ -39,18 +39,7 @@ workflow NFCORE_PIRA {
     ch_fasta = channel.empty()
     ch_gtf = channel.empty()
 
-    samplesheet
-        .map { meta, fastqs ->
-            [
-                run: meta.id,
-                experiment: meta.experiment,
-                condition: meta.condition,
-                single_end: meta.single_end,
-                fastq_1: fastqs[0],
-                fastq_2: meta.single_end ? null : fastqs[1],
-            ]
-        }
-        .set { ch_samples }
+    samplesheet.set { ch_samples }
 
     channel
         .fromPath(params.fasta, type: "file")

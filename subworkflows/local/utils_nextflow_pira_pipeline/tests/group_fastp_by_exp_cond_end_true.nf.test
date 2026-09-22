@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow group_fastp_by_exp_cond_end - single end true"
-    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/group_fastp_by_exp_cond_end_true.nf"
+    script "./group_fastp_by_exp_cond_end_true.nf"
     workflow "TEST_GROUP_FASTP_BY_EXP_COND_END_TRUE"
 
     test("group_fastp_by_exp_cond_end - single end true") {

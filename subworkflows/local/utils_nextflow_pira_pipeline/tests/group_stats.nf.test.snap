@@ -1,0 +1,37 @@
+{
+    "group_stats": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "stats": [
+                            "stats-1",
+                            "stats-2",
+                            "stats-3",
+                            "stats-4",
+                            "stats-5",
+                            "stats-6"
+                        ]
+                    }
+                ],
+                "out": [
+                    {
+                        "stats": [
+                            "stats-1",
+                            "stats-2",
+                            "stats-3",
+                            "stats-4",
+                            "stats-5",
+                            "stats-6"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "timestamp": "2026-09-22T23:51:49.452228",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

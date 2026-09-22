@@ -1,28 +1,29 @@
-nextflow_function {
+nextflow_workflow {
 
-    name "Test Function reduce_strandedness_by_cond"
-    script "../main.nf"
-    function "reduce_strandedness_by_cond"
+    name "Test Workflow reduce_strandedness_by_cond"
+    script "subworkflows/local/utils_nextflow_pira_pipeline/tests/reduce_strandedness_by_cond.nf"
+    workflow "TEST_REDUCE_STRANDEDNESS_BY_COND"
 
     test("reduce_strandedness_by_cond") {
 
         when {
-            function {
+            workflow {
                 """
-                input[0] = Channel.of(
+                input[0] = channel.of(
                     [ experiment: 'exp-1', condition: 'cond-1', sequencing: 'seq-1', alias: 'alias-1', strandedness: 'strand-1'],
                     [ experiment: 'exp-2', condition: 'cond-1', sequencing: 'seq-1', alias: 'alias-1', strandedness: 'strand-1'],
                     [ experiment: 'exp-3', condition: 'cond-2', sequencing: 'seq-2', alias: 'alias-2', strandedness: 'strand-2'],
                     [ experiment: 'exp-4', condition: 'cond-2', sequencing: 'seq-2', alias: 'alias-2', strandedness: 'strand-2'],
                     [ experiment: 'exp-5', condition: 'cond-3', sequencing: 'seq-3', alias: 'alias-3', strandedness: 'strand-3'],
-                    [ experiment: 'exp-6', condition: 'cond-3', sequencing: 'seq-3', alias: 'alias-3', strandedness: 'strand-3'],
+                    [ experiment: 'exp-6', condition: 'cond-3', sequencing: 'seq-3', alias: 'alias-3', strandedness: 'strand-3']
                 )
                 """
             }
         }
 
         then {
-            assert function.success
+            assert workflow.success
+            assert snapshot(workflow.out).match()
         }
 
     }

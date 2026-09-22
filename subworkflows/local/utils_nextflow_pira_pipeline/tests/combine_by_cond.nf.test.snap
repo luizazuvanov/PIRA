@@ -1,0 +1,57 @@
+{
+    "combine_by_cond": {
+        "content": [
+            {
+                "0": [
+                    {
+                        "alias": "alias-1",
+                        "bam": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "condition": "cond-1",
+                        "sequencing": "seq-1",
+                        "strandedness": "strand-1"
+                    },
+                    {
+                        "alias": "alias-2",
+                        "bam": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "condition": "cond-2",
+                        "sequencing": "seq-2",
+                        "strandedness": "strand-2"
+                    }
+                ],
+                "out": [
+                    {
+                        "alias": "alias-1",
+                        "bam": [
+                            "bam-1",
+                            "bam-2"
+                        ],
+                        "condition": "cond-1",
+                        "sequencing": "seq-1",
+                        "strandedness": "strand-1"
+                    },
+                    {
+                        "alias": "alias-2",
+                        "bam": [
+                            "bam-3",
+                            "bam-4"
+                        ],
+                        "condition": "cond-2",
+                        "sequencing": "seq-2",
+                        "strandedness": "strand-2"
+                    }
+                ]
+            }
+        ],
+        "timestamp": "2026-09-22T23:51:18.313783",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}
