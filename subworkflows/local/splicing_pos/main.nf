@@ -13,7 +13,7 @@ workflow SPLICING_POS {
         ch_input.map { it -> it.tmp_1 },
         ch_input.map { it -> it.tmp_2 },
         ch_input.map { it -> it.sequencing },
-        ch_input.map { it -> it.length },
+        ch_input.map { it -> it.length }
     )
 
     // versions
