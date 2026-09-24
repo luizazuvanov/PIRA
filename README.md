@@ -74,12 +74,19 @@ nextflow run nf-core/pira \
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).
 
-With the default parameters, samples are downloaded from SRA. To use the FASTQ paths in the samplesheet instead, add `--with_fastq true`:
+With the default parameters, samples are downloaded from SRA. To use the FASTQ paths in the samplesheet instead, add `--with_fastq true`. Create a samplesheet containing the FASTQ paths:
+
+```csv
+run,experiment,condition,single_end,fastq_1,fastq_2
+sample-1,experiment-1,control,false,reads/sample-1_R1.fastq.gz,reads/sample-1_R2.fastq.gz
+```
+
+Save it as `samplesheet_fastq.csv` and run:
 
 ```bash
 nextflow run nf-core/pira \
    -profile docker \
-   --input samplesheet.csv \
+  --input samplesheet_fastq.csv \
    --with_fastq true \
    --fasta reference.fa \
    --gtf annotation.gtf \
