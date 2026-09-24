@@ -56,13 +56,11 @@ First, prepare a samplesheet with a header row. The required columns are `run`, 
 `samplesheet.csv`:
 
 ```csv
-run,experiment,condition,single_end,fastq_1,fastq_2
-SRR16496056,SRX12699021,control,false,reads/SRR16496056_1.fastq.gz,reads/SRR16496056_2.fastq.gz
+run,experiment,condition,single_end
+SRR16496056,SRX12699021,control,false
 ```
 
-Each row represents one sequencing run. Use the same `condition` value for biological replicates that should be compared. For single-end data, set `single_end` to `true` and leave `fastq_2` empty.
-
-Now, you can run the pipeline using:
+Each row represents one sequencing run. Use the same `condition` value for biological replicates that should be compared. For single-end data, set `single_end` to `true` and leave `fastq_2` empty. Now, you can run the pipeline using:
 
 ```bash
 nextflow run nf-core/pira \
