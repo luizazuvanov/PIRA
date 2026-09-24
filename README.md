@@ -21,74 +21,100 @@
 
 ## Introduction
 
-**nf-core/pira** is a bioinformatics pipeline to identifying RNA alternatives.
+**nf-core/pira** is a bioinformatics pipeline for identifying alternative RNA splicing events from RNA-seq data.
 
 ![nf-core/pira metro map](assets/metro_map.svg)
 
-1. Reference genome:
-   1. Use or compute genome index with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
-   2. Compute `BED` file with [UCSC tools](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html).
-2. Samples:
-   1. Use or download sample data from `SRA` with NCBI's [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump).
-3. Quality control and trimming with [FASTP](https://github.com/OpenGene/fastp);
-4. Alignment and quantification with [STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf);
-5. Sort and index `BAM` files with [SAMtools](http://www.htslib.org/);
-6. Alignment quality control with [RSeQC](http://rseqc.sourceforge.net/);
-7. Transcript assembly and merge with [StringTie2](https://ccb.jhu.edu/software/stringtie/);
-8. Alternative splicing analysis with [rMATS](http://rnaseq-mats.sourceforge.net/).
+By default, the pipeline follows these stages:
+
+- **Genome preprocessing**
+  - Generates a STAR genome index from the reference FASTA and GTF files with [STAR](https://github.com/alexdobin/STAR), unless an existing index is supplied;
+  - Generates a BED annotation with [UCSC Kent utilities](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html).
+- **RNA-seq preprocessing**
+  - Downloads sample data from SRA with the [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump), unless `--with_fastq true` is used;
+  - Performs FASTQ quality control and trimming with [fastp](https://github.com/OpenGene/fastp).
+- **Alignment**
+  - Aligns reads to the reference genome with [STAR](https://github.com/alexdobin/STAR);
+  - Optionally performs a two-pass STAR alignment with `--with_twopass true`.
+- **Quality control**
+  - Calculates BAM statistics and indexes with [SAMtools](https://www.htslib.org/);
+  - Infers library strandedness with [RSeQC](http://rseqc.sourceforge.net/).
+- **Transcript assembly**
+  - Optionally assembles transcripts and estimates gene abundance with [StringTie](https://ccb.jhu.edu/software/stringtie/), enabled with `--with_transcriptassembly true`.
+- **Alternative splicing quantification**
+  - Identifies alternative splicing events with [rMATS-turbo](https://github.com/Xinglab/rmats-turbo);
+  - Optionally enables novel splice-site detection with `--with_novelss true`;
+  - Aggregates quality-control reports with MultiQC.
 
 ## Usage
 
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
-
-First, prepare a samplesheet with your input data that looks as follows:
+First, prepare a samplesheet with a header row. The required columns are `run`, `experiment`, `condition`, and `single_end`. When `--with_fastq` is enabled, add `fastq_1` and `fastq_2` for paired-end samples.
 
 `samplesheet.csv`:
 
 ```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+run,experiment,condition,single_end
+SRR16496056,SRX12699021,control,false
 ```
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
-
--->
-
-Now, you can run the pipeline using:
-
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
+Each row represents one sequencing run. Use the same `condition` value for biological replicates that should be compared. For single-end data, set `single_end` to `true` and leave `fastq_2` empty. Now, you can run the pipeline using:
 
 ```bash
 nextflow run nf-core/pira \
    -profile <docker/singularity/.../institute> \
    --input samplesheet.csv \
+   --fasta reference.fa \
+   --gtf annotation.gtf \
    --outdir <OUTDIR>
 ```
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).
 
-For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/pira/usage) and the [parameter documentation](https://nf-co.re/pira/parameters).
+With the default parameters, samples are downloaded from SRA. To use the FASTQ paths in the samplesheet instead, add `--with_fastq true`. Create a samplesheet containing the FASTQ paths:
+
+```csv
+run,experiment,condition,single_end,fastq_1,fastq_2
+sample-1,experiment-1,control,false,reads/sample-1_R1.fastq.gz,reads/sample-1_R2.fastq.gz
+```
+
+Save it as `samplesheet_fastq.csv` and run:
+
+```bash
+nextflow run nf-core/pira \
+   -profile docker \
+  --input samplesheet_fastq.csv \
+   --with_fastq true \
+   --fasta reference.fa \
+   --gtf annotation.gtf \
+   --outdir results
+```
+
+Optional analysis stages can be enabled with `--with_twopass true`, `--with_transcriptassembly true`, and `--with_novelss true`. An existing STAR index can be supplied with `--index`; otherwise it is generated from the FASTA and GTF files.
+
+For more details, see the [usage documentation](docs/usage.md), [output documentation](docs/output.md), and [parameter documentation](https://nf-co.re/pira/parameters).
 
 ## Pipeline output
 
-To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/pira/results) tab on the nf-core website pipeline page.
-For more details about the output files and reports, please refer to the
-[output documentation](https://nf-co.re/pira/output).
+The pipeline publishes results under the output directory, including:
 
-## Creditsnf-metro
+- `multiqc/multiqc_report.html`: aggregated quality-control report;
+- `fastp/`: FASTP reports and trimmed reads;
+- `star/`: STAR alignment results and logs;
+- `samtools/`: alignment statistics and BAM indexes;
+- `rseqc/`: strandedness inference reports;
+- `stringtie/`: optional transcript assemblies and abundance tables;
+- `rmats/`: alternative splicing event tables and summaries;
+- `pipeline_info/`: execution reports, parameters, software versions, and workflow summaries.
 
-The original pipeline was implemented using Shell scripts and was originally written by [Luíza Zuvanov](@luizazuvanov).
-The pipeline was then re-written in Nextflow DSL2 by [Andre Perez](@andre-marcos-perez) and is currently maintained by
-[Luíza Zuvanov](@luizazuvanov), [Andre Perez](@andre-marcos-perez) and the nf-core community.
+See the [output documentation](docs/output.md) for the complete output layout. Example full-size runs are available on the [nf-core results page](https://nf-co.re/pira/results).
 
-We thank the following people for their extensive assistance in the development of this pipeline:
+## Credits
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+The original pipeline was implemented using shell scripts and was initially written by [Luíza Zuvanov](https://github.com/luizazuvanov). It was re-written in Nextflow DSL2 by [André Perez](https://github.com/andre-marcos-perez) and is maintained by Luíza Zuvanov, André Perez, and the nf-core community.
 
 ## Contributions and Support
 
@@ -98,10 +124,7 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 
 ## Citations
 
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use nf-core/pira for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
-
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
+The pipeline is under development. Once a release DOI is available, cite the corresponding nf-core/pira release record.
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
