@@ -14,6 +14,10 @@ nfcore-lint: ## Lint code with nf-core tools
 build: ## Build pipeline deps container
 	@docker build --no-cache . -t nfcore/pira:dev
 
+.PHONY: metro-map
+metro-map: ## Generate and validate the pipeline metro map SVG
+	@nf-metro render assets/metro_map.mmd --format svg -o assets/metro_map.svg --validate
+
 .PHONY: clean
 clean: ## Clean up
 	@rm -rf ./results ./logs/nextflow.log* ./work ./.nextflow
