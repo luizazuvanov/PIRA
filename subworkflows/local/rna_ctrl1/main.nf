@@ -38,7 +38,14 @@ workflow CTRL1 {
     ch_versions = channel.empty()
     FASTP.out.versions.set { ch_versions }
 
+    // multiqc
+
+    FASTP.out.json
+        .map { _meta, report -> report }
+        .set { ch_multiqc }
+
     emit:
-    data = ch_out
+    data     = ch_out
+    multiqc = ch_multiqc
     versions = ch_versions
 }

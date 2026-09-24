@@ -29,7 +29,10 @@ workflow TRANSCRIPT_ASSEMBLY {
     ch_versions = channel.empty()
     STRINGTIE_STRINGTIE.out.versions.set { ch_versions }
 
+    ch_multiqc = STRINGTIE_STRINGTIE.out.abundance
+
     emit:
-    data = ch_out
+    data     = ch_out
+    multiqc  = ch_multiqc
     versions = ch_versions
 }

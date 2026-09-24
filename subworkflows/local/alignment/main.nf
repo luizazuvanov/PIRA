@@ -43,7 +43,11 @@ workflow ALIGNMENT {
     ch_versions = channel.empty()
     STAR_ALIGN.out.versions.set { ch_versions }
 
+    ch_multiqc = STAR_ALIGN.out.log_final
+        .map { _meta, report -> report }
+
     emit:
-    data = ch_out
+    data     = ch_out
+    multiqc  = ch_multiqc
     versions = ch_versions
 }

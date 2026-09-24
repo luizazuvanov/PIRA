@@ -33,7 +33,11 @@ workflow CTRL3 {
         .mix( STRANDEDNESS.out.versions )
         .set { ch_versions }
 
+    ch_multiqc = RSEQC_INFEREXPERIMENT.out.txt
+        .map { _meta, report -> report }
+
     emit:
-    data = ch_out
+    data     = ch_out
+    multiqc  = ch_multiqc
     versions = ch_versions
 }

@@ -13,6 +13,9 @@ input:
       type: object
       description: BAM alignments with experiment, condition, strandedness, and reference annotation metadata
 output:
+  - abundance:
+      type: file
+      description: StringTie gene abundance tables with coverage, FPKM, and TPM values
   - data:
       type: file
       description: Assembled transcript GTF files with experiment and condition metadata

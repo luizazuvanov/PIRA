@@ -16,6 +16,9 @@ output:
   - data:
       type: file
       description: Quality-controlled and trimmed FASTQ files with sample metadata
+  - multiqc:
+      type: file
+      description: fastp JSON reports for MultiQC
   - versions:
       type: file
       description: Version of fastp used by the subworkflow

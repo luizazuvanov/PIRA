@@ -15,6 +15,7 @@ process STRINGTIE_STRINGTIE {
 
     output:
     tuple val(meta), path("*.transcripts.gtf"), emit: transcript_gtf
+    tuple val(meta), path("*.gene.abundance.txt"), emit: abundance
     path  "versions.yml"                      , emit: versions
 
     when:
@@ -37,6 +38,7 @@ process STRINGTIE_STRINGTIE {
         $strandedness \\
         $reference \\
         -o ${prefix}.transcripts.gtf \\
+        -A ${prefix}.gene.abundance.txt \\
         -p $task.cpus \\
         $args
 
@@ -50,6 +52,7 @@ process STRINGTIE_STRINGTIE {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.transcripts.gtf
+    touch ${prefix}.gene.abundance.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -13,6 +13,9 @@ input:
       type: object
       description: GTF annotation, two BAM groups, rMATS preparation intermediates, sequencing type, and read length metadata
 output:
+  - summary:
+      type: file
+      description: rMATS summary of significant alternative splicing events and replicate identities
   - versions:
       type: file
       description: Version of rMATS used by the subworkflow
