@@ -30,6 +30,7 @@ workflow TRANSCRIPT_ASSEMBLY {
     STRINGTIE_STRINGTIE.out.versions.set { ch_versions }
 
     ch_multiqc = STRINGTIE_STRINGTIE.out.abundance
+        .map { _meta, report -> report }
 
     emit:
     data     = ch_out
