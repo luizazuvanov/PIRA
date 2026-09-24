@@ -363,7 +363,7 @@ workflow PIRA {
 
     emit:
     versions = ch_versions
-    multiqc_report = MULTIQC.out.report.map { report -> [report] }.toList()
+    multiqc_report = MULTIQC.out.report.toList()
 }
 
 /*
