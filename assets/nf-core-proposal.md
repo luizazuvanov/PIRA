@@ -10,9 +10,9 @@ RNA-seq, alternative splicing, transcriptomics, RNA isoforms, de novo splice-sit
 
 ## What is it about?
 
-PIRA is an end-to-end RNA-seq workflow for identifying and quantifying alternative splicing events. It accepts either user-provided FASTQ files or public SRA run accessions, together with a reference FASTA and GTF annotation.
+PIRA is a specialized end-to-end RNA-seq workflow for discovering and quantifying alternative splicing events, with particular emphasis on events absent from the supplied reference annotation. It accepts either user-provided FASTQ files or public SRA run accessions, together with a reference FASTA and GTF annotation.
 
-The pipeline performs read preprocessing, STAR alignment, BAM quality control, strandedness inference, and alternative splicing quantification with rMATS-turbo. It includes three optional de novo discovery layers: STAR two-pass alignment, StringTie transcript assembly, and rMATS novel splice-site detection.
+Unlike a general RNA-seq pipeline whose primary outputs are alignments and expression matrices, PIRA is organized around layered alternative-splicing discovery. It combines alignment evidence, reconstructed transcript models, and event-level splice-site detection before producing rMATS-turbo results. The three discovery layers are STAR two-pass alignment, StringTie transcript assembly, and rMATS novel splice-site detection.
 
 ## Schematic diagram
 
@@ -22,20 +22,22 @@ The source diagram is [assets/metro_map.mmd](metro_map.mmd).
 
 ## What would a minimal first release include?
 
+The minimum useful release would be a focused alternative-splicing workflow rather than a broad RNA-seq quantification framework:
+
 - Samplesheet input with SRA accessions or local FASTQ files;
 - Reference FASTA and GTF inputs;
 - Optional STAR index input, with index generation when omitted;
 - FASTQ preprocessing with fastp;
-- STAR alignment;
+- STAR alignment as the evidence-generation stage;
 - SAMtools BAM statistics and indexing;
 - RSeQC strandedness inference;
-- rMATS-turbo preparation and post-processing;
+- rMATS-turbo preparation and post-processing for event-level splice quantification;
 - MultiQC reporting;
 - Docker/Singularity-compatible execution;
 - Basic nf-test coverage and nf-core standardized parameters;
 - Stub-run support.
 
-The STAR two-pass, StringTie transcript assembly, and rMATS novel splice-site layers are already implemented as optional components and could be included in the first release or finalized as early follow-up features.
+The defining feature of the first release would be the coordinated de novo strategy: STAR two-pass alignment, StringTie transcript assembly, and rMATS novel splice-site detection. These are complementary discovery layers designed to improve detection of unannotated junctions, isoforms, and splicing events.
 
 ## nf-core requirements
 
@@ -55,30 +57,30 @@ The remaining unchecked items are active preparation work for the nf-core review
 
 ## Why do we need a new pipeline?
 
-Existing RNA-seq pipelines provide alignment, quantification, or general quality control, but do not directly target systematic discovery and quantification of alternative splicing events with multiple coordinated de novo strategies.
+PIRA addresses a gap between general RNA-seq processing and specialized alternative-splicing analysis. Generic RNA-seq workflows typically optimize read QC, alignment, transcript or gene quantification, and broad reporting. They do not make discovery of unannotated splicing events the central analytical objective or coordinate multiple discovery layers for that purpose.
 
-This is particularly important for organisms such as _C. elegans_, where transcript annotations remain incomplete and tissue-, developmental-stage-, and disease-specific isoforms may be absent from reference annotations. PIRA combines three complementary discovery layers:
+This distinction is particularly important for organisms such as _C. elegans_, where transcript annotations remain incomplete and tissue-, developmental-stage-, and disease-specific isoforms may be absent from reference annotations. PIRA combines three complementary discovery layers:
 
 1. STAR two-pass alignment to improve support for unannotated splice junctions;
 2. StringTie transcript assembly to reconstruct novel isoforms;
 3. rMATS-turbo novel splice-site detection to identify additional unannotated splicing events.
 
-Simulation results indicate that activating all three layers improves novel-event detection, with an overall F1-score of approximately 0.68 and a TASS-specific precision, recall, and F1-score of approximately 81%, 71%, and 75%, respectively.
+Preliminary simulation results from Luíza Zuvanov's in-progress PhD thesis (pipeline author) indicate that activating all three layers improves novel-event detection, with an overall F1-score of approximately 0.68 and a TASS-specific precision, recall, and F1-score of approximately 81%, 71%, and 75%, respectively. These results are currently unpublished and will be documented and validated further as the work progresses.
 
-PIRA also provides a reproducible, scalable, and portable implementation through Nextflow and nf-core conventions.
+The novelty is analytical rather than merely infrastructural: PIRA treats incomplete annotation as an explicit design assumption and evaluates the effect of progressively enabling discovery layers. It provides a reproducible, scalable, and portable implementation through Nextflow and nf-core conventions while retaining a focused biological objective: finding and quantifying alternative splicing that a reference-only workflow could miss.
 
 ## Who would be interested?
 
-- Researchers studying alternative splicing and isoform regulation;
+- Researchers studying alternative splicing, isoform regulation, and splice-site choice;
 - RNA-seq analysts working with incomplete or evolving genome annotations;
 - Researchers studying _C. elegans_ development, tissues, or disease models;
-- Transcriptomics and RNA biology groups;
-- Groups analysing multiple RNA-seq datasets consistently;
+- Transcriptomics and RNA biology groups that need event-level rather than only gene-level results;
+- Groups comparing alternative-splicing landscapes across multiple datasets;
 - Users requiring reproducible execution on HPC, cloud, or local container platforms.
 
 ## What has been done so far?
 
-A functional Nextflow DSL2 implementation exists and is currently being prepared for nf-core review.
+A functional Nextflow DSL2 implementation exists and is currently being prepared for nf-core review. The implementation is positioned as a focused alternative-splicing workflow, with generic RNA-seq preprocessing and alignment serving as supporting stages rather than the primary scientific output.
 
 The current prototype includes:
 
