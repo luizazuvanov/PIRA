@@ -36,7 +36,11 @@ workflow CTRL2 {
         .mix( SAMTOOLS_STATS.out.versions )
         .mix( SAMTOOLS_INDEX.out.versions )
 
+    ch_multiqc = SAMTOOLS_STATS.out.stats
+        .map { _meta, report -> report }
+
     emit:
-    data = ch_out
+    data     = ch_out
+    multiqc  = ch_multiqc
     versions = ch_versions
 }

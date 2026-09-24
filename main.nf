@@ -62,11 +62,19 @@ workflow NFCORE_PIRA {
     //
     // WORKFLOW: Run pipeline
     //
-    PIRA (ch_samples, ch_fasta, ch_gtf, ch_index_optional)
+    PIRA (
+        ch_samples,
+        ch_fasta,
+        ch_gtf,
+        ch_index_optional,
+        params.multiqc_config,
+        params.multiqc_logo,
+        params.multiqc_methods_description,
+    )
 
     emit:
     versions = PIRA.out.versions
-    multiqc_report = PIRA.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = PIRA.out.multiqc_report
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

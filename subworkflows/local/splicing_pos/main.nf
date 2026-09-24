@@ -21,6 +21,9 @@ workflow SPLICING_POS {
     ch_versions = channel.empty()
     RMATS_POS.out.versions.set { ch_versions }
 
+    ch_multiqc = RMATS_POS.out.summary
+
     emit:
+    multiqc  = ch_multiqc
     versions = ch_versions
 }

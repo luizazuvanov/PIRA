@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "PIPELINE_INITIALISATION"
+description: Initialise the nf-core/pira pipeline and create the samplesheet channel
+keywords:
+  - utility
+  - pipeline
+  - initialization
+  - completion
+  - MultiQC
+components:
+  - utils_nfschema_plugin
+  - utils_nfcore_pipeline
+  - utils_nextflow_pipeline
+  - completionemail
+  - completionsummary
+input:
+  - version:
+      type: boolean
+      description: Display the pipeline version and exit
+  - validate_params:
+      type: boolean
+      description: Validate parameters against the schema
+  - monochrome_logs:
+      type: boolean
+      description: Disable coloured log output
+  - nextflow_cli_args:
+      type: list
+      description: Nextflow CLI positional arguments
+  - outdir:
+      type: directory
+      description: Pipeline output directory
+  - input:
+      type: file
+      description: Input samplesheet
+  - help:
+      type: boolean
+      description: Display the help message
+  - help_full:
+      type: boolean
+      description: Display the full help message
+  - show_hidden:
+      type: boolean
+      description: Show hidden parameters in the help message
+output:
+  - samplesheet:
+      type: file
+      description: Parsed samplesheet channel
+  - versions:
+      type: file
+      description: Software versions emitted during initialization
+authors:
+  - "@andre-marcos-perez"
+maintainers:
+  - "@andre-marcos-perez"

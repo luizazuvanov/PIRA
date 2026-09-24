@@ -10,7 +10,6 @@
 
 include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-schema'
-include { paramsHelp                } from 'plugin/nf-schema'
 include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
@@ -102,7 +101,7 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
     channel
-        .fromPath(params.input, type: "file")
+        .fromPath(input, type: "file")
         .map { it -> file(it) }
         .splitCsv( header: true, strip: true )
         .unique()
@@ -169,13 +168,19 @@ workflow PIPELINE_COMPLETION {
 // Generate methods description for MultiQC
 //
 def toolCitationText() {
-    // TODO nf-core: Optionally add in-text citation tools to this list.
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
     // Uncomment function in methodsDescriptionText to render in MultiQC report
     def citation_text = [
             "Tools used in the workflow included:",
-            "FastQC (Andrews 2010),",
-            "MultiQC (Ewels et al. 2016)",
+            "fastp (Chen et al. 2018),",
+            "STAR (Dobin et al. 2013),",
+            "SAMtools (Li et al. 2009),",
+            "RSeQC (Wang et al. 2012),",
+            "rMATS (Shen et al. 2014),",
+            params.with_transcriptassembly ? "StringTie (Pertea et al. 2015)," : "",
+            !params.with_fastq ? "SRA Toolkit (Leinonen et al. 2011)," : "",
+            "UCSC Genome Browser utilities (Kent et al. 2002),",
+            "and MultiQC (Ewels et al. 2016)",
             "."
         ].join(' ').trim()
 
@@ -183,12 +188,18 @@ def toolCitationText() {
 }
 
 def toolBibliographyText() {
-    // TODO nf-core: Optionally add bibliographic entries to this list.
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "<li>Author (2023) Pub name, Journal, DOI</li>" : "",
     // Uncomment function in methodsDescriptionText to render in MultiQC report
     def reference_text = [
-            "<li>Andrews S, (2010) FastQC, URL: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).</li>",
-            "<li>Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics , 32(19), 3047–3048. doi: /10.1093/bioinformatics/btw354</li>"
+            "<li>Chen, S., Zhou, Y., Chen, Y., & Gu, J. (2018). fastp: an ultra-fast all-in-one FASTQ preprocessor. Bioinformatics, 34(17), i884-i890. <a href=\"https://doi.org/10.1093/bioinformatics/bty560\">10.1093/bioinformatics/bty560</a></li>",
+            "<li>Dobin, A. et al. (2013). STAR: ultrafast universal RNA-seq aligner. Bioinformatics, 29(1), 15-21. <a href=\"https://doi.org/10.1093/bioinformatics/bts635\">10.1093/bioinformatics/bts635</a></li>",
+            "<li>Li, H. et al. (2009). The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25(16), 2078-2079. <a href=\"https://doi.org/10.1093/bioinformatics/btp352\">10.1093/bioinformatics/btp352</a></li>",
+            "<li>Wang, L. et al. (2012). RSeQC: quality control of RNA-seq experiments. Bioinformatics, 28(16), 2184-2185. <a href=\"https://doi.org/10.1093/bioinformatics/bts356\">10.1093/bioinformatics/bts356</a></li>",
+            "<li>Shen, S. et al. (2014). rMATS: robust and flexible detection of differential alternative splicing from replicate RNA-Seq data. Proceedings of the National Academy of Sciences, 111, E179-E184. <a href=\"https://doi.org/10.1073/pnas.1320200111\">10.1073/pnas.1320200111</a></li>",
+            params.with_transcriptassembly ? "<li>Pertea, M. et al. (2015). StringTie enables improved reconstruction of a transcriptome from RNA-seq reads. Nature Biotechnology, 33, 290-295. <a href=\"https://doi.org/10.1038/nbt.3122\">10.1038/nbt.3122</a></li>" : "",
+            !params.with_fastq ? "<li>Leinonen, R., Sugawara, H., &amp; Shumpei, K. (2011). The sequence read archive. Nucleic Acids Research, 39(Database issue), D19-D21. <a href=\"https://doi.org/10.1093/nar/gkq1019\">10.1093/nar/gkq1019</a></li>" : "",
+            "<li>Kent, W. J. et al. (2002). The human genome browser at UCSC. Genome Research, 12(6), 996-1006. <a href=\"https://doi.org/10.1101/gr.229102\">10.1101/gr.229102</a></li>",
+            "<li>Ewels, P., Magnusson, M., Lundin, S., &amp; Kaller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics, 32(19), 3047-3048. <a href=\"https://doi.org/10.1093/bioinformatics/btw354\">10.1093/bioinformatics/btw354</a></li>"
         ].join(' ').trim()
 
     return reference_text
@@ -218,9 +229,8 @@ def methodsDescriptionText(mqc_methods_yaml) {
     meta["tool_citations"] = ""
     meta["tool_bibliography"] = ""
 
-    // TODO nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
-    // meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
-    // meta["tool_bibliography"] = toolBibliographyText()
+    meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".")
+    meta["tool_bibliography"] = toolBibliographyText()
 
 
     def methods_text = mqc_methods_yaml.text

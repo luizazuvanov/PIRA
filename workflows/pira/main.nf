@@ -4,7 +4,6 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-
 include { GENOME_BED                               } from '../../subworkflows/local/genome_bed/main'
 include { GENOME_INDEX                             } from '../../subworkflows/local/genome_index/main'
 include { SAMPLES                                  } from '../../subworkflows/local/rna_samples/main'
@@ -23,8 +22,6 @@ include { SPLICING_PRE as SPLICING_PRE_WITHOUT_NSS } from '../../subworkflows/lo
 include { SPLICING_POS as SPLICING_POS_WITH_NSS    } from '../../subworkflows/local/splicing_pos/main'
 include { SPLICING_POS as SPLICING_POS_WITHOUT_NSS } from '../../subworkflows/local/splicing_pos/main'
 
-include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-
 include { group_gtf                         } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_stats                       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { group_fastp_by_exp_cond_end       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
@@ -34,6 +31,12 @@ include { combine_by_cond                   } from '../../subworkflows/local/uti
 include { join_by_exp                       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { compute_pairs_by_cond             } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
 include { reduce_strandedness_by_cond       } from '../../subworkflows/local/utils_nextflow_pira_pipeline/main'
+
+include { MULTIQC                } from '../../modules/nf-core/multiqc/main'
+include { paramsSummaryMap       } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc   } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText } from '../../subworkflows/local/utils_nfcore_pira_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,11 +51,14 @@ workflow PIRA {
     ch_fasta
     ch_gtf
     ch_index_optional
+    multiqc_config
+    multiqc_logo
+    multiqc_methods_description
 
     main:
 
     ch_versions = channel.empty()
-    // ch_multiqc_files = channel.empty()
+    ch_multiqc_files = channel.empty()
 
     //
     // SUBWORKFLOW: GENOME
@@ -99,6 +105,7 @@ workflow PIRA {
     CTRL1(ch_fastq)
     ch_fastp = CTRL1.out.data
     ch_versions = ch_versions.mix(CTRL1.out.versions)
+    ch_multiqc_files = ch_multiqc_files.mix(CTRL1.out.multiqc)
 
     //
     // SUBWORKFLOW: ALIGNMENT
@@ -117,6 +124,7 @@ workflow PIRA {
 
     ch_alignment = ALIGNMENT.out.data
     ch_versions = ch_versions.mix(ALIGNMENT.out.versions)
+    ch_multiqc_files = ch_multiqc_files.mix(ALIGNMENT.out.multiqc)
 
     if (params.with_twopass) {
 
@@ -144,6 +152,7 @@ workflow PIRA {
 
         ch_alignment = ALIGNMENT_DENOVO.out.data
         ch_versions = ch_versions.mix(ALIGNMENT_DENOVO.out.versions)
+        ch_multiqc_files = ch_multiqc_files.mix(ALIGNMENT_DENOVO.out.multiqc)
 
     }
 
@@ -159,6 +168,8 @@ workflow PIRA {
 
     CTRL2(ch_bam)
     ch_stats = CTRL2.out.data
+    ch_versions = ch_versions.mix(CTRL2.out.versions)
+    ch_multiqc_files = ch_multiqc_files.mix(CTRL2.out.multiqc)
 
     //
     // SUBWORKFLOW: CTRL3
@@ -172,6 +183,7 @@ workflow PIRA {
     )
     ch_strandedness = CTRL3.out.data
     ch_versions = ch_versions.mix(CTRL3.out.versions)
+    ch_multiqc_files = ch_multiqc_files.mix(CTRL3.out.multiqc)
 
     if (params.with_transcriptassembly) {
 
@@ -202,6 +214,7 @@ workflow PIRA {
         )
 
         ch_versions = ch_versions.mix(TRANSCRIPT_ASSEMBLY.out.versions)
+        ch_multiqc_files = ch_multiqc_files.mix(TRANSCRIPT_ASSEMBLY.out.multiqc)
 
         //
         // SUBWORKFLOW: ASSEMBLY MERGE
@@ -296,6 +309,7 @@ workflow PIRA {
                 .map { row, gtf -> row + [gtf: gtf.gtf] }
         )
         ch_versions = ch_versions.mix(SPLICING_POS_WITH_NSS.out.versions)
+        ch_multiqc_files = ch_multiqc_files.mix(SPLICING_POS_WITH_NSS.out.multiqc)
 
     } else {
 
@@ -305,13 +319,14 @@ workflow PIRA {
                 .map { row, gtf -> row + [gtf: gtf.gtf] }
         )
         ch_versions = ch_versions.mix(SPLICING_POS_WITHOUT_NSS.out.versions)
+        ch_multiqc_files = ch_multiqc_files.mix(SPLICING_POS_WITHOUT_NSS.out.multiqc)
     }
 
     //
-    // WRAP UP
+    // Versions
     //
 
-    softwareVersionsToYAML(ch_versions)
+    ch_collated_versions = softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name: 'nf_core_pira_software_versions.yml',
@@ -319,9 +334,36 @@ workflow PIRA {
             newLine: true
         )
 
+    //
+    // MODULE: MULTIQC
+    //
+
+    ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
+
+    ch_summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    ch_workflow_summary = channel.value(paramsSummaryMultiqc(ch_summary_params))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+
+    ch_multiqc_custom_methods_description = multiqc_methods_description
+        ? file(multiqc_methods_description, checkIfExists: true)
+        : file("${projectDir}/assets/methods_description_template.yml", checkIfExists: true)
+    ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
+
+    MULTIQC(
+        ch_multiqc_files.flatten().collect(),
+        multiqc_config
+            ? file(multiqc_config, checkIfExists: true)
+            : file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true),
+        [],
+        multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
+        [],
+        []
+    )
+
     emit:
     versions = ch_versions
-    multiqc_report = channel.empty()
+    multiqc_report = MULTIQC.out.report.toList()
 }
 
 /*

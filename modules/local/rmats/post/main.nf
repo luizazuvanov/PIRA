@@ -19,6 +19,7 @@ process RMATS_POS {
     output:
     tuple val(meta), path("post/tmp/"), emit: tmp
     path("post/out/")                 , emit: out
+    path("post/out/summary.txt")      , emit: summary
     path("versions.yml")              , emit: versions
 
     script:
