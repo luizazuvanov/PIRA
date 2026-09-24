@@ -25,17 +25,26 @@
 
 ![nf-core/pira metro map](assets/metro_map.svg)
 
-By default, the pipeline performs the following steps:
+By default, the pipeline follows these stages:
 
-- Downloads sample data from SRA with the [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump);
-- Generates a STAR genome index and BED annotation from the reference files using [STAR](https://github.com/alexdobin/STAR) and [UCSC Kent utilities](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html);
-- Performs FASTQ quality control and trimming with [fastp](https://github.com/OpenGene/fastp);
-- Aligns reads to the reference genome with [STAR](https://github.com/alexdobin/STAR);
-- Calculates BAM statistics and indexes with [SAMtools](https://www.htslib.org/);
-- Infers library strandedness with [RSeQC](http://rseqc.sourceforge.net/); and
-- Identifies alternative splicing events with [rMATS-turbo](https://github.com/Xinglab/rmats-turbo).
-
-Optional pipeline stages can use FASTQ files supplied in the samplesheet, run STAR two-pass alignment, assemble transcripts with [StringTie](https://ccb.jhu.edu/software/stringtie/), and enable rMATS novel splice-site detection.
+- **Genome preprocessing**
+  - Generates a STAR genome index from the reference FASTA and GTF files with [STAR](https://github.com/alexdobin/STAR), unless an existing index is supplied;
+  - Generates a BED annotation with [UCSC Kent utilities](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html).
+- **RNA-seq preprocessing**
+  - Downloads sample data from SRA with the [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump), unless `--with_fastq true` is used;
+  - Performs FASTQ quality control and trimming with [fastp](https://github.com/OpenGene/fastp).
+- **Alignment**
+  - Aligns reads to the reference genome with [STAR](https://github.com/alexdobin/STAR);
+  - Optionally performs a two-pass STAR alignment with `--with_twopass true`.
+- **Quality control**
+  - Calculates BAM statistics and indexes with [SAMtools](https://www.htslib.org/);
+  - Infers library strandedness with [RSeQC](http://rseqc.sourceforge.net/).
+- **Transcript assembly**
+  - Optionally assembles transcripts and estimates gene abundance with [StringTie](https://ccb.jhu.edu/software/stringtie/), enabled with `--with_transcriptassembly true`.
+- **Alternative splicing quantification**
+  - Identifies alternative splicing events with [rMATS-turbo](https://github.com/Xinglab/rmats-turbo);
+  - Optionally enables novel splice-site detection with `--with_novelss true`;
+  - Aggregates quality-control reports with MultiQC.
 
 ## Usage
 
