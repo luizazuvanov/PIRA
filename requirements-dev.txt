@@ -1,2 +1,3 @@
 -r requirements.txt
 pre-commit==4.2.0
+nf-metro==2.1.0

@@ -20,31 +20,35 @@
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/pira/usage#samplesheet-input).",
+                    "help_text": "Create a comma-separated samplesheet with a header row. Required columns are `run`, `experiment`, `condition`, and `single_end`; when `with_fastq` is enabled, also provide `fastq_1` and `fastq_2` for paired-end samples. See [usage docs](https://nf-co.re/pira/usage#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "with_fastq": {
                     "type": "boolean",
                     "hidden": false,
-                    "description": "Whether to use FASTQ files from the samplesheet, omit to download them.",
+                    "description": "Whether to use FASTQ files from the samplesheet; when false, download sample data from SRA using the `run` identifiers.",
+                    "help_text": "When enabled, provide `fastq_1` and, for paired-end samples, `fastq_2` in the samplesheet. When disabled, FASTQ files are downloaded from SRA.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "with_twopass": {
                     "type": "boolean",
                     "hidden": false,
-                    "description": "Whether to run STAR aligner's two-pass mapping, omit to skip it.",
+                    "description": "Whether to run STAR aligner's two-pass mapping; omit to skip this optional stage.",
+                    "help_text": "The first STAR alignment supplies splice junctions used for the second-pass alignment.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "with_transcriptassembly": {
                     "type": "boolean",
                     "hidden": false,
-                    "description": "Whether to run STRINGTIE's transcript assembly, omit to skip it.",
+                    "description": "Whether to run StringTie transcript assembly; omit to skip this optional stage.",
+                    "help_text": "Runs per-sample transcript assembly and transcript merging after alignment and strandedness inference.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "with_novelss": {
                     "type": "boolean",
                     "hidden": false,
-                    "description": "Whether to run rMATS' novel splice site detection (novelSS param), omit to skip it.",
+                    "description": "Whether to enable rMATS novel splice site detection; omit to use the standard event set.",
+                    "help_text": "Passes novel splice site mode to rMATS preparation and post-processing.",
                     "fa_icon": "fas fa-check-circle"
                 },
                 "outdir": {
@@ -82,7 +86,8 @@
                     "type": "string",
                     "format": "directory-path",
                     "exists": true,
-                    "description": "Path to genome index folder.",
+                    "description": "Optional path to an existing STAR genome index directory. If omitted, the pipeline generates an index from `fasta` and `gtf`.",
+                    "help_text": "When supplied, this index is used instead of generating a new one.",
                     "fa_icon": "fas fa-folder-open"
                 }
             }
