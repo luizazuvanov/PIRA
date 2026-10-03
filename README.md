@@ -1,3 +1,5 @@
+> Note: This repository is in the review stage by the nf-core community.
+
 <h1>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-pira_logo_dark.png">
