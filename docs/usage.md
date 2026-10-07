@@ -14,20 +14,20 @@ The default workflow performs SRA retrieval, fastp preprocessing, STAR alignment
 
 The input samplesheet is a comma-separated file with a header row. Each row represents one sequencing run. The required columns are:
 
-| Column       | Description                                                                                 |
-| ------------ | ------------------------------------------------------------------------------------------- |
-| `run`        | SRA run accession or custom run identifier.                                                 |
-| `experiment` | Experiment identifier used to group runs and report results.                                |
-| `condition`  | Condition name used to form comparison groups.                                              |
-| `single_end` | `true` for single-end data or `false` for paired-end data.                                  |
-| `fastq_1`    | FASTQ read 1 path. Required with `--with_fastq`.                                            |
-| `fastq_2`    | FASTQ read 2 path for paired-end data. Required with `--with_fastq` for paired-end samples. |
+| Column       | Data type | Description                                                                                 |
+| ------------ | --------- | ------------------------------------------------------------------------------------------- |
+| `run`        | string    | SRA run accession or custom run identifier.                                                 |
+| `experiment` | string    | Experiment identifier used to group runs and report results.                                |
+| `condition`  | string    | Condition name used to form comparison groups.                                              |
+| `single_end` | boolean   | `true` for single-end data or `false` for paired-end data.                                  |
+| `fastq_1`    | path      | FASTQ read 1 path. Required with `--with_fastq`.                                            |
+| `fastq_2`    | path      | FASTQ read 2 path for paired-end data. Required with `--with_fastq` for paired-end samples. |
 
 The first four columns are required in all modes. The FASTQ columns are required only when `--with_fastq` is used. Use the same `condition` value for biological replicates that should be compared. Each run must have a unique `run` identifier.
 
 ### SRA input
 
-With the default `--with_fastq` omitted, the `run` column is used to download data through the SRA Toolkit. FASTQ paths may be left empty:
+With `--with_fastq` omitted, the `run` column is used to download data from the [NCBI Sequence Read Archive (SRA) database](https://www.ncbi.nlm.nih.gov/sra) through the SRA Toolkit. FASTQ paths may be left empty:
 
 ```csv
 run,experiment,condition,single_end,fastq_1,fastq_2
