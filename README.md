@@ -33,19 +33,19 @@ By default, the pipeline follows these stages:
   - Generates a STAR genome index from the reference FASTA and GTF files with [STAR](https://github.com/alexdobin/STAR), unless an existing index is supplied;
   - Generates a BED annotation with [UCSC Kent utilities](https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html).
 - **RNA-seq preprocessing**
-  - Downloads sample data from SRA with the [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump), unless `--with_fastq true` is used;
+  - Downloads sample data from SRA with the [SRA Toolkit](https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump), unless `--with_fastq` is used;
   - Performs FASTQ quality control and trimming with [fastp](https://github.com/OpenGene/fastp).
 - **Alignment**
   - Aligns reads to the reference genome with [STAR](https://github.com/alexdobin/STAR);
-  - Optionally performs a two-pass STAR alignment with `--with_twopass true`.
+  - Optionally performs a two-pass STAR alignment with `--with_twopass`.
 - **Quality control**
   - Calculates BAM statistics and indexes with [SAMtools](https://www.htslib.org/);
   - Infers library strandedness with [RSeQC](http://rseqc.sourceforge.net/).
 - **Transcript assembly**
-  - Optionally assembles transcripts and estimates gene abundance with [StringTie](https://ccb.jhu.edu/software/stringtie/), enabled with `--with_transcriptassembly true`.
+  - Optionally assembles transcripts and estimates gene abundance with [StringTie](https://ccb.jhu.edu/software/stringtie/), enabled with `--with_transcriptassembly`.
 - **Alternative splicing quantification**
   - Identifies alternative splicing events with [rMATS-turbo](https://github.com/Xinglab/rmats-turbo);
-  - Optionally enables novel splice-site detection with `--with_novelss true`;
+  - Optionally enables novel splice-site detection with `--with_novelss`;
   - Aggregates quality-control reports with MultiQC.
 
 ## Usage
@@ -76,7 +76,7 @@ nextflow run nf-core/pira \
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).
 
-With the default parameters, samples are downloaded from SRA. To use the FASTQ paths in the samplesheet instead, add `--with_fastq true`. Create a samplesheet containing the FASTQ paths:
+With the default parameters, samples are downloaded from SRA. To use the FASTQ paths in the samplesheet instead, add `--with_fastq`. Create a samplesheet containing the FASTQ paths:
 
 ```csv
 run,experiment,condition,single_end,fastq_1,fastq_2
@@ -89,13 +89,13 @@ Save it as `samplesheet_fastq.csv` and run:
 nextflow run nf-core/pira \
    -profile docker \
   --input samplesheet_fastq.csv \
-   --with_fastq true \
+   --with_fastq \
    --fasta reference.fa \
    --gtf annotation.gtf \
    --outdir results
 ```
 
-Optional analysis stages can be enabled with `--with_twopass true`, `--with_transcriptassembly true`, and `--with_novelss true`. An existing STAR index can be supplied with `--index`; otherwise it is generated from the FASTA and GTF files.
+Optional analysis stages can be enabled with `--with_twopass`, `--with_transcriptassembly`, and `--with_novelss`. An existing STAR index can be supplied with `--index`; otherwise it is generated from the FASTA and GTF files.
 
 For more details, see the [usage documentation](docs/usage.md), [output documentation](docs/output.md), and [parameter documentation](https://nf-co.re/pira/parameters).
 
