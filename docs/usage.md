@@ -217,8 +217,11 @@ Tool-specific arguments can be supplied using the `ext.args` or `ext.args2` proc
 
 ```nextflow
 process {
-    withName: 'RMATS_POS' {
-        ext.args = '--mil 30'
+    withName: 'NFCORE_PIRA:PIRA:SPLICING_PRE_WITH_NSS:RMATS_PRE' {
+        ext.args = '--variable-read-length --novelSS --mil 20'
+    }
+    withName: 'NFCORE_PIRA:PIRA:SPLICING_POS_WITH_NSS:RMATS_POS' {
+        ext.args = '--variable-read-length --novelSS --mil 20'
     }
 }
 ```

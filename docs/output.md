@@ -31,7 +31,7 @@ BED-format annotation generated from the input GTF using UCSC Kent utilities. Th
 
 ### `star/`
 
-STAR alignment and, when no compatible `--index` is supplied, the generated STAR genome index. Alignment results are grouped by alignment mode, for example:
+STAR alignment and, when `--index` is omitted, the generated STAR genome index. Alignment results are grouped by alignment mode, for example:
 
 - `star/baseline/`: primary STAR alignment results;
 - `star/denovo/`: second-pass alignment results when `--with_twopass` is enabled.
